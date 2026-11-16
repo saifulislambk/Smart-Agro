@@ -17,7 +17,8 @@
     { "source": "/roadmap/(.*)", "destination": "/crop-detail.html" },
     { "source": "/docs/view/ai-model", "destination": "/docs/html/ai-model-setup.html" },
     { "source": "/docs/view/deployment", "destination": "/docs/html/deployment-hosting.html" },
-    { "source": "/docs/view/developer", "destination": "/docs/html/developer-guide.html" }
+    { "source": "/docs/view/developer", "destination": "/docs/html/developer-guide.html" },
+    { "source": "/api/(.*)", "destination": "/api/index.js" }
   ],
   "headers": [
     {

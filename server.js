@@ -464,7 +464,7 @@ function getMailTransporter() {
   });
 }
 
-app.post('/api/auth/send-email-otp', async (req, res) => {
+app.post(['/api/auth/send-email-otp', '/api/send-email-otp'], async (req, res) => {
   try {
     const { email } = req.body;
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
@@ -523,7 +523,7 @@ app.post('/api/auth/send-email-otp', async (req, res) => {
   }
 });
 
-app.post('/api/auth/verify-email-otp', async (req, res) => {
+app.post(['/api/auth/verify-email-otp', '/api/verify-email-otp'], async (req, res) => {
   try {
     const { email, otp } = req.body;
     if (!email || !otp) {
