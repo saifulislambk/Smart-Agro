@@ -284,7 +284,7 @@ async function sendPhoneOtp(rawPhone) {
     if (err.code === 'auth/unauthorized-domain') {
       msg = '⚠️ ফায়ারবেস কনসোলে smartagrobd.vercel.app ডোমেইনটি অনুমোদিত নয়। Firebase Console > Authentication > Settings > Authorized Domains-এ smartagrobd.vercel.app যোগ করুন।';
     } else if (err.code === 'auth/operation-not-allowed') {
-      msg = '⚠️ ফায়ারবেস কনসোলে Phone Authentication অন করা নেই। console.firebase.google.com-এ গিয়ে Sign-in Method-এ Phone অন করুন।';
+      msg = '⚠️ Google Policy: ফায়ারবেসে সরাসরি SMS পাঠানোর জন্য Blaze Plan (বিলিং) প্রয়োজন অথবা Firebase Console > Phone > "Phone numbers for testing"-এ নম্বর যোগ করতে হবে। অথবা উপরের গুগল সাইন-ইন দিয়ে সরাসরি লগইন করুন।';
     } else if (err.code === 'auth/quota-exceeded') {
       msg = '⚠️ ফায়ারবেসের দৈনিক ফ্রি এসএমএস কোটা শেষ হয়েছে। গুগল সাইন-ইন দিয়ে লগইন করুন অথবা ব্লেজ প্ল্যান অন করুন।';
     } else if (err.code === 'auth/invalid-app-credential' || err.code === 'auth/invalid-api-key') {
