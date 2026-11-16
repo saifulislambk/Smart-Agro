@@ -1,10 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "public",
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/scan", "destination": "/scan.html" },
     { "source": "/scanner", "destination": "/scan.html" },
     { "source": "/roadmap", "destination": "/roadmap.html" },
@@ -33,7 +30,7 @@
     }
   ],
   "functions": {
-    "api/index.js": {
+    "api/**/*.js": {
       "maxDuration": 15,
       "memory": 1024
     }
