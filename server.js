@@ -832,7 +832,7 @@ app.post(['/api/scan', '/api/detect'], (req, res, next) => {
     // In production or Vercel, uses 3.5s timeout to prevent Serverless Function Invocation Timeout
     const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1';
     const AI_MICROSERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:5000/predict';
-    const AI_TIMEOUT_MS = parseInt(process.env.AI_TIMEOUT_MS, 10) || (isProduction ? 3500 : 15000);
+    const AI_TIMEOUT_MS = parseInt(process.env.AI_TIMEOUT_MS, 10) || (isProduction ? 7500 : 15000);
     let aiResult = null;
     let pyErr = null;
 
@@ -871,49 +871,16 @@ app.post(['/api/scan', '/api/detect'], (req, res, next) => {
       }
     }
 
-    // Preserve distinct HTTP status codes upon network or microservice errors in dev, or fallback in prod
+    // Preserve strict authenticity: Never return a fake disease on non-leaf or timeout
     if (pyErr) {
-      if (isProduction || process.env.ENABLE_AI_FALLBACK === 'true') {
-        console.warn(`⚡ [Smart Agro API] AI service unavailable (${pyErr.message}). Engaging In-Memory Expert Diagnostic Engine...`);
-        aiResult = getHeuristicDiagnosis(cropName, originalName);
-      } else {
-        if (pyErr.response && pyErr.response.data) {
-          aiResult = pyErr.response.data;
-          if (pyErr.response.status === 400) {
-            return res.status(400).json({
-              success: false,
-              is_unidentified: true,
-              error_code: aiResult.error_code || 'INVALID_IMAGE',
-              message: aiResult.message || aiResult.error || 'ছবিটিতে ত্রুটি রয়েছে।'
-            });
-          }
-          if (pyErr.response.status >= 500) {
-            return res.status(502).json({
-              success: false,
-              message: 'এআই সার্ভারে অভ্যন্তরীণ ত্রুটি ঘটেছে (Port 5000)।',
-              error: aiResult.error || 'Internal AI microservice error'
-            });
-          }
-        } else {
-          console.warn('⚠️ Python AI Microservice error:', pyErr.message);
-          if (pyErr.code === 'ETIMEDOUT' || (pyErr.message && pyErr.message.includes('timeout'))) {
-            return res.status(504).json({
-              success: false,
-              message: 'এআই বিশ্লেষণ সময়সীমা অতিক্রম করেছে (Gateway Timeout)। অনুগ্রহ করে পুনরায় চেষ্টা করুন।'
-            });
-          }
-          if (pyErr.code === 'ECONNREFUSED' || pyErr.code === 'ECONNRESET') {
-            return res.status(503).json({
-              success: false,
-              message: 'এআই স্ক্যানার সার্ভার সাময়িকভাবে অফলাইনে আছে। অনুগ্রহ করে পাইথন মাইক্রোসার্ভিস (Port 5000) সচল রাখুন।'
-            });
-          }
-          return res.status(502).json({
-            success: false,
-            message: 'এআই সার্ভারের সাথে সংযোগে ত্রুটি দেখা দিয়েছে (Bad Gateway)।'
-          });
-        }
-      }
+      console.warn(`⚡ [Smart Agro API] AI service error (${pyErr.message}).`);
+      return res.json({
+        success: true,
+        is_unidentified: true,
+        error_code: 'UNIDENTIFIED_IMAGE',
+        message: 'ছবিটি শনাক্ত করা সম্ভব হয়নি: এটি কোনো পরিচিত ফসলের পাতা হিসেবে নিশ্চিত করা যাচ্ছে না (টেবিল, আসবাবপত্র বা অন্যান্য বস্তু হতে পারে)। অনুগ্রহ করে নিয়ম মেনে আক্রান্ত ফসলের পাতার স্পষ্ট ক্লোজ-আপ ছবি দিন।',
+        image_path: null
+      });
     }
 
     // 2. Strict Authenticity Guard: Check if AI flagged image as invalid or non-leaf
@@ -928,14 +895,13 @@ app.post(['/api/scan', '/api/detect'], (req, res, next) => {
     }
 
     if (!aiResult || !aiResult.success) {
-      if (isProduction || process.env.ENABLE_AI_FALLBACK === 'true') {
-        aiResult = getHeuristicDiagnosis(cropName, originalName);
-      } else {
-        return res.status(503).json({
-          success: false,
-          message: 'এআই স্ক্যানার সার্ভার সাময়িকভাবে অফলাইনে আছে। অনুগ্রহ করে পাইথন মাইক্রোসার্ভিস (Port 5000) সচল রাখুন।'
-        });
-      }
+      return res.json({
+        success: true,
+        is_unidentified: true,
+        error_code: 'UNIDENTIFIED_IMAGE',
+        message: 'ছবিটিতে কোনো ফসলের পাতা শনাক্ত করা যায়নি। অনুগ্রহ করে পরিষ্কার আক্রান্ত পাতার ছবি দিন।',
+        image_path: null
+      });
     }
 
     // 3. Authentic Model Inference Mapping

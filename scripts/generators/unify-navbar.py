@@ -41,7 +41,7 @@ def make_header(active_key):
        1. Top Fixed Navigation Header (Unified across all pages)
        ==================================================================== -->
   <header class="sticky top-0 z-50 glass-header px-2.5 sm:px-4 py-2.5 md:px-8 bg-white/90 backdrop-blur-md border-b border-emerald-100 shadow-xs">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2 md:gap-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2 md:gap-4 overflow-x-hidden">
       
       <!-- Logo & Branding -->
       <a href="/" class="flex items-center space-x-2 md:space-x-3 cursor-pointer group shrink-0">
@@ -57,8 +57,8 @@ def make_header(active_key):
         </div>
       </a>
 
-      <!-- Desktop Navigation Menu -->
-      <nav class="hidden md:flex items-center space-x-1">
+      <!-- Desktop Navigation Menu (Active on xl screens >= 1280px) -->
+      <nav class="hidden xl:flex items-center space-x-1">
         <a href="/" class="{d_class('home')}">হোম</a>
         <a href="/scan" class="{d_class('scanner')}">এআই স্ক্যানার</a>
         <a href="/roadmap" class="{d_class('roadmap')}">ফসলের গাইড</a>
@@ -94,8 +94,9 @@ def make_mobile_nav(active_key):
     return f'''  <!-- START: Unified Mobile Navigation & Drawer -->
   <!-- ====================================================================
        Floating Glass Bottom Mobile Navigation Bar (Clean 3-Item Layout: Home, Scan, Menu)
+       Active on all mobile, tablet & narrow desktop windows (< 1280px)
        ==================================================================== -->
-  <nav class="md:hidden fixed bottom-2.5 left-4 right-4 z-40 glass-header bg-white/95 backdrop-blur-md border border-emerald-200/90 rounded-2xl px-3 py-1 shadow-xl max-w-xs mx-auto">
+  <nav class="xl:hidden fixed bottom-2.5 left-4 right-4 z-40 glass-header bg-white/95 backdrop-blur-md border border-emerald-200/90 rounded-2xl px-3 py-1 shadow-xl max-w-xs mx-auto">
     <div class="flex items-center justify-between text-center relative">
       
       <!-- 1. Home -->
@@ -262,10 +263,10 @@ def process_file(rel_path, active_key):
     
     mobile_nav_pattern = re.compile(
         r'<!-- START: Unified Mobile Navigation & Drawer -->.*?<!-- END: Unified Mobile Navigation & Drawer -->'
-        r'|<!--\s*=*\s*Floating Glass Bottom Mobile.*?-->\s*<nav class="md:hidden fixed bottom-.*?</nav>'
-        r'|<!--\s*=*\s*4\.\s*Floating Glass Bottom Mobile.*?-->\s*<nav class="md:hidden fixed bottom-.*?</nav>'
-        r'|<!--.*?Mobile Bottom Navigation.*?-->\s*<nav class="md:hidden fixed bottom-.*?</nav>'
-        r'|<nav class="md:hidden fixed bottom-.*?</nav>',
+        r'|<!--\s*=*\s*Floating Glass Bottom Mobile.*?-->\s*<nav class="(md:hidden|xl:hidden) fixed bottom-.*?</nav>'
+        r'|<!--\s*=*\s*4\.\s*Floating Glass Bottom Mobile.*?-->\s*<nav class="(md:hidden|xl:hidden) fixed bottom-.*?</nav>'
+        r'|<!--.*?Mobile Bottom Navigation.*?-->\s*<nav class="(md:hidden|xl:hidden) fixed bottom-.*?</nav>'
+        r'|<nav class="(md:hidden|xl:hidden) fixed bottom-.*?</nav>',
         re.DOTALL
     )
 

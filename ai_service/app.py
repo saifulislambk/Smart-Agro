@@ -86,7 +86,7 @@ NON_LEAF_PATTERN = re.compile(
     r'American_black_bear|ice_bear|sloth_bear|'
     # 6. Household, Clothing, Furniture
     r'suit|jean|jersey|trench_coat|shoe|boot|sandal|'
-    r'desk|sofa|'
+    r'table|dining_table|desk|sofa|chair|furniture|wardrobe|bed|wood|'
     # 7. Fabrics, Bedding, Boards, Sports Balls, Bottles & Fasteners
     r'velvet|wool|curtain|pillow|quilt|cushion|rug|carpet|mat|'
     r'chalkboard|blackboard|whiteboard|bulletin_board|'

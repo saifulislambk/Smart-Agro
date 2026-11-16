@@ -57,11 +57,11 @@
 
 <body class="font-bengali text-slate-800 bg-slate-50 selection:bg-emerald-500 selection:text-white pb-24 md:pb-16 antialiased">
 
-          <!-- ====================================================================
+            <!-- ====================================================================
        1. Top Fixed Navigation Header (Unified across all pages)
        ==================================================================== -->
   <header class="sticky top-0 z-50 glass-header px-2.5 sm:px-4 py-2.5 md:px-8 bg-white/90 backdrop-blur-md border-b border-emerald-100 shadow-xs">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2 md:gap-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2 md:gap-4 overflow-x-hidden">
       
       <!-- Logo & Branding -->
       <a href="/" class="flex items-center space-x-2 md:space-x-3 cursor-pointer group shrink-0">
@@ -77,8 +77,8 @@
         </div>
       </a>
 
-      <!-- Desktop Navigation Menu -->
-      <nav class="hidden md:flex items-center space-x-1">
+      <!-- Desktop Navigation Menu (Active on xl screens >= 1280px) -->
+      <nav class="hidden xl:flex items-center space-x-1">
         <a href="/" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">হোম</a>
         <a href="/scan" class="px-3.5 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-xs">এআই স্ক্যানার</a>
         <a href="/roadmap" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">ফসলের গাইড</a>
@@ -255,7 +255,64 @@
     <!-- Scanner Box -->
     <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm space-y-6">
 
-      <!-- Crop Selector (Precision Diagnosis) -->
+      <!-- 1. Upfront Leaf Photography Guide (Do's & Don'ts) - Rules FIRST -->
+      <div class="p-4 md:p-5 rounded-2xl bg-slate-50 border-2 border-emerald-300 space-y-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">📸</span>
+            <h3 class="text-xs md:text-sm font-black text-slate-800">ছবি তোলার সঠিক নিয়মিকা (সঠিক এআই ফলাফলের জন্য করণীয়)</h3>
+          </div>
+          <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100/70 px-2.5 py-0.5 rounded-full border border-emerald-300 self-start sm:self-auto">১০০% সঠিক রোগ নির্ণয়ের শর্ত</span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <!-- Do's -->
+          <div class="p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-300 space-y-2">
+            <div class="flex items-center gap-1.5 text-emerald-900 font-black">
+              <span>✅</span>
+              <span>কী করবেন (Do's)</span>
+            </div>
+            <ul class="space-y-1.5 text-slate-700 font-medium">
+              <li class="flex items-start gap-1.5">
+                <span class="text-emerald-600 font-bold">•</span>
+                <span><strong>একক পাতার ক্লোজ-আপ:</strong> শুধুমাত্র একটি রোগাক্রান্ত পাতার স্পষ্ট ও কাছে থেকে ছবি তুলুন।</span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-emerald-600 font-bold">•</span>
+                <span><strong>দিনের স্বাভাবিক আলো:</strong> পর্যাপ্ত প্রাকৃতিক দিনের আলোতে ছবি তুলুন যাতে পাতার রঙ অবিকল বোঝা যায়।</span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-emerald-600 font-bold">•</span>
+                <span><strong>দাগ স্পষ্ট ফোকাসে:</strong> পাতার রোগাক্রান্ত দাগ ফ্রেমের ঠিক মাঝে এবং স্পষ্ট ফোকাসে রাখুন।</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Don'ts -->
+          <div class="p-3.5 rounded-xl bg-rose-50/80 border border-rose-300 space-y-2">
+            <div class="flex items-center gap-1.5 text-rose-900 font-black">
+              <span>❌</span>
+              <span>কী করবেন না (Don'ts)</span>
+            </div>
+            <ul class="space-y-1.5 text-slate-700 font-medium">
+              <li class="flex items-start gap-1.5">
+                <span class="text-rose-600 font-bold">•</span>
+                <span><strong>টেবিল বা আসবাবপত্র নয়:</strong> টেবিল, মেঝের টাইলস, দেওয়াল বা কাপড়ের ছবি তোলা যাবে না (মডেলটি শুধু পাতার রোগ নির্ণয়ে তৈরি)।</span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-rose-600 font-bold">•</span>
+                <span><strong>দূর থেকে তোলা বা পুরো গাছ:</strong> দূর থেকে তোলা জমি বা ঝোপঝাড়ের ছবি দেওয়া যাবে না।</span>
+              </li>
+              <li class="flex items-start gap-1.5">
+                <span class="text-rose-600 font-bold">•</span>
+                <span><strong>আলুর কন্দ, ফল বা মাটি:</strong> কন্দ বা মাটি নয়—কেবল পাতার ছবি বিশ্লেষণে সক্ষম।</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Crop Selector (Precision Diagnosis) - Options SECOND -->
       <div class="p-4 md:p-5 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-300 flex flex-col gap-3.5 shadow-sm">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div class="flex items-center gap-2.5">
@@ -296,67 +353,6 @@
           <button type="button" onclick="SmartAgroScanner.setCropFilter('corn')" data-crop-pill="corn" class="crop-pill-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200">🌽 ভুট্টা</button>
           <button type="button" onclick="SmartAgroScanner.setCropFilter('citrus')" data-crop-pill="citrus" class="crop-pill-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200">🍋 লেবু</button>
           <button type="button" onclick="SmartAgroScanner.setCropFilter('auto')" data-crop-pill="auto" class="crop-pill-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200">✨ সব ফসল</button>
-        </div>
-      </div>
-
-      <!-- Upfront Leaf Photography Guide (Do's & Don'ts) -->
-      <div class="p-4 md:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <span class="text-xl">📸</span>
-            <h3 class="text-xs md:text-sm font-black text-slate-800">পাতার ছবি তোলার সঠিক নিয়মিকা (Do's & Don'ts)</h3>
-          </div>
-          <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100/70 px-2.5 py-0.5 rounded-full border border-emerald-300 self-start sm:self-auto">নির্ভুল এআই ফলাফল পেতে</span>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-          <!-- Do's -->
-          <div class="p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-300 space-y-2">
-            <div class="flex items-center gap-1.5 text-emerald-900 font-black">
-              <span>✅</span>
-              <span>কী করবেন (Do's)</span>
-            </div>
-            <ul class="space-y-1.5 text-slate-700 font-medium">
-              <li class="flex items-start gap-1.5">
-                <span class="text-emerald-600 font-bold">•</span>
-                <span><strong>একক পাতার ক্লোজ-আপ:</strong> শুধুমাত্র একটি রোগাক্রান্ত পাতার স্পষ্ট ও কাছে থেকে ছবি তুলুন।</span>
-              </li>
-              <li class="flex items-start gap-1.5">
-                <span class="text-emerald-600 font-bold">•</span>
-                <span><strong>দিনের স্বাভাবিক আলো:</strong> পর্যাপ্ত প্রাকৃতিক দিনের আলোতে ছবি তুলুন যাতে পাতার রঙ অবিকল বোঝা যায়।</span>
-              </li>
-              <li class="flex items-start gap-1.5">
-                <span class="text-emerald-600 font-bold">•</span>
-                <span><strong>দাগ স্পষ্ট ফোকাসে:</strong> পাতার রোগাক্রান্ত দাগ ফ্রেমের ঠিক মাঝে এবং স্পষ্ট ফোকাসে রাখুন।</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Don'ts -->
-          <div class="p-3.5 rounded-xl bg-rose-50/80 border border-rose-300 space-y-2">
-            <div class="flex items-center gap-1.5 text-rose-900 font-black">
-              <span>❌</span>
-              <span>কী করবেন না (Don'ts)</span>
-            </div>
-            <ul class="space-y-1.5 text-slate-700 font-medium">
-              <li class="flex items-start gap-1.5">
-                <span class="text-rose-600 font-bold">•</span>
-                <span><strong>দূর থেকে তোলা বা পুরো গাছ:</strong> দূর থেকে তোলা জমি, পুরো গাছপালা বা ঝোপঝাড়ের ছবি দেওয়া যাবে না।</span>
-              </li>
-              <li class="flex items-start gap-1.5">
-                <span class="text-rose-600 font-bold">•</span>
-                <span><strong>আলুর কন্দ বা ফলমূল:</strong> আলুর কন্দ, ফলমূল বা শাকসবজি নয়—মডেলটি কেবল পাতা বিশ্লেষণে প্রস্তুত।</span>
-              </li>
-              <li class="flex items-start gap-1.5">
-                <span class="text-rose-600 font-bold">•</span>
-                <span><strong>যন্ত্রপাতি, হাত বা মাটি:</strong> ট্রাক্টর, কৃষি যন্ত্রপাতি, মানুষের হাত, পায়ের জুতো বা মাটির ছবি পরিহার করুন।</span>
-              </li>
-              <li class="flex items-start gap-1.5">
-                <span class="text-rose-600 font-bold">•</span>
-                <span><strong>অন্ধকার বা ঝাপসা:</strong> অতি-অন্ধকার, মাত্রাতিরিক্ত ফ্লাশ বা অতিরিক্ত ঝাপসা ছবি সিস্টেমে গৃহীত হবে না।</span>
-              </li>
-            </ul>
-          </div>
         </div>
       </div>
 
@@ -789,11 +785,12 @@
     </a>
   </nav>
 
-          <!-- START: Unified Mobile Navigation & Drawer -->
+            <!-- START: Unified Mobile Navigation & Drawer -->
   <!-- ====================================================================
        Floating Glass Bottom Mobile Navigation Bar (Clean 3-Item Layout: Home, Scan, Menu)
+       Active on all mobile, tablet & narrow desktop windows (< 1280px)
        ==================================================================== -->
-  <nav class="md:hidden fixed bottom-2.5 left-4 right-4 z-40 glass-header bg-white/95 backdrop-blur-md border border-emerald-200/90 rounded-2xl px-3 py-1 shadow-xl max-w-xs mx-auto">
+  <nav class="xl:hidden fixed bottom-2.5 left-4 right-4 z-40 glass-header bg-white/95 backdrop-blur-md border border-emerald-200/90 rounded-2xl px-3 py-1 shadow-xl max-w-xs mx-auto">
     <div class="flex items-center justify-between text-center relative">
       
       <!-- 1. Home -->

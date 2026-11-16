@@ -43,6 +43,7 @@ async function initFirebaseAuth() {
       authInstance = firebase.auth();
       authInstance.useDeviceLanguage();
       googleProvider = new firebase.auth.GoogleAuthProvider();
+      checkGoogleEmailSignInLink();
 
       // Check if real config is valid
       if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_FIREBASE_API_KEY") {
@@ -474,8 +475,123 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// UI Event Handlers for Email OTP Auth
+// UI Event Handlers for Email Auth (Google Email Link & Email OTP)
 let currentPendingEmail = '';
+
+// Check if page was loaded via a Google Passwordless Email Sign-In Link
+async function checkGoogleEmailSignInLink() {
+  if (typeof firebase === 'undefined' || !authInstance) return;
+  try {
+    if (authInstance.isSignInWithEmailLink(window.location.href)) {
+      let email = window.localStorage.getItem('emailForSignIn');
+      if (!email) {
+        email = window.prompt('অনুগ্রহ করে নিশ্চিতকরণের জন্য আপনার ইমেইল ঠিকানা দিন:');
+      }
+      if (email) {
+        showToast('⏳ গুগল ইমেইল লিংক যাচাই করা হচ্ছে...');
+        const result = await authInstance.signInWithEmailLink(email.trim().toLowerCase(), window.location.href);
+        window.localStorage.removeItem('emailForSignIn');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        const fbUser = result.user;
+        const activeUser = {
+          uid: fbUser.uid,
+          displayName: fbUser.displayName || email.split('@')[0],
+          role: 'যাচাইকৃত গুগল ইমেইল কৃষক',
+          email: fbUser.email || email,
+          phoneNumber: fbUser.phoneNumber || '',
+          photoURL: fbUser.photoURL || `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(email)}`,
+          badge: '✓ যাচাইকৃত গুগল ইমেইল',
+          isGuest: false,
+          authProvider: 'google_email_link'
+        };
+
+        try {
+          await fetch('/api/user/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              firebase_uid: activeUser.uid,
+              display_name: activeUser.displayName,
+              email: activeUser.email,
+              role: activeUser.role,
+              auth_provider: 'google_email_link'
+            })
+          });
+        } catch(e){}
+
+        localStorage.setItem('smart_agro_user', JSON.stringify(activeUser));
+        notifySubscribers(activeUser);
+        showToast(`🎉 গুগল থেকে সফলভাবে যাচাই ও লগইন সম্পন্ন হয়েছে (${email})!`);
+      }
+    }
+  } catch (err) {
+    console.error('Google Email Sign-In Check Error:', err);
+    showToast('⚠️ গুগল ইমেইল লিংকের মেয়াদ শেষ বা লিংকটি সঠিক নয়।');
+  }
+}
+
+// Google Native Passwordless Email Link Auth (Sent directly by Google noreply@...firebaseapp.com)
+async function sendGoogleEmailLink() {
+  const emailInput = document.getElementById('farmer-email-input');
+  const googleLinkBtn = document.getElementById('btn-send-google-link');
+  const errorDiv = document.getElementById('email-auth-error');
+  if (!emailInput) return;
+
+  const rawEmail = emailInput.value.trim().toLowerCase();
+  if (errorDiv) {
+    errorDiv.innerText = '';
+    errorDiv.classList.add('hidden');
+  }
+
+  if (!rawEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
+    if (errorDiv) {
+      errorDiv.innerText = 'অনুগ্রহ করে একটি সঠিক ইমেইল ঠিকানা দিন (যেমন: farmer@gmail.com)।';
+      errorDiv.classList.remove('hidden');
+    }
+    return;
+  }
+
+  if (googleLinkBtn) {
+    googleLinkBtn.disabled = true;
+    googleLinkBtn.innerText = '⏳ গুগল লিংক পাঠানো হচ্ছে...';
+  }
+
+  try {
+    if (!authInstance) {
+      throw new Error('গুগল ফায়ারবেস সার্ভিস প্রস্তুত নয়।');
+    }
+    const actionCodeSettings = {
+      url: window.location.origin + '/?emailSignIn=true',
+      handleCodeInApp: true
+    };
+
+    await authInstance.sendSignInLinkToEmail(rawEmail, actionCodeSettings);
+    window.localStorage.setItem('emailForSignIn', rawEmail);
+    showToast(`📩 গুগল থেকে (${rawEmail}) ঠিকানায় ১-ক্লিক সাইন-ইন লিংক পাঠানো হয়েছে! ইনবক্স চেক করুন।`);
+    if (errorDiv) {
+      errorDiv.innerText = `✅ গুগল সরাসরি ${rawEmail} ঠিকানায় সাইন-ইন লিংক পাঠিয়েছে। আপনার জিমেইল ইনবক্স বা স্প্যাম ফোল্ডারে গিয়ে লিংকে ক্লিক করলেই স্বয়ংক্রিয়ভাবে লগইন হয়ে যাবে!`;
+      errorDiv.className = 'p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-xs font-bold text-emerald-800 text-center block mb-4';
+    }
+  } catch (err) {
+    console.error('Google Send Email Link Error:', err);
+    let msg = err.message || 'গুগল ইমেইল লিংক পাঠাতে সমস্যা হয়েছে।';
+    if (err.code === 'auth/unauthorized-domain') {
+      msg = '⚠️ ফায়ারবেস কনসোলে smartagrobd.vercel.app ডোমেইনটি অনুমোদিত নয়।';
+    } else if (err.code === 'auth/operation-not-allowed') {
+      msg = '⚠️ ফায়ারবেসে Email Link Auth অন করা নেই। Firebase Console > Authentication > Email/Password > Email link toggle অন করুন।';
+    }
+    if (errorDiv) {
+      errorDiv.innerText = msg;
+      errorDiv.className = 'p-3 rounded-xl bg-rose-50 border border-rose-300 text-xs font-bold text-rose-800 text-center block mb-4';
+    }
+  } finally {
+    if (googleLinkBtn) {
+      googleLinkBtn.disabled = false;
+      googleLinkBtn.innerText = '🔗 গুগল থেকে সরাসরি সাইন-ইন লিংক পাঠান';
+    }
+  }
+}
 
 async function handleSendEmailOtp() {
   const emailInput = document.getElementById('farmer-email-input');
@@ -686,10 +802,18 @@ function injectLoginModal() {
                    class="w-full px-3 py-2.5 text-sm font-bold text-slate-800 bg-transparent focus:outline-none"
                    onkeydown="if(event.key === 'Enter') SmartAgroAuth.handleSendEmailOtp()">
           </div>
-          <button id="btn-send-email-otp" onclick="SmartAgroAuth.handleSendEmailOtp()"
-                  class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs md:text-sm shadow-md shadow-emerald-600/20 active:scale-95 transition-all">
-            📩 ইমেইলে ওটিপি কোড পাঠান
-          </button>
+          <div class="space-y-2 pt-1">
+            <button id="btn-send-google-link" onclick="SmartAgroAuth.sendGoogleEmailLink()"
+                    class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs md:text-sm shadow-md active:scale-95 transition-all flex items-center justify-center gap-2">
+              <span>📨</span>
+              <span>গুগল থেকে সরাসরি সাইন-ইন লিংক পাঠান</span>
+            </button>
+            <button id="btn-send-email-otp" onclick="SmartAgroAuth.handleSendEmailOtp()"
+                    class="w-full py-2 px-3 rounded-xl bg-white hover:bg-emerald-50 border border-emerald-300 text-emerald-800 font-bold text-xs shadow-2xs active:scale-95 transition-all flex items-center justify-center gap-2">
+              <span>🔢</span>
+              <span>অথবা ৬ ডিজিটের ওটিপি কোড দিয়ে লগইন</span>
+            </button>
+          </div>
         </div>
 
         <!-- Step 2: Input OTP Verification Code -->
@@ -928,6 +1052,7 @@ async function saveAccountContactInfo() {
 
 window.SmartAgroAuth = {
   signInWithGoogle,
+  sendGoogleEmailLink,
   handleSendEmailOtp,
   handleVerifyEmailOtp,
   resetEmailInputStep,
