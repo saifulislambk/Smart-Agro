@@ -43,7 +43,8 @@ const inMemoryStore = {
     }
   ],
   crop_guides: require('./data/cropGuidesData').allCropGuides,
-  fertilizer_plans: []
+  fertilizer_plans: [],
+  users: []
 };
 
 // Rich in-memory crop guides fallback (25 Comprehensive Crops)
@@ -248,6 +249,137 @@ async function deleteScan(id) {
   return inMemoryStore.scan_history.length < initialLength;
 }
 
+// Sync or create user account
+async function syncUser(userData) {
+  const { firebase_uid, display_name, email, phone_number, photo_url, district, role, auth_provider } = userData;
+  if (!firebase_uid) return null;
+
+  if (isPostgresConnected && pool) {
+    try {
+      const queryText = `
+        INSERT INTO users (firebase_uid, display_name, email, phone_number, photo_url, district, role, auth_provider, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP)
+        ON CONFLICT (firebase_uid) 
+        DO UPDATE SET 
+          display_name = COALESCE(EXCLUDED.display_name, users.display_name),
+          email = COALESCE(EXCLUDED.email, users.email),
+          phone_number = COALESCE(EXCLUDED.phone_number, users.phone_number),
+          photo_url = COALESCE(EXCLUDED.photo_url, users.photo_url),
+          district = COALESCE(EXCLUDED.district, users.district),
+          updated_at = CURRENT_TIMESTAMP
+        RETURNING *;
+      `;
+      const res = await pool.query(queryText, [
+        firebase_uid,
+        display_name || 'কৃষক ভাই',
+        email || null,
+        phone_number || null,
+        photo_url || null,
+        district || 'ব্রাহ্মণবাড়িয়া',
+        role || 'কৃষক',
+        auth_provider || 'google'
+      ]);
+      return res.rows[0];
+    } catch (err) {
+      console.warn('Postgres syncUser error, using in-memory store:', err.message);
+    }
+  }
+
+  let existing = inMemoryStore.users.find(u => u.firebase_uid === firebase_uid);
+  if (existing) {
+    if (display_name) existing.display_name = display_name;
+    if (email) existing.email = email;
+    if (phone_number) existing.phone_number = phone_number;
+    if (photo_url) existing.photo_url = photo_url;
+    if (district) existing.district = district;
+    existing.updated_at = new Date().toISOString();
+    return existing;
+  }
+
+  const newUser = {
+    id: inMemoryStore.users.length + 1,
+    firebase_uid,
+    display_name: display_name || 'কৃষক ভাই',
+    email: email || null,
+    phone_number: phone_number || null,
+    photo_url: photo_url || null,
+    district: district || 'ব্রাহ্মণবাড়িয়া',
+    role: role || 'কৃষক',
+    auth_provider: auth_provider || 'google',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+  inMemoryStore.users.push(newUser);
+  return newUser;
+}
+
+// Get User Profile by UID
+async function getUserProfile(firebase_uid) {
+  if (!firebase_uid) return null;
+
+  if (isPostgresConnected && pool) {
+    try {
+      const res = await pool.query('SELECT * FROM users WHERE firebase_uid = $1 LIMIT 1;', [firebase_uid]);
+      if (res.rows.length > 0) return res.rows[0];
+    } catch (err) {
+      console.warn('Postgres getUserProfile error, using in-memory store:', err.message);
+    }
+  }
+
+  return inMemoryStore.users.find(u => u.firebase_uid === firebase_uid) || null;
+}
+
+// Update User Contact (Link Phone or Email)
+async function updateUserContact(firebase_uid, updates) {
+  if (!firebase_uid) return null;
+
+  if (isPostgresConnected && pool) {
+    try {
+      const fields = [];
+      const values = [firebase_uid];
+      let idx = 2;
+
+      if (updates.email !== undefined) {
+        fields.push(`email = $${idx++}`);
+        values.push(updates.email);
+      }
+      if (updates.phone_number !== undefined) {
+        fields.push(`phone_number = $${idx++}`);
+        values.push(updates.phone_number);
+      }
+      if (updates.display_name !== undefined) {
+        fields.push(`display_name = $${idx++}`);
+        values.push(updates.display_name);
+      }
+      if (updates.district !== undefined) {
+        fields.push(`district = $${idx++}`);
+        values.push(updates.district);
+      }
+
+      if (fields.length > 0) {
+        fields.push(`updated_at = CURRENT_TIMESTAMP`);
+        const queryText = `UPDATE users SET ${fields.join(', ')} WHERE firebase_uid = $1 RETURNING *;`;
+        const res = await pool.query(queryText, values);
+        if (res.rows.length > 0) return res.rows[0];
+      }
+    } catch (err) {
+      console.warn('Postgres updateUserContact error, using in-memory store:', err.message);
+    }
+  }
+
+  let user = inMemoryStore.users.find(u => u.firebase_uid === firebase_uid);
+  if (user) {
+    if (updates.email !== undefined) user.email = updates.email;
+    if (updates.phone_number !== undefined) user.phone_number = updates.phone_number;
+    if (updates.display_name !== undefined) user.display_name = updates.display_name;
+    if (updates.district !== undefined) user.district = updates.district;
+    user.updated_at = new Date().toISOString();
+    return user;
+  }
+
+  return syncUser({ firebase_uid, ...updates });
+}
+
 module.exports = {
   initDb,
   saveScan,
@@ -257,5 +389,8 @@ module.exports = {
   getCropGuideById,
   saveFertilizerPlan,
   getFertilizerPlans,
+  syncUser,
+  getUserProfile,
+  updateUserContact,
   isPostgresConnected: () => isPostgresConnected
 };

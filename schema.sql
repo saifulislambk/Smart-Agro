@@ -54,7 +54,26 @@ CREATE TABLE IF NOT EXISTS fertilizer_plans (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 4. Seed Comprehensive Crop Guides (8 Major Bangladeshi Crops)
+-- 4. Create User Accounts Table (Supports Linking Phone and Email)
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    firebase_uid VARCHAR(128) UNIQUE NOT NULL,
+    display_name VARCHAR(150) NOT NULL DEFAULT 'কৃষক ভাই',
+    email VARCHAR(150),
+    phone_number VARCHAR(50),
+    photo_url TEXT,
+    district VARCHAR(100) DEFAULT 'ব্রাহ্মণবাড়িয়া',
+    role VARCHAR(100) DEFAULT 'কৃষক',
+    auth_provider VARCHAR(50) DEFAULT 'google',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_users_uid ON users(firebase_uid);
+CREATE INDEX IF NOT EXISTS idx_users_phone ON users(phone_number);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+
+-- 5. Seed Comprehensive Crop Guides (8 Major Bangladeshi Crops)
 INSERT INTO crop_guides (crop_id, crop_name_bn, crop_name_en, variety_info, season, icon, hero_color, steps)
 VALUES 
 (

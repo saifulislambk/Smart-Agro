@@ -73,69 +73,56 @@ def make_header(active_key):
 def make_mobile_nav(active_key):
     def m_class(key):
         if key == active_key:
-            return 'bg-emerald-600 text-white font-black shadow-xs py-0.5'
-        return 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold py-0.5'
+            return 'bg-emerald-600 text-white font-black shadow-xs py-1'
+        return 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold py-1'
 
     scanner_active = (active_key == 'scanner')
     scanner_btn_class = 'scale-105 ring-2 ring-emerald-400 shadow-emerald-600/40' if scanner_active else 'hover:scale-105 ring-1 ring-emerald-500/20'
     scanner_label_class = 'text-emerald-700 font-black' if scanner_active else 'text-slate-600 font-bold'
 
-    # 5th tab: More / Menu
-    is_more_active = active_key in ['grafting', 'history']
-    more_btn_class = 'bg-emerald-600 text-white font-black shadow-xs py-0.5' if is_more_active else 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold py-0.5'
-    more_icon = '🌱' if active_key == 'grafting' else ('📜' if active_key == 'history' else '☰')
-    more_label = 'কলম' if active_key == 'grafting' else ('ইতিহাস' if active_key == 'history' else 'মেনু')
+    # 3rd button: Menu is highlighted if user is on any sub-page accessed via Menu
+    is_menu_active = active_key in ['roadmap', 'calculator', 'grafting', 'history']
+    menu_btn_class = 'bg-emerald-600 text-white font-black shadow-xs py-1' if is_menu_active else 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold py-1'
 
-    # Status badges for drawer items
-    grafting_active_badge = '<span class="text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded-full">সক্রিয়</span>' if active_key == 'grafting' else ''
-    history_active_badge = '<span class="text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded-full">সক্রিয়</span>' if active_key == 'history' else ''
-    grafting_card_class = 'bg-emerald-50/90 border-emerald-500 shadow-xs' if active_key == 'grafting' else 'bg-slate-50 hover:bg-emerald-50/60 border-slate-200/80'
-    history_card_class = 'bg-emerald-50/90 border-emerald-500 shadow-xs' if active_key == 'history' else 'bg-slate-50 hover:bg-emerald-50/60 border-slate-200/80'
+    # Status badges and styles for drawer items
+    def badge_for(key):
+        return '<span class="text-[9px] bg-emerald-600 text-white font-bold px-1.5 py-0.5 rounded-full">সক্রিয়</span>' if active_key == key else ''
+
+    def card_style(key):
+        return 'bg-emerald-50/90 border-emerald-500 shadow-xs' if active_key == key else 'bg-slate-50 hover:bg-emerald-50/60 border-slate-200/80'
 
     return f'''  <!-- START: Unified Mobile Navigation & Drawer -->
   <!-- ====================================================================
-       Floating Glass Bottom Mobile Navigation Bar (Sleek Compact 5-Tab Layout)
+       Floating Glass Bottom Mobile Navigation Bar (Clean 3-Item Layout: Home, Scan, Menu)
        ==================================================================== -->
-  <nav class="md:hidden fixed bottom-2 left-3 right-3 z-40 glass-header bg-white/95 backdrop-blur-md border border-emerald-200/90 rounded-2xl px-2 py-0.5 shadow-xl max-w-sm mx-auto">
-    <div class="flex items-center justify-around text-center relative">
+  <nav class="md:hidden fixed bottom-2.5 left-4 right-4 z-40 glass-header bg-white/95 backdrop-blur-md border border-emerald-200/90 rounded-2xl px-3 py-1 shadow-xl max-w-xs mx-auto">
+    <div class="flex items-center justify-between text-center relative">
       
       <!-- 1. Home -->
-      <a href="/" data-nav-page="home" class="flex-1 flex flex-col items-center justify-center rounded-lg transition-all {m_class('home')}">
-        <span class="text-sm">🏠</span>
-        <span class="text-[9px] font-bold tracking-tight">হোম</span>
+      <a href="/" data-nav-page="home" class="flex-1 flex flex-col items-center justify-center rounded-xl transition-all {m_class('home')}">
+        <span class="text-base sm:text-lg">🏠</span>
+        <span class="text-[10px] font-bold tracking-tight">হোম</span>
       </a>
 
-      <!-- 2. Guides / Roadmap -->
-      <a href="/roadmap" data-nav-page="roadmap" class="flex-1 flex flex-col items-center justify-center rounded-lg transition-all {m_class('roadmap')}">
-        <span class="text-sm">🌾</span>
-        <span class="text-[9px] font-bold tracking-tight">গাইড</span>
-      </a>
-
-      <!-- 3. Center Elevated AI Scanner Hero Button -->
-      <div class="flex-1 flex flex-col items-center justify-center -mt-2.5">
-        <a href="/scan" data-nav-page="scanner" class="w-9 h-9 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center text-sm shadow-md border border-white transition-all active:scale-95 {scanner_btn_class}" title="এআই রোগ নির্ণয় স্ক্যানার">
+      <!-- 2. Center Elevated AI Scanner Hero Button -->
+      <div class="flex-1 flex flex-col items-center justify-center -mt-3.5">
+        <a href="/scan" data-nav-page="scanner" class="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center text-lg shadow-lg border-2 border-white transition-all active:scale-95 {scanner_btn_class}" title="এআই রোগ নির্ণয় স্ক্যানার">
           📷
         </a>
-        <span class="text-[9px] mt-0.5 tracking-tight {scanner_label_class}">স্ক্যান</span>
+        <span class="text-[10px] mt-0.5 tracking-tight {scanner_label_class}">স্ক্যানার</span>
       </div>
 
-      <!-- 4. Fertilizer Calculator -->
-      <a href="/calculator" data-nav-page="calculator" class="flex-1 flex flex-col items-center justify-center rounded-lg transition-all {m_class('calculator')}">
-        <span class="text-sm">⚖️</span>
-        <span class="text-[9px] font-bold tracking-tight">সার</span>
-      </a>
-
-      <!-- 5. More / Menu Trigger -->
-      <button id="mobile-menu-trigger-btn" type="button" onclick="toggleSmartAgroMobileMenu()" class="flex-1 flex flex-col items-center justify-center rounded-lg transition-all {more_btn_class}" title="আরও অপশন ও মেনু">
-        <span class="text-sm">{more_icon}</span>
-        <span class="text-[9px] font-bold tracking-tight">{more_label}</span>
+      <!-- 3. Menu Trigger (Opens all other options) -->
+      <button id="mobile-menu-trigger-btn" type="button" onclick="toggleSmartAgroMobileMenu()" class="flex-1 flex flex-col items-center justify-center rounded-xl transition-all {menu_btn_class}" title="মেনু ও অন্যান্য সকল সেবা">
+        <span class="text-base sm:text-lg">☰</span>
+        <span class="text-[10px] font-bold tracking-tight">মেনু</span>
       </button>
 
     </div>
   </nav>
 
   <!-- ====================================================================
-       Smart Agro Mobile Drawer / Slide-Up Sheet (Opens from bottom)
+       Smart Agro Mobile Drawer / Slide-Up Sheet (All Other Services & Navigation)
        ==================================================================== -->
   <div id="smart-agro-mobile-drawer" class="fixed inset-0 z-50 hidden transition-opacity duration-300">
     <!-- Dark Backdrop -->
@@ -149,8 +136,8 @@ def make_mobile_nav(active_key):
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-base font-bold">🌾</div>
           <div>
-            <h4 class="text-sm font-black text-slate-800">স্মার্ট এগ্রো অন্যান্য সেবা</h4>
-            <p class="text-[10px] text-slate-500 font-medium">প্রয়োজনীয় টুলস ও গুরুত্বপূর্ণ লিংক</p>
+            <h4 class="text-sm font-black text-slate-800">স্মার্ট এগ্রো মেনু</h4>
+            <p class="text-[10px] text-slate-500 font-medium">সকল সেবা ও গুরুত্বপূর্ণ লিঙ্কসমূহ</p>
           </div>
         </div>
         <button type="button" onclick="toggleSmartAgroMobileMenu(false)" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-sm font-bold active:scale-95">
@@ -158,14 +145,38 @@ def make_mobile_nav(active_key):
         </button>
       </div>
 
-      <!-- Feature Grid -->
+      <!-- Navigation & Services Grid -->
       <div class="grid grid-cols-2 gap-2.5 mt-3.5">
         
+        <!-- Crop Guides / Roadmap -->
+        <a href="/roadmap" class="p-3 rounded-2xl border transition-all flex flex-col justify-between {card_style('roadmap')}">
+          <div class="flex items-center justify-between">
+            <span class="text-2xl">🌾</span>
+            {badge_for('roadmap')}
+          </div>
+          <div class="mt-2">
+            <div class="text-xs font-black text-slate-800">ফসলের গাইড</div>
+            <div class="text-[10px] text-slate-500 line-clamp-1">৪০+ ফসলের পূর্ণাঙ্গ চাষাবাদ</div>
+          </div>
+        </a>
+
+        <!-- Fertilizer Calculator -->
+        <a href="/calculator" class="p-3 rounded-2xl border transition-all flex flex-col justify-between {card_style('calculator')}">
+          <div class="flex items-center justify-between">
+            <span class="text-2xl">⚖️</span>
+            {badge_for('calculator')}
+          </div>
+          <div class="mt-2">
+            <div class="text-xs font-black text-slate-800">সার ক্যালকুলেটর</div>
+            <div class="text-[10px] text-slate-500 line-clamp-1">সুষম সারের সঠিক হিসাব</div>
+          </div>
+        </a>
+
         <!-- Grafting / Nursery -->
-        <a href="/grafting" class="p-3 rounded-2xl border transition-all flex flex-col justify-between {grafting_card_class}">
+        <a href="/grafting" class="p-3 rounded-2xl border transition-all flex flex-col justify-between {card_style('grafting')}">
           <div class="flex items-center justify-between">
             <span class="text-2xl">🌱</span>
-            {grafting_active_badge}
+            {badge_for('grafting')}
           </div>
           <div class="mt-2">
             <div class="text-xs font-black text-slate-800">কলম পদ্ধতি</div>
@@ -174,10 +185,10 @@ def make_mobile_nav(active_key):
         </a>
 
         <!-- History -->
-        <a href="/history" class="p-3 rounded-2xl border transition-all flex flex-col justify-between {history_card_class}">
+        <a href="/history" class="p-3 rounded-2xl border transition-all flex flex-col justify-between {card_style('history')}">
           <div class="flex items-center justify-between">
             <span class="text-2xl">📜</span>
-            {history_active_badge}
+            {badge_for('history')}
           </div>
           <div class="mt-2">
             <div class="text-xs font-black text-slate-800">স্ক্যান ইতিহাস</div>
@@ -185,28 +196,22 @@ def make_mobile_nav(active_key):
           </div>
         </a>
 
-        <!-- Fertilizer Calc Shortcut -->
-        <a href="/calculator" class="p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 border border-slate-200/80 transition-all flex flex-col justify-between">
-          <span class="text-2xl">⚖️</span>
-          <div class="mt-2">
-            <div class="text-xs font-black text-slate-800">সার ক্যালকুলেটর</div>
-            <div class="text-[10px] text-slate-500 line-clamp-1">সুষম সারের সঠিক হিসাব</div>
-          </div>
-        </a>
+      </div>
 
-        <!-- Crop Roadmap Shortcut -->
-        <a href="/roadmap" class="p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50/60 border border-slate-200/80 transition-all flex flex-col justify-between">
-          <span class="text-2xl">🌾</span>
-          <div class="mt-2">
-            <div class="text-xs font-black text-slate-800">ফসলের গাইড</div>
-            <div class="text-[10px] text-slate-500 line-clamp-1">৪০+ ফসলের পূর্ণাঙ্গ চাষাবাদ</div>
+      <!-- Account Settings & Linking Card -->
+      <div onclick="SmartAgroAuth.openAccountSettingsModal(); toggleSmartAgroMobileMenu(false);" class="mt-3 p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100/70 border border-emerald-300/80 cursor-pointer transition-all flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-xs">👤</div>
+          <div>
+            <div class="text-xs font-black text-slate-800">অ্যাকাউন্ট সেটিংস ও যোগাযোগ</div>
+            <div class="text-[10px] text-slate-600">মোবাইল নম্বর ও ইমেইল যুক্ত করুন</div>
           </div>
-        </a>
-
+        </div>
+        <span class="text-xs text-emerald-700 font-black">খুলুন ➔</span>
       </div>
 
       <!-- Quick Emergency Helpline Card -->
-      <div class="mt-3 bg-gradient-to-r from-amber-500/10 to-emerald-500/10 border border-amber-300/50 rounded-2xl p-3 flex items-center justify-between">
+      <div class="mt-2.5 bg-gradient-to-r from-amber-500/10 to-emerald-500/10 border border-amber-300/50 rounded-2xl p-3 flex items-center justify-between">
         <div class="flex items-center gap-2.5">
           <div class="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg shadow-xs">📞</div>
           <div>

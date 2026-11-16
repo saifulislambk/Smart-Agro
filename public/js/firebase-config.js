@@ -156,7 +156,7 @@ function notifySubscribers(user) {
 }
 
 // --------------------------------------------------------------------
-// 1. Google Sign-In Authentication
+// 1. Google Sign-In Authentication (Real Google Account)
 // --------------------------------------------------------------------
 async function signInWithGoogle() {
   if (isFirebaseConfigured && authInstance && googleProvider) {
@@ -167,10 +167,39 @@ async function signInWithGoogle() {
         displayName: result.user.displayName || 'সম্মানিত কৃষক',
         role: 'যাচাইকৃত গুগল কৃষক',
         email: result.user.email,
+        phoneNumber: result.user.phoneNumber || '',
         photoURL: result.user.photoURL || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
         badge: '✓ যাচাইকৃত কৃষক',
+        district: 'ব্রাহ্মণবাড়িয়া',
+        auth_provider: 'google',
         isGuest: false
       };
+
+      // Sync with Account Database
+      try {
+        const syncRes = await fetch('/api/user/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            firebase_uid: user.uid,
+            display_name: user.displayName,
+            email: user.email,
+            phone_number: user.phoneNumber,
+            photo_url: user.photoURL,
+            district: user.district,
+            role: user.role,
+            auth_provider: 'google'
+          })
+        });
+        const syncData = await syncRes.json();
+        if (syncData.user) {
+          if (syncData.user.phone_number) user.phoneNumber = syncData.user.phone_number;
+          if (syncData.user.district) user.district = syncData.user.district;
+        }
+      } catch (dbErr) {
+        console.warn('Account DB sync notice:', dbErr);
+      }
+
       localStorage.setItem('smart_agro_user', JSON.stringify(user));
       closeLoginModal();
       notifySubscribers(user);
@@ -178,34 +207,20 @@ async function signInWithGoogle() {
       return user;
     } catch (error) {
       console.error('Google Sign-In Error:', error);
-      alert('গুগল লগইন ত্রুটি: ' + error.message);
+      let errMsg = 'গুগল লগইন ত্রুটি: ' + (error.message || 'চেক করুন');
+      if (error.code === 'auth/unauthorized-domain') {
+        errMsg = '⚠️ ফায়ারবেসে smartagrobd.vercel.app ডোমেইন অনুমোদন করা নেই। Firebase Console > Settings > Authorized Domains-এ ডোমেইনটি যোগ করুন।';
+      }
+      showToast(errMsg);
       throw error;
     }
   } else {
-    // Graceful Google Auth fallback for local/offline testing
-    const demoGoogleUser = {
-      uid: 'google_farmer_auth_01',
-      displayName: 'মোঃ আবদুর রহিম',
-      role: 'যাচাইকৃত গুগল কৃষক',
-      email: 'abdur.rahim@gmail.com',
-      photoURL: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-      badge: '✓ যাচাইকৃত কৃষক',
-      district: 'ঢাকা',
-      isGuest: false
-    };
-    localStorage.setItem('smart_agro_user', JSON.stringify(demoGoogleUser));
-    closeLoginModal();
-    notifySubscribers(demoGoogleUser);
-    if (demoGoogleUser.district && window.SmartAgroWeather && SmartAgroWeather.selectDistrict) {
-      SmartAgroWeather.selectDistrict(demoGoogleUser.district);
-    }
-    showToast('গুগল অ্যাকাউন্ট যাচাই সফল হয়েছে! স্বাগতম, ' + demoGoogleUser.displayName);
-    return demoGoogleUser;
+    throw new Error('ফায়ারবেস কনফিগারেশন সক্রিয় নেই। অনুগ্রহ করে Vercel-এ FIREBASE_API_KEY সেট করুন।');
   }
 }
 
 // --------------------------------------------------------------------
-// 2. Bangladesh Phone Number (SMS OTP) Authentication
+// 2. Bangladesh Phone Number (SMS OTP) Authentication (Real Accounts Only)
 // --------------------------------------------------------------------
 function formatBDPhoneNumber(input) {
   if (!input) return '';
@@ -232,7 +247,7 @@ function validateBDPhoneNumber(number) {
   return regex.test(formatted);
 }
 
-// Send OTP to Bangladesh Phone Number
+// Send Real SMS OTP to Bangladesh Phone Number
 async function sendPhoneOtp(rawPhone) {
   const phone = formatBDPhoneNumber(rawPhone);
   if (!validateBDPhoneNumber(phone)) {
@@ -241,93 +256,105 @@ async function sendPhoneOtp(rawPhone) {
 
   currentPendingPhone = phone;
 
-  if (isFirebaseConfigured && authInstance) {
-    try {
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
-          size: 'invisible',
-          callback: () => {
-            console.debug('reCAPTCHA resolved');
-          }
-        });
-        await window.recaptchaVerifier.render();
-      }
+  if (!isFirebaseConfigured || !authInstance) {
+    throw new Error('ফায়ারবেস কনফিগারেশন অনুপস্থিত। দয়া করে Vercel Settings-এ আসল ফায়ারবেস কি যুক্ত করুন।');
+  }
 
-      phoneConfirmationResult = await authInstance.signInWithPhoneNumber(phone, window.recaptchaVerifier);
-      showToast(`মোবাইলে ওটিপি কোড পাঠানো হয়েছে (${phone})`);
-      return { success: true, phone, mode: 'firebase' };
-    } catch (err) {
-      console.warn('Firebase SMS OTP delivery issue, activating test OTP fallback:', err);
-      if (window.grecaptcha && window.recaptchaWidgetId !== undefined) {
-        try { window.grecaptcha.reset(window.recaptchaWidgetId); } catch(e){}
-      }
-      // Resilient fallback so verification NEVER fails
-      const mockOtp = '123456';
-      sessionStorage.setItem('smart_agro_mock_otp_' + phone, mockOtp);
-      showToast(`টেস্ট ওটিপি কোড: ${mockOtp} (নম্বর: ${phone})`);
-      return { success: true, phone, mode: 'mock', mockOtp };
+  try {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        size: 'invisible',
+        callback: () => {
+          console.debug('reCAPTCHA resolved');
+        }
+      });
+      await window.recaptchaVerifier.render();
     }
-  } else {
-    // Intelligent Dev / Offline fallback when Firebase keys are pending
-    const mockOtp = '123456';
-    sessionStorage.setItem('smart_agro_mock_otp_' + phone, mockOtp);
-    showToast(`টেস্ট ওটিপি পাঠানো হয়েছে: ${mockOtp} (নম্বর: ${phone})`);
-    return { success: true, phone, mode: 'mock', mockOtp };
+
+    phoneConfirmationResult = await authInstance.signInWithPhoneNumber(phone, window.recaptchaVerifier);
+    showToast(`মোবাইলে এসএমএস ওটিপি কোড পাঠানো হয়েছে (${phone})`);
+    return { success: true, phone, mode: 'firebase' };
+  } catch (err) {
+    console.error('Firebase Phone Auth Error:', err);
+    if (window.grecaptcha && window.recaptchaWidgetId !== undefined) {
+      try { window.grecaptcha.reset(window.recaptchaWidgetId); } catch(e){}
+    }
+
+    let msg = 'এসএমএস পাঠাতে সমস্যা হয়েছে।';
+    if (err.code === 'auth/unauthorized-domain') {
+      msg = '⚠️ ফায়ারবেস কনসোলে smartagrobd.vercel.app ডোমেইনটি অনুমোদিত নয়। Firebase Console > Authentication > Settings > Authorized Domains-এ smartagrobd.vercel.app যোগ করুন।';
+    } else if (err.code === 'auth/operation-not-allowed') {
+      msg = '⚠️ ফায়ারবেস কনসোলে Phone Authentication অন করা নেই। console.firebase.google.com-এ গিয়ে Sign-in Method-এ Phone অন করুন।';
+    } else if (err.code === 'auth/quota-exceeded') {
+      msg = '⚠️ ফায়ারবেসের দৈনিক ফ্রি এসএমএস কোটা শেষ হয়েছে। গুগল সাইন-ইন দিয়ে লগইন করুন অথবা ব্লেজ প্ল্যান অন করুন।';
+    } else if (err.code === 'auth/invalid-app-credential' || err.code === 'auth/invalid-api-key') {
+      msg = '⚠️ ফায়ারবেস কনফিগ কি সঠিক নয়। Vercel Settings-এ আসল প্রজেক্ট কি সেট করুন।';
+    } else if (err.message) {
+      msg = `ত্রুটি: ${err.message}`;
+    }
+    throw new Error(msg);
   }
 }
 
-// Verify OTP Code
+// Verify Real SMS OTP Code
 async function verifyPhoneOtp(otpCode) {
   if (!otpCode || otpCode.trim().length < 6) {
-    throw new Error('অনুগ্রহ করে ৬ ডিজিটের ওটিপি কোড দিন।');
+    throw new Error('অনুগ্রহ করে ফোনে আসা ৬ ডিজিটের ওটিপি কোড দিন।');
   }
   const cleanCode = otpCode.trim();
 
-  if (isFirebaseConfigured && phoneConfirmationResult && cleanCode !== '123456') {
-    try {
-      const result = await phoneConfirmationResult.confirm(cleanCode);
-      const firebaseUser = result.user;
-      const user = {
-        uid: firebaseUser.uid,
-        displayName: firebaseUser.displayName || 'কৃষক ভাই (' + (firebaseUser.phoneNumber || currentPendingPhone) + ')',
-        role: 'যাচাইকৃত মোবাইল কৃষক',
-        phoneNumber: firebaseUser.phoneNumber || currentPendingPhone,
-        email: firebaseUser.email || '',
-        photoURL: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
-        badge: '✓ যাচাইকৃত মোবাইল',
-        isGuest: false
-      };
-      localStorage.setItem('smart_agro_user', JSON.stringify(user));
-      closeLoginModal();
-      notifySubscribers(user);
-      showToast('মোবাইল ওটিপি যাচাই সফল হয়েছে! স্বাগতম।');
-      return user;
-    } catch (err) {
-      console.warn('Firebase OTP confirmation error, testing fallback code:', err);
-    }
+  if (!phoneConfirmationResult) {
+    throw new Error('পূর্বে কোনো ওটিপি পাঠানো হয়নি। প্রথমে ওটিপি কোড পাঠান।');
   }
 
-  // Fallback verification for test code (123456)
-  const storedOtp = sessionStorage.getItem('smart_agro_mock_otp_' + currentPendingPhone) || '123456';
-  if (cleanCode === storedOtp || cleanCode === '123456') {
+  try {
+    const result = await phoneConfirmationResult.confirm(cleanCode);
+    const firebaseUser = result.user;
     const user = {
-      uid: 'phone_' + currentPendingPhone.replace(/\+/g, ''),
-      displayName: 'কৃষক ভাই (' + currentPendingPhone + ')',
+      uid: firebaseUser.uid,
+      displayName: firebaseUser.displayName || 'কৃষক ভাই (' + (firebaseUser.phoneNumber || currentPendingPhone) + ')',
       role: 'যাচাইকৃত মোবাইল কৃষক',
-      phoneNumber: currentPendingPhone,
-      email: '',
+      phoneNumber: firebaseUser.phoneNumber || currentPendingPhone,
+      email: firebaseUser.email || '',
       photoURL: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
       badge: '✓ যাচাইকৃত মোবাইল',
-      district: 'ঢাকা',
+      district: 'ব্রাহ্মণবাড়িয়া',
+      auth_provider: 'phone',
       isGuest: false
     };
+
+    // Sync user with backend Account Database
+    try {
+      const syncRes = await fetch('/api/user/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firebase_uid: user.uid,
+          display_name: user.displayName,
+          email: user.email,
+          phone_number: user.phoneNumber,
+          photo_url: user.photoURL,
+          district: user.district,
+          role: user.role,
+          auth_provider: 'phone'
+        })
+      });
+      const syncData = await syncRes.json();
+      if (syncData.user && syncData.user.email) {
+        user.email = syncData.user.email;
+      }
+    } catch (dbErr) {
+      console.warn('Account DB sync notice:', dbErr);
+    }
+
     localStorage.setItem('smart_agro_user', JSON.stringify(user));
     closeLoginModal();
     notifySubscribers(user);
-    showToast('মোবাইল নম্বর সফলভাবে যাচাই হয়েছে! স্বাগতম।');
+    showToast('মোবাইল ওটিপি যাচাই সফল হয়েছে! স্বাগতম।');
     return user;
-  } else {
-    throw new Error('ওটিপি কোড সঠিক নয়। আবার চেষ্টা করুন (টেস্ট কোড: 123456)।');
+  } catch (err) {
+    console.error('OTP confirmation error:', err);
+    throw new Error('ভুল ওটিপি কোড অথবা কোডের মেয়াদ শেষ হয়ে গেছে। আবার চেষ্টা করুন।');
   }
 }
 
@@ -668,6 +695,186 @@ function showToast(message) {
   }, 3500);
 }
 
+// --------------------------------------------------------------------
+// 4. Account Settings & Contact Linking (Add Phone to Email / Email to Phone)
+// --------------------------------------------------------------------
+function openAccountSettingsModal() {
+  const currentUser = getCurrentUser();
+  if (!currentUser || currentUser.isGuest) {
+    openLoginModal();
+    return;
+  }
+
+  const existing = document.getElementById('smart-agro-account-modal');
+  if (existing) existing.remove();
+
+  const hasEmail = Boolean(currentUser.email && currentUser.email.includes('@'));
+  const hasPhone = Boolean(currentUser.phoneNumber && currentUser.phoneNumber.length >= 10);
+
+  const modalDiv = document.createElement('div');
+  modalDiv.id = 'smart-agro-account-modal';
+  modalDiv.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in font-bengali';
+
+  modalDiv.innerHTML = `
+    <div class="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-emerald-100 p-6 overflow-hidden">
+      
+      <!-- Close Button -->
+      <button onclick="SmartAgroAuth.closeAccountSettingsModal()" 
+              class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center text-sm font-bold transition-colors">
+        ✕
+      </button>
+
+      <!-- Header -->
+      <div class="flex items-center space-x-3.5 pb-4 border-b border-slate-100">
+        <img src="${currentUser.photoURL || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}" 
+             alt="${currentUser.displayName}" 
+             class="w-12 h-12 rounded-full object-cover border-2 border-emerald-500 shadow-sm shrink-0">
+        <div class="min-w-0 flex-1">
+          <h3 class="text-base font-black text-slate-900 truncate">${currentUser.displayName}</h3>
+          <p class="text-xs text-emerald-700 font-bold">${currentUser.role || 'কৃষক'}</p>
+        </div>
+      </div>
+
+      <!-- Account Linking Section -->
+      <div class="mt-4 space-y-4">
+        
+        <div id="account-settings-msg" class="hidden p-2.5 rounded-xl text-xs font-bold text-center"></div>
+
+        <!-- Email Section -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">ইমেইল ঠিকানা</label>
+          ${hasEmail ? `
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-emerald-200">
+              <span class="text-xs font-bold text-slate-800 truncate">📧 ${currentUser.email}</span>
+              <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full shrink-0">✓ সংযুক্ত</span>
+            </div>
+          ` : `
+            <div class="flex gap-2">
+              <input id="link-email-input" type="email" placeholder="আপনার ইমেইল ঠিকানা দিন" 
+                     class="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold focus:ring-2 focus:ring-emerald-500 outline-none">
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">ইমেইল যোগ করলে পাসওয়ার্ডবিহীন বা গুগল লগইন ব্যাকআপ পাওয়া যাবে।</p>
+          `}
+        </div>
+
+        <!-- Phone Number Section -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">মোবাইল নম্বর (SMS)</label>
+          ${hasPhone ? `
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-emerald-200">
+              <span class="text-xs font-bold text-slate-800 truncate">📱 ${currentUser.phoneNumber}</span>
+              <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full shrink-0">✓ সংযুক্ত</span>
+            </div>
+          ` : `
+            <div class="flex gap-2">
+              <input id="link-phone-input" type="tel" placeholder="01XXXXXXXXX" 
+                     class="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold focus:ring-2 focus:ring-emerald-500 outline-none">
+            </div>
+            <p class="text-[10px] text-slate-400 mt-1">মোবাইল নম্বর যোগ করলে সরাসরি ফোন নম্বর দিয়ে যেকোনো সময় একাউন্ট রিকভার করতে পারবেন।</p>
+          `}
+        </div>
+
+        <!-- Display Name -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">আপনার নাম</label>
+          <input id="link-name-input" type="text" value="${currentUser.displayName || ''}" 
+                 class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold focus:ring-2 focus:ring-emerald-500 outline-none">
+        </div>
+
+        <!-- District Selector -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">নিজ জেলা</label>
+          <input id="link-district-input" type="text" value="${currentUser.district || 'ব্রাহ্মণবাড়িয়া'}" 
+                 class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold focus:ring-2 focus:ring-emerald-500 outline-none">
+        </div>
+
+        <!-- Action Button -->
+        <button id="save-account-settings-btn" onclick="SmartAgroAuth.saveAccountContactInfo()" 
+                class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs md:text-sm shadow-md active:scale-95 transition-all">
+          💾 তথ্য সংরক্ষণ ও একাউন্ট আপডেট করুন
+        </button>
+
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(modalDiv);
+}
+
+function closeAccountSettingsModal() {
+  const modal = document.getElementById('smart-agro-account-modal');
+  if (modal) modal.remove();
+}
+
+async function saveAccountContactInfo() {
+  const currentUser = getCurrentUser();
+  if (!currentUser) return;
+
+  const btn = document.getElementById('save-account-settings-btn');
+  const msgDiv = document.getElementById('account-settings-msg');
+
+  const emailInput = document.getElementById('link-email-input');
+  const phoneInput = document.getElementById('link-phone-input');
+  const nameInput = document.getElementById('link-name-input');
+  const distInput = document.getElementById('link-district-input');
+
+  const newEmail = emailInput ? emailInput.value.trim() : (currentUser.email || '');
+  let newPhone = phoneInput ? phoneInput.value.trim() : (currentUser.phoneNumber || '');
+  const newName = nameInput ? nameInput.value.trim() : (currentUser.displayName || 'কৃষক ভাই');
+  const newDist = distInput ? distInput.value.trim() : (currentUser.district || 'ব্রাহ্মণবাড়িয়া');
+
+  if (newPhone && !newPhone.startsWith('+88')) {
+    newPhone = formatBDPhoneNumber(newPhone);
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = '⏳ সংরক্ষণ হচ্ছে...';
+  }
+
+  try {
+    const res = await fetch('/api/user/link-contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firebase_uid: currentUser.uid,
+        display_name: newName,
+        email: newEmail,
+        phone_number: newPhone,
+        district: newDist
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.message || 'সংরক্ষণ ব্যর্থ হয়েছে।');
+    }
+
+    // Update local state
+    currentUser.displayName = newName;
+    if (newEmail) currentUser.email = newEmail;
+    if (newPhone) currentUser.phoneNumber = newPhone;
+    if (newDist) currentUser.district = newDist;
+
+    localStorage.setItem('smart_agro_user', JSON.stringify(currentUser));
+    notifySubscribers(currentUser);
+    closeAccountSettingsModal();
+    showToast('✅ অ্যাকাউন্ট তথ্য সফলভাবে সংরক্ষিত ও লিঙ্ক হয়েছে!');
+  } catch (err) {
+    if (msgDiv) {
+      msgDiv.innerText = err.message || 'ত্রুটি ঘটেছে।';
+      msgDiv.className = 'p-2.5 rounded-xl text-xs font-bold text-center bg-rose-50 text-rose-700 border border-rose-200';
+      msgDiv.classList.remove('hidden');
+    }
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = '💾 তথ্য সংরক্ষণ ও একাউন্ট আপডেট করুন';
+    }
+  }
+}
+
 window.SmartAgroAuth = {
   signInWithGoogle,
   sendPhoneOtp,
@@ -683,6 +890,9 @@ window.SmartAgroAuth = {
   onAuthStateChanged,
   openLoginModal,
   closeLoginModal,
+  openAccountSettingsModal,
+  closeAccountSettingsModal,
+  saveAccountContactInfo,
   toggleProfileDropdown,
   closeProfileDropdown,
   showToast,

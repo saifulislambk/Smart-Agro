@@ -555,6 +555,29 @@ select option {
   }
 }
 
+/* Compact Google reCAPTCHA Badge */
+.grecaptcha-badge {
+  transform: scale(0.68) !important;
+  transform-origin: bottom right !important;
+  bottom: 72px !important;
+  right: 6px !important;
+  opacity: 0.8 !important;
+  transition: opacity 0.2s ease, transform 0.2s ease !important;
+  z-index: 35 !important;
+}
+
+.grecaptcha-badge:hover {
+  opacity: 1 !important;
+  transform: scale(0.78) !important;
+}
+
+@media (min-width: 768px) {
+  .grecaptcha-badge {
+    bottom: 20px !important;
+    transform: scale(0.8) !important;
+  }
+}
+
 /* Shadow utilities */
 .shadow-xs {
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);

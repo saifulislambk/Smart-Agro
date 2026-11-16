@@ -387,6 +387,52 @@ app.get('/api/firebase-config', (req, res) => {
   });
 });
 
+// 1.2 User Account Database & Contact Linking API
+app.post('/api/user/sync', async (req, res) => {
+  try {
+    const { firebase_uid, display_name, email, phone_number, photo_url, district, role, auth_provider } = req.body;
+    if (!firebase_uid) {
+      return res.status(400).json({ success: false, message: 'firebase_uid is required' });
+    }
+    const user = await db.syncUser({ firebase_uid, display_name, email, phone_number, photo_url, district, role, auth_provider });
+    res.json({ success: true, user });
+  } catch (err) {
+    console.error('Error syncing user:', err);
+    res.status(500).json({ success: false, message: 'অ্যাকাউন্ট সংরক্ষণ করতে সমস্যা হয়েছে।' });
+  }
+});
+
+app.get('/api/user/profile', async (req, res) => {
+  try {
+    const uid = req.query.uid;
+    if (!uid) {
+      return res.status(400).json({ success: false, message: 'uid is required' });
+    }
+    const user = await db.getUserProfile(uid);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'ইউজার প্রোফাইল পাওয়া যায়নি।' });
+    }
+    res.json({ success: true, user });
+  } catch (err) {
+    console.error('Error getting user profile:', err);
+    res.status(500).json({ success: false, message: 'প্রোফাইল লোড করতে সমস্যা হয়েছে।' });
+  }
+});
+
+app.post('/api/user/link-contact', async (req, res) => {
+  try {
+    const { firebase_uid, phone_number, email, display_name, district } = req.body;
+    if (!firebase_uid) {
+      return res.status(400).json({ success: false, message: 'firebase_uid is required' });
+    }
+    const updatedUser = await db.updateUserContact(firebase_uid, { phone_number, email, display_name, district });
+    res.json({ success: true, message: 'যোগাযোগের তথ্য সফলভাবে সংরক্ষিত হয়েছে!', user: updatedUser });
+  } catch (err) {
+    console.error('Error linking contact info:', err);
+    res.status(500).json({ success: false, message: 'তথ্য আপডেট করতে সমস্যা হয়েছে।' });
+  }
+});
+
 // 2. Weather & Agro-Alerts (Live OpenWeatherMap with Geolocation & Spraying Advisory)
 app.get('/api/weather', async (req, res) => {
   try {
