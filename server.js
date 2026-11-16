@@ -6,6 +6,12 @@ const path = require('path');
 const fs = require('fs');
 const axios = require('axios');
 const FormData = require('form-data');
+let nodemailer = null;
+try {
+  nodemailer = require('nodemailer');
+} catch (e) {
+  console.warn('⚠️ nodemailer not loaded:', e.message);
+}
 require('dotenv').config();
 
 const db = require('./db');
@@ -430,6 +436,168 @@ app.post('/api/user/link-contact', async (req, res) => {
   } catch (err) {
     console.error('Error linking contact info:', err);
     res.status(500).json({ success: false, message: 'তথ্য আপডেট করতে সমস্যা হয়েছে।' });
+  }
+});
+
+// 1.3 Email OTP Verification Engine (Passwordless Login & Account Activation)
+const emailOtpStore = new Map();
+
+// Periodic prune of expired OTP tokens
+setInterval(() => {
+  const now = Date.now();
+  for (const [email, record] of emailOtpStore.entries()) {
+    if (now > record.expiresAt) {
+      emailOtpStore.delete(email);
+    }
+  }
+}, 5 * 60 * 1000);
+
+function getMailTransporter() {
+  if (!nodemailer) return null;
+  const user = process.env.SMTP_USER || process.env.GMAIL_USER;
+  const pass = process.env.SMTP_PASS || process.env.GMAIL_PASS;
+  if (!user || !pass) return null;
+
+  return nodemailer.createTransport({
+    service: process.env.SMTP_SERVICE || 'gmail',
+    auth: { user, pass }
+  });
+}
+
+app.post('/api/auth/send-email-otp', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      return res.status(400).json({ success: false, message: 'অনুগ্রহ করে একটি সঠিক ইমেইল ঠিকানা দিন (যেমন: farmer@gmail.com)।' });
+    }
+    const cleanEmail = email.trim().toLowerCase();
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    emailOtpStore.set(cleanEmail, {
+      code: otp,
+      expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
+      attempts: 0
+    });
+
+    const transporter = getMailTransporter();
+    if (transporter) {
+      const mailOptions = {
+        from: `"স্মার্ট এগ্রো (Smart Agro)" <${process.env.SMTP_USER || process.env.GMAIL_USER}>`,
+        to: cleanEmail,
+        subject: `🌾 ${otp} - আপনার স্মার্ট এগ্রো লগইন ওটিপি কোড`,
+        html: `
+          <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 540px; margin: 0 auto; padding: 24px; border: 2px solid #10b981; border-radius: 20px; background: #ffffff;">
+            <div style="text-align: center; margin-bottom: 24px;">
+              <h1 style="color: #059669; font-size: 26px; margin: 0 0 6px 0;">🌾 স্মার্ট এগ্রো (Smart Agro)</h1>
+              <p style="color: #64748b; font-size: 14px; margin: 0;">কৃষি ও ফসল সুরক্ষা প্ল্যাটফর্ম</p>
+            </div>
+            <div style="background: #f0fdf4; border: 2px dashed #059669; border-radius: 16px; padding: 24px; text-align: center; margin: 20px 0;">
+              <p style="color: #1e293b; font-size: 14px; font-weight: bold; margin: 0 0 12px 0;">আপনার ৬ ডিজিটের এককালীন ওটিপি কোড:</p>
+              <div style="font-size: 38px; font-weight: 900; letter-spacing: 8px; color: #047857; margin: 10px 0;">${otp}</div>
+              <p style="color: #64748b; font-size: 12px; margin: 12px 0 0 0;">⏳ এই কোডটির মেয়াদ ১০ মিনিট থাকবে।</p>
+            </div>
+            <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 16px 0 0 0;">
+              আপনি যদি এই অনুরোধ না করে থাকেন, তবে এই বার্তাটি এড়িয়ে চলুন।
+            </p>
+          </div>
+        `
+      };
+      await transporter.sendMail(mailOptions);
+      console.log(`📧 [Smart Agro Auth] Real email OTP sent to ${cleanEmail}`);
+      return res.json({
+        success: true,
+        message: `আপনার ইমেইলে (${cleanEmail}) ৬ ডিজিটের ওটিপি কোড পাঠানো হয়েছে। ইনবক্স অথবা স্প্যাম ফোল্ডার চেক করুন।`
+      });
+    } else {
+      console.log(`📧 [Smart Agro Auth - Fallback] OTP for ${cleanEmail}: ${otp}`);
+      return res.json({
+        success: true,
+        simulated: true,
+        otp: otp,
+        message: `ওটিপি কোড: ${otp} (সার্ভারে সরাসরি SMTP সেট না থাকায় কোডটি প্রদর্শিত হলো)`
+      });
+    }
+  } catch (err) {
+    console.error('Email OTP send error:', err);
+    return res.status(500).json({ success: false, message: 'ইমেইল পাঠাতে সমস্যা হয়েছে: ' + err.message });
+  }
+});
+
+app.post('/api/auth/verify-email-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return res.status(400).json({ success: false, message: 'ইমেইল ও ওটিপি কোড উভয়ই আবশ্যক।' });
+    }
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanOtp = otp.trim();
+
+    const record = emailOtpStore.get(cleanEmail);
+    if (!record) {
+      return res.status(400).json({ success: false, message: 'কোনো সক্রিয় ওটিপি পাওয়া যায়নি অথবা মেয়াদ শেষ হয়েছে। আবার ওটিপি পাঠান।' });
+    }
+
+    if (Date.now() > record.expiresAt) {
+      emailOtpStore.delete(cleanEmail);
+      return res.status(400).json({ success: false, message: 'ওটিপি কোডের মেয়াদ শেষ হয়ে গেছে। নতুন কোড নিন।' });
+    }
+
+    record.attempts = (record.attempts || 0) + 1;
+    if (record.attempts > 5) {
+      emailOtpStore.delete(cleanEmail);
+      return res.status(400).json({ success: false, message: 'অতিরিক্ত ভুল ওটিপি চেষ্টা করা হয়েছে। নতুন ওটিপি পাঠান।' });
+    }
+
+    if (record.code !== cleanOtp) {
+      return res.status(400).json({ success: false, message: 'ভুল ওটিপি কোড! অনুগ্রহ করে সঠিক ৬ ডিজিটের কোড দিন।' });
+    }
+
+    // OTP is verified! Prune record
+    emailOtpStore.delete(cleanEmail);
+
+    const emailHash = Buffer.from(cleanEmail).toString('hex').slice(0, 24);
+    const uid = `email_${emailHash}`;
+    const username = cleanEmail.split('@')[0];
+    const displayName = username.charAt(0).toUpperCase() + username.slice(1);
+
+    const userData = {
+      firebase_uid: uid,
+      display_name: displayName,
+      email: cleanEmail,
+      phone_number: null,
+      photo_url: `https://api.dicebear.com/7.x/identicon/svg?seed=${encodeURIComponent(cleanEmail)}`,
+      district: 'ঢাকা',
+      role: 'যাচাইকৃত ইমেইল কৃষক',
+      auth_provider: 'email_otp'
+    };
+
+    let savedUser = null;
+    try {
+      savedUser = await db.syncUser(userData);
+    } catch (dbErr) {
+      console.warn('DB sync warning in verify-email-otp:', dbErr.message);
+    }
+
+    const activeUser = {
+      uid: uid,
+      displayName: savedUser ? savedUser.display_name : displayName,
+      role: 'যাচাইকৃত ইমেইল কৃষক',
+      email: cleanEmail,
+      phoneNumber: savedUser ? savedUser.phone_number : '',
+      photoURL: userData.photo_url,
+      badge: '✓ যাচাইকৃত ইমেইল',
+      isGuest: false,
+      authProvider: 'email_otp'
+    };
+
+    return res.json({
+      success: true,
+      user: activeUser,
+      message: 'অভিনন্দন! আপনার ইমেইল সফলভাবে যাচাই হয়েছে।'
+    });
+  } catch (err) {
+    console.error('Email OTP verify error:', err);
+    return res.status(500).json({ success: false, message: 'ওটিপি যাচাইয়ে সমস্যা হয়েছে: ' + err.message });
   }
 });
 

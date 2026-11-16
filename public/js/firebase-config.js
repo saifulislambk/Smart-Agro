@@ -474,17 +474,27 @@ document.addEventListener('click', (e) => {
   }
 });
 
-// UI Event Handlers for Phone Auth
-async function handleSendPhoneOtp() {
-  const phoneInput = document.getElementById('farmer-phone-input');
-  const sendBtn = document.getElementById('btn-send-phone-otp');
-  const errorDiv = document.getElementById('phone-auth-error');
-  if (!phoneInput) return;
+// UI Event Handlers for Email OTP Auth
+let currentPendingEmail = '';
 
-  const rawPhone = phoneInput.value.trim();
+async function handleSendEmailOtp() {
+  const emailInput = document.getElementById('farmer-email-input');
+  const sendBtn = document.getElementById('btn-send-email-otp');
+  const errorDiv = document.getElementById('email-auth-error');
+  if (!emailInput) return;
+
+  const rawEmail = emailInput.value.trim().toLowerCase();
   if (errorDiv) {
     errorDiv.innerText = '';
     errorDiv.classList.add('hidden');
+  }
+
+  if (!rawEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rawEmail)) {
+    if (errorDiv) {
+      errorDiv.innerText = 'অনুগ্রহ করে একটি সঠিক ইমেইল ঠিকানা লিখুন (যেমন: farmer@gmail.com)।';
+      errorDiv.classList.remove('hidden');
+    }
+    return;
   }
 
   if (sendBtn) {
@@ -493,20 +503,34 @@ async function handleSendPhoneOtp() {
   }
 
   try {
-    const res = await sendPhoneOtp(rawPhone);
-    const step1 = document.getElementById('phone-auth-step-1');
-    const step2 = document.getElementById('phone-auth-step-2');
-    const displayPhone = document.getElementById('otp-sent-phone-display');
+    const res = await fetch('/api/auth/send-email-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: rawEmail })
+    });
+    const data = await res.json();
 
-    if (displayPhone) displayPhone.innerText = res.phone;
+    if (!res.ok || !data.success) {
+      throw new Error(data.message || 'ইমেইল পাঠাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+    }
+
+    currentPendingEmail = rawEmail;
+
+    const step1 = document.getElementById('email-auth-step-1');
+    const step2 = document.getElementById('email-auth-step-2');
+    const displayEmail = document.getElementById('otp-sent-email-display');
+
+    if (displayEmail) displayEmail.innerText = rawEmail;
     if (step1) step1.classList.add('hidden');
     if (step2) step2.classList.remove('hidden');
 
-    const otpInput = document.getElementById('farmer-otp-input');
+    const otpInput = document.getElementById('farmer-email-otp-input');
     if (otpInput) {
-      otpInput.value = '';
+      otpInput.value = data.otp || '';
       otpInput.focus();
     }
+
+    showToast(data.message || `ইমেইলে ওটিপি পাঠানো হয়েছে (${rawEmail})`);
   } catch (err) {
     if (errorDiv) {
       errorDiv.innerText = err.message || 'ত্রুটি ঘটেছে। আবার চেষ্টা করুন।';
@@ -515,15 +539,15 @@ async function handleSendPhoneOtp() {
   } finally {
     if (sendBtn) {
       sendBtn.disabled = false;
-      sendBtn.innerText = '📩 ওটিপি কোড পাঠান';
+      sendBtn.innerText = '📩 ইমেইলে ওটিপি কোড পাঠান';
     }
   }
 }
 
-async function handleVerifyPhoneOtp() {
-  const otpInput = document.getElementById('farmer-otp-input');
-  const verifyBtn = document.getElementById('btn-verify-phone-otp');
-  const errorDiv = document.getElementById('phone-auth-error');
+async function handleVerifyEmailOtp() {
+  const otpInput = document.getElementById('farmer-email-otp-input');
+  const verifyBtn = document.getElementById('btn-verify-email-otp');
+  const errorDiv = document.getElementById('email-auth-error');
   if (!otpInput) return;
 
   const code = otpInput.value.trim();
@@ -532,13 +556,36 @@ async function handleVerifyPhoneOtp() {
     errorDiv.classList.add('hidden');
   }
 
+  if (!code || code.length < 6) {
+    if (errorDiv) {
+      errorDiv.innerText = 'অনুগ্রহ করে ৬ সংখ্যার ওটিপি কোড দিন।';
+      errorDiv.classList.remove('hidden');
+    }
+    return;
+  }
+
   if (verifyBtn) {
     verifyBtn.disabled = true;
     verifyBtn.innerText = '⏳ যাচাই করা হচ্ছে...';
   }
 
   try {
-    await verifyPhoneOtp(code);
+    const res = await fetch('/api/auth/verify-email-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: currentPendingEmail, otp: code })
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      throw new Error(data.message || 'ভুল বা মেয়াদোত্তীর্ণ ওটিপি কোড।');
+    }
+
+    const activeUser = data.user;
+    localStorage.setItem('smart_agro_user', JSON.stringify(activeUser));
+    notifySubscribers(activeUser);
+    showToast(`স্বাগতম, ${activeUser.displayName}! লগইন সফল হয়েছে।`);
+    closeLoginModal();
   } catch (err) {
     if (errorDiv) {
       errorDiv.innerText = err.message || 'যাচাই ব্যর্থ হয়েছে। আবার চেষ্টা করুন।';
@@ -552,17 +599,24 @@ async function handleVerifyPhoneOtp() {
   }
 }
 
-function resetPhoneInputStep() {
-  const step1 = document.getElementById('phone-auth-step-1');
-  const step2 = document.getElementById('phone-auth-step-2');
-  const errorDiv = document.getElementById('phone-auth-error');
+function resetEmailInputStep() {
+  const step1 = document.getElementById('email-auth-step-1');
+  const step2 = document.getElementById('email-auth-step-2');
+  const errorDiv = document.getElementById('email-auth-error');
   if (step1) step1.classList.remove('hidden');
   if (step2) step2.classList.add('hidden');
   if (errorDiv) {
     errorDiv.innerText = '';
     errorDiv.classList.add('hidden');
   }
+  const emailInput = document.getElementById('farmer-email-input');
+  if (emailInput) emailInput.focus();
 }
+
+// Backwards-compatible aliases
+const handleSendPhoneOtp = handleSendEmailOtp;
+const handleVerifyPhoneOtp = handleVerifyEmailOtp;
+const resetPhoneInputStep = resetEmailInputStep;
 
 // Inject Modern Comprehensive Login Modal HTML
 function injectLoginModal() {
@@ -588,12 +642,12 @@ function injectLoginModal() {
         </div>
         <h3 class="text-xl md:text-2xl font-black text-slate-900">কৃষক লগইন ও প্রোফাইল</h3>
         <p class="text-xs md:text-sm text-slate-600 font-semibold font-bengali">
-          গুগল বা বাংলাদেশি মোবাইল নম্বর দিয়ে সহজে যুক্ত হোন।
+          গুগল বা আপনার ইমেইল দিয়ে সহজে লগইন করুন।
         </p>
       </div>
 
       <!-- Error Banner -->
-      <div id="phone-auth-error" class="hidden mb-4 p-3 rounded-xl bg-rose-50 border border-rose-300 text-xs font-bold text-rose-800 text-center"></div>
+      <div id="email-auth-error" class="hidden mb-4 p-3 rounded-xl bg-rose-50 border border-rose-300 text-xs font-bold text-rose-800 text-center"></div>
 
       <!-- Google Sign-In Button -->
       <div class="space-y-3">
@@ -612,62 +666,59 @@ function injectLoginModal() {
       <div class="relative my-4 text-center">
         <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
         <span class="relative bg-white px-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-          অথবা মোবাইল ওটিপি (SMS OTP)
+          অথবা ইমেইল ওটিপি (Email OTP)
         </span>
       </div>
 
-      <!-- Bangladesh Phone Authentication Form -->
+      <!-- Email Authentication Form -->
       <div class="p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-3.5">
         
-        <!-- Step 1: Input Phone Number -->
-        <div id="phone-auth-step-1" class="space-y-3">
+        <!-- Step 1: Input Email -->
+        <div id="email-auth-step-1" class="space-y-3">
           <label class="block text-xs font-bold text-slate-700">
-            📱 আপনার বাংলাদেশি মোবাইল নম্বর দিন:
+            ✉️ আপনার ইমেইল ঠিকানা দিন:
           </label>
           <div class="flex items-center rounded-xl bg-white border-2 border-emerald-300 focus-within:border-emerald-600 transition-colors overflow-hidden shadow-xs">
-            <span class="px-3 py-2.5 bg-emerald-100 text-emerald-900 font-black text-xs border-r border-emerald-200 select-none flex items-center gap-1">
-              <span>🇧🇩</span>
-              <span>+880</span>
+            <span class="px-3 py-2.5 bg-emerald-100 text-emerald-900 font-black text-xs border-r border-emerald-200 select-none">
+              📧
             </span>
-            <input type="tel" id="farmer-phone-input" placeholder="01712-345678" maxlength="11"
+            <input type="email" id="farmer-email-input" placeholder="farmer@gmail.com"
                    class="w-full px-3 py-2.5 text-sm font-bold text-slate-800 bg-transparent focus:outline-none"
-                   onkeydown="if(event.key === 'Enter') SmartAgroAuth.handleSendPhoneOtp()">
+                   onkeydown="if(event.key === 'Enter') SmartAgroAuth.handleSendEmailOtp()">
           </div>
-          <button id="btn-send-phone-otp" onclick="SmartAgroAuth.handleSendPhoneOtp()"
+          <button id="btn-send-email-otp" onclick="SmartAgroAuth.handleSendEmailOtp()"
                   class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs md:text-sm shadow-md shadow-emerald-600/20 active:scale-95 transition-all">
-            📩 ওটিপি কোড পাঠান
+            📩 ইমেইলে ওটিপি কোড পাঠান
           </button>
         </div>
 
         <!-- Step 2: Input OTP Verification Code -->
-        <div id="phone-auth-step-2" class="hidden space-y-3 animate-fade-in">
+        <div id="email-auth-step-2" class="hidden space-y-3 animate-fade-in">
           <div class="flex items-center justify-between">
             <label class="block text-xs font-bold text-slate-700">
               🔑 ওটিপি কোড লিখুন:
             </label>
-            <button onclick="SmartAgroAuth.resetPhoneInputStep()" class="text-[11px] font-bold text-emerald-700 hover:underline">
-              নম্বর পরিবর্তন ✕
+            <button onclick="SmartAgroAuth.resetEmailInputStep()" class="text-[11px] font-bold text-emerald-700 hover:underline">
+              ইমেইল পরিবর্তন ✕
             </button>
           </div>
           <p class="text-[11px] text-slate-500 font-semibold">
-            <span id="otp-sent-phone-display" class="font-bold text-slate-800"></span> নম্বরে পাঠানো ৬ সংখ্যার কোড দিন।
+            <span id="otp-sent-email-display" class="font-bold text-slate-800"></span> ঠিকানায় পাঠানো ৬ সংখ্যার কোড দিন।
           </p>
-          <input type="text" id="farmer-otp-input" placeholder="123456" maxlength="6"
+          <input type="text" id="farmer-email-otp-input" placeholder="123456" maxlength="6"
                  class="w-full px-4 py-2.5 text-center text-lg font-black tracking-widest text-slate-900 bg-white border-2 border-emerald-400 rounded-xl focus:outline-none focus:border-emerald-600 shadow-xs"
-                 onkeydown="if(event.key === 'Enter') SmartAgroAuth.handleVerifyPhoneOtp()">
-          <button id="btn-verify-phone-otp" onclick="SmartAgroAuth.handleVerifyPhoneOtp()"
+                 onkeydown="if(event.key === 'Enter') SmartAgroAuth.handleVerifyEmailOtp()">
+          <button id="btn-verify-email-otp" onclick="SmartAgroAuth.handleVerifyEmailOtp()"
                   class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs md:text-sm shadow-md active:scale-95 transition-all">
             ✓ কোড যাচাই ও লগইন করুন
           </button>
           <div class="text-center pt-1">
-            <button onclick="SmartAgroAuth.handleSendPhoneOtp()" class="text-[11px] font-bold text-slate-500 hover:text-emerald-700">
+            <button onclick="SmartAgroAuth.handleSendEmailOtp()" class="text-[11px] font-bold text-slate-500 hover:text-emerald-700">
               🔄 কোড পাননি? পুনরায় পাঠান
             </button>
           </div>
         </div>
 
-        <!-- Invisible Recaptcha Anchor for Firebase -->
-        <div id="recaptcha-container"></div>
       </div>
 
     </div>
@@ -877,13 +928,16 @@ async function saveAccountContactInfo() {
 
 window.SmartAgroAuth = {
   signInWithGoogle,
+  handleSendEmailOtp,
+  handleVerifyEmailOtp,
+  resetEmailInputStep,
+  handleSendPhoneOtp,
+  handleVerifyPhoneOtp,
+  resetPhoneInputStep,
   sendPhoneOtp,
   verifyPhoneOtp,
   formatBDPhoneNumber,
   validateBDPhoneNumber,
-  handleSendPhoneOtp,
-  handleVerifyPhoneOtp,
-  resetPhoneInputStep,
   selectDemoFarmer,
   signOutUser,
   getCurrentUser,
