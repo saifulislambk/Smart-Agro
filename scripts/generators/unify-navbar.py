@@ -73,16 +73,16 @@ def make_header(active_key):
 def make_mobile_nav(active_key):
     def m_class(key):
         if key == active_key:
-            return 'bg-emerald-600 text-white font-black shadow-md'
-        return 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold'
+            return 'bg-emerald-600 text-white font-black shadow-xs py-0.5'
+        return 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold py-0.5'
 
     scanner_active = (active_key == 'scanner')
-    scanner_btn_class = 'scale-105 ring-4 ring-emerald-400 shadow-emerald-600/50' if scanner_active else 'hover:scale-105 ring-2 ring-emerald-500/20'
+    scanner_btn_class = 'scale-105 ring-2 ring-emerald-400 shadow-emerald-600/40' if scanner_active else 'hover:scale-105 ring-1 ring-emerald-500/20'
     scanner_label_class = 'text-emerald-700 font-black' if scanner_active else 'text-slate-600 font-bold'
 
     # 5th tab: More / Menu
     is_more_active = active_key in ['grafting', 'history']
-    more_btn_class = 'bg-emerald-600 text-white font-black shadow-md' if is_more_active else 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold'
+    more_btn_class = 'bg-emerald-600 text-white font-black shadow-xs py-0.5' if is_more_active else 'text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold py-0.5'
     more_icon = '🌱' if active_key == 'grafting' else ('📜' if active_key == 'history' else '☰')
     more_label = 'কলম' if active_key == 'grafting' else ('ইতিহাস' if active_key == 'history' else 'মেনু')
 
@@ -94,41 +94,41 @@ def make_mobile_nav(active_key):
 
     return f'''  <!-- START: Unified Mobile Navigation & Drawer -->
   <!-- ====================================================================
-       Floating Glass Bottom Mobile Navigation Bar (5-Tab Responsive Layout)
+       Floating Glass Bottom Mobile Navigation Bar (Sleek Compact 5-Tab Layout)
        ==================================================================== -->
-  <nav class="md:hidden fixed bottom-2 left-2 right-2 z-40 glass-header bg-white/95 backdrop-blur-md border border-emerald-200/90 rounded-2xl px-1.5 py-1 shadow-2xl">
+  <nav class="md:hidden fixed bottom-2 left-3 right-3 z-40 glass-header bg-white/95 backdrop-blur-md border border-emerald-200/90 rounded-2xl px-2 py-0.5 shadow-xl max-w-sm mx-auto">
     <div class="flex items-center justify-around text-center relative">
       
       <!-- 1. Home -->
-      <a href="/" data-nav-page="home" class="flex-1 flex flex-col items-center justify-center py-1 rounded-xl transition-all {m_class('home')}">
-        <span class="text-base sm:text-lg">🏠</span>
-        <span class="text-[10px] font-bold tracking-tight">হোম</span>
+      <a href="/" data-nav-page="home" class="flex-1 flex flex-col items-center justify-center rounded-lg transition-all {m_class('home')}">
+        <span class="text-sm">🏠</span>
+        <span class="text-[9px] font-bold tracking-tight">হোম</span>
       </a>
 
       <!-- 2. Guides / Roadmap -->
-      <a href="/roadmap" data-nav-page="roadmap" class="flex-1 flex flex-col items-center justify-center py-1 rounded-xl transition-all {m_class('roadmap')}">
-        <span class="text-base sm:text-lg">🌾</span>
-        <span class="text-[10px] font-bold tracking-tight">গাইড</span>
+      <a href="/roadmap" data-nav-page="roadmap" class="flex-1 flex flex-col items-center justify-center rounded-lg transition-all {m_class('roadmap')}">
+        <span class="text-sm">🌾</span>
+        <span class="text-[9px] font-bold tracking-tight">গাইড</span>
       </a>
 
       <!-- 3. Center Elevated AI Scanner Hero Button -->
-      <div class="flex-1 flex flex-col items-center justify-center -mt-5">
-        <a href="/scan" data-nav-page="scanner" class="w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center text-xl shadow-lg border-2 border-white transition-all active:scale-90 {scanner_btn_class}" title="এআই রোগ নির্ণয় স্ক্যানার">
+      <div class="flex-1 flex flex-col items-center justify-center -mt-2.5">
+        <a href="/scan" data-nav-page="scanner" class="w-9 h-9 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center text-sm shadow-md border border-white transition-all active:scale-95 {scanner_btn_class}" title="এআই রোগ নির্ণয় স্ক্যানার">
           📷
         </a>
-        <span class="text-[10px] mt-0.5 tracking-tight {scanner_label_class}">স্ক্যান</span>
+        <span class="text-[9px] mt-0.5 tracking-tight {scanner_label_class}">স্ক্যান</span>
       </div>
 
       <!-- 4. Fertilizer Calculator -->
-      <a href="/calculator" data-nav-page="calculator" class="flex-1 flex flex-col items-center justify-center py-1 rounded-xl transition-all {m_class('calculator')}">
-        <span class="text-base sm:text-lg">⚖️</span>
-        <span class="text-[10px] font-bold tracking-tight">সার</span>
+      <a href="/calculator" data-nav-page="calculator" class="flex-1 flex flex-col items-center justify-center rounded-lg transition-all {m_class('calculator')}">
+        <span class="text-sm">⚖️</span>
+        <span class="text-[9px] font-bold tracking-tight">সার</span>
       </a>
 
       <!-- 5. More / Menu Trigger -->
-      <button id="mobile-menu-trigger-btn" type="button" onclick="toggleSmartAgroMobileMenu()" class="flex-1 flex flex-col items-center justify-center py-1 rounded-xl transition-all {more_btn_class}" title="আরও অপশন ও মেনু">
-        <span class="text-base sm:text-lg">{more_icon}</span>
-        <span class="text-[10px] font-bold tracking-tight">{more_label}</span>
+      <button id="mobile-menu-trigger-btn" type="button" onclick="toggleSmartAgroMobileMenu()" class="flex-1 flex flex-col items-center justify-center rounded-lg transition-all {more_btn_class}" title="আরও অপশন ও মেনু">
+        <span class="text-sm">{more_icon}</span>
+        <span class="text-[9px] font-bold tracking-tight">{more_label}</span>
       </button>
 
     </div>
