@@ -1,0 +1,41 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "public",
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/scan", "destination": "/scan.html" },
+    { "source": "/scanner", "destination": "/scan.html" },
+    { "source": "/roadmap", "destination": "/roadmap.html" },
+    { "source": "/guides", "destination": "/roadmap.html" },
+    { "source": "/crop-detail", "destination": "/crop-detail.html" },
+    { "source": "/crop-guide", "destination": "/crop-detail.html" },
+    { "source": "/grafting", "destination": "/grafting.html" },
+    { "source": "/nursery", "destination": "/grafting.html" },
+    { "source": "/kalom", "destination": "/grafting.html" },
+    { "source": "/calculator", "destination": "/calculator.html" },
+    { "source": "/fertilizer", "destination": "/calculator.html" },
+    { "source": "/history", "destination": "/history.html" },
+    { "source": "/roadmap/(.*)", "destination": "/crop-detail.html" },
+    { "source": "/docs/view/ai-model", "destination": "/docs/html/ai-model-setup.html" },
+    { "source": "/docs/view/deployment", "destination": "/docs/html/deployment-hosting.html" },
+    { "source": "/docs/view/developer", "destination": "/docs/html/developer-guide.html" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
+        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization" }
+      ]
+    }
+  ],
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 15,
+      "memory": 1024
+    }
+  }
+}

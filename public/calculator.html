@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>সুষম সার ক্যালকুলেটর - স্মার্ট এগ্রো (Smart Agro)</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⚖️%3C/text%3E%3C/svg%3E">
+
+  <!-- Google Fonts: Noto Sans Bengali & Hind Siliguri -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: {
+              950: '#06261c',
+              900: '#064e3b',
+              800: '#065f46',
+              700: '#047857'
+            },
+            emerald: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d'
+            }
+          },
+          fontFamily: {
+            bengali: ['"Noto Sans Bengali"', '"Hind Siliguri"', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Stylesheet for Glassmorphism -->
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Firebase Web SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+</head>
+
+<body class="calculator-page font-bengali text-slate-800 selection:bg-emerald-500 selection:text-white pb-28 md:pb-16 antialiased relative">
+
+  <!-- Floating Nature Spores & Pollen Particles -->
+  <div class="pollen-container">
+    <div class="pollen-dot pollen-1"></div>
+    <div class="pollen-dot pollen-2"></div>
+    <div class="pollen-dot pollen-3"></div>
+    <div class="pollen-dot pollen-4"></div>
+    <div class="pollen-dot pollen-5"></div>
+  </div>
+
+    <!-- ====================================================================
+       1. Top Fixed Navigation Header (Unified across all pages)
+       ==================================================================== -->
+  <header class="sticky top-0 z-50 glass-header px-4 py-3 md:px-8 bg-white/90 backdrop-blur-md border-b border-emerald-100 shadow-xs">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 md:gap-4">
+      
+      <!-- Logo & Branding -->
+      <a href="/" class="flex items-center space-x-2.5 md:space-x-3 cursor-pointer group shrink-0">
+        <div class="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-xl md:text-2xl shadow-md group-hover:scale-105 transition-transform border border-white/40">
+          🌾
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5 md:gap-2">
+            <span class="text-lg md:text-xl font-black text-slate-900 tracking-tight">স্মার্ট এগ্রো</span>
+            <span class="text-[10px] md:text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 hidden sm:inline-block">এআই কৃষি সহকারী</span>
+          </div>
+          <p class="text-[11px] text-slate-500 font-medium hidden lg:block">ডিজিটাল কৃষি তথ্য ও রোগ নির্ণয় সেবা</p>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Menu -->
+      <nav class="hidden md:flex items-center space-x-1">
+        <a href="/" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">হোম</a>
+        <a href="/scan" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">এআই স্ক্যানার</a>
+        <a href="/roadmap" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">ফসলের গাইড</a>
+        <a href="/calculator" class="px-3.5 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-xs">সার ক্যালকুলেটর</a>
+        <a href="/grafting" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">কলম পদ্ধতি</a>
+        <a href="/history" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">স্ক্যান ইতিহাস</a>
+      </nav>
+
+      <!-- 64 District Selector, GPS Button & Auth -->
+      <div class="flex items-center space-x-2 md:space-x-3">
+        
+        <!-- District Picker Grouped by 8 Divisions -->
+        <div class="relative flex items-center">
+          <select id="district-select" class="appearance-none bg-white border border-emerald-300 text-slate-800 text-xs md:text-sm font-bold rounded-xl pl-3.5 pr-8 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-sm max-w-[130px] md:max-w-none">
+            <optgroup label="চট্টগ্রাম বিভাগ">
+              <option value="ব্রাহ্মণবাড়িয়া" selected>📍 ব্রাহ্মণবাড়িয়া</option>
+              <option value="কুমিল্লা">📍 কুমিল্লা</option>
+              <option value="চট্টগ্রাম">📍 চট্টগ্রাম</option>
+              <option value="কক্সবাজার">📍 কক্সবাজার</option>
+              <option value="চাঁদপুর">📍 চাঁদপুর</option>
+              <option value="নোয়াখালী">📍 নোয়াখালী</option>
+              <option value="ফেনী">📍 ফেনী</option>
+              <option value="লক্ষ্মীপুর">📍 লক্ষ্মীপুর</option>
+              <option value="খাগড়াছড়ি">📍 খাগড়াছড়ি</option>
+              <option value="রাঙ্গামাটি">📍 রাঙ্গামাটি</option>
+              <option value="বান্দরবান">📍 বান্দরবান</option>
+            </optgroup>
+            <optgroup label="ঢাকা বিভাগ">
+              <option value="ঢাকা">📍 ঢাকা</option>
+              <option value="গাজীপুর">📍 গাজীপুর</option>
+              <option value="নারায়ণগঞ্জ">📍 নারায়ণগঞ্জ</option>
+              <option value="নরসিংদী">📍 নরসিংদী</option>
+              <option value="মুন্সীগঞ্জ">📍 মুন্সীগঞ্জ</option>
+              <option value="মানিকগঞ্জ">📍 মানিকগঞ্জ</option>
+              <option value="টাঙ্গাইল">📍 টাঙ্গাইল</option>
+              <option value="কিশোরগঞ্জ">📍 কিশোরগঞ্জ</option>
+              <option value="ফরিদপুর">📍 ফরিদপুর</option>
+              <option value="গোপালগঞ্জ">📍 গোপালগঞ্জ</option>
+              <option value="মাদারীপুর">📍 মাদারীপুর</option>
+              <option value="রাজবাড়ী">📍 রাজবাড়ী</option>
+              <option value="শরীয়তপুর">📍 শরীয়তপুর</option>
+            </optgroup>
+            <optgroup label="রাজশাহী বিভাগ">
+              <option value="রাজশাহী">📍 রাজশাহী</option>
+              <option value="বগুড়া">📍 বগুড়া</option>
+              <option value="পাবনা">📍 পাবনা</option>
+              <option value="সিরাজগঞ্জ">📍 সিরাজগঞ্জ</option>
+              <option value="নওগাঁ">📍 নওগাঁ</option>
+              <option value="নাটোর">📍 নাটোর</option>
+              <option value="চাঁপাইনবাবগঞ্জ">📍 চাঁপাইনবাবগঞ্জ</option>
+              <option value="জয়পুরহাট">📍 জয়পুরহাট</option>
+            </optgroup>
+            <optgroup label="রংপুর বিভাগ">
+              <option value="রংপুর">📍 রংপুর</option>
+              <option value="দিনাজপুর">📍 দিনাজপুর</option>
+              <option value="গাইবান্ধা">📍 গাইবান্ধা</option>
+              <option value="কুড়িগ্রাম">📍 কুড়িগ্রাম</option>
+              <option value="নীলফামারী">📍 নীলফামারী</option>
+              <option value="লালমনিরহাট">📍 লালমনিরহাট</option>
+              <option value="পঞ্চগড়">📍 পঞ্চগড়</option>
+              <option value="ঠাকুরগাঁও">📍 ঠাকুরগাঁও</option>
+            </optgroup>
+            <optgroup label="খুলনা বিভাগ">
+              <option value="খুলনা">📍 খুলনা</option>
+              <option value="যশোর">📍 যশোর</option>
+              <option value="কুষ্টিয়া">📍 কুষ্টিয়া</option>
+              <option value="বাগেরহাট">📍 বাগেরহাট</option>
+              <option value="সাতক্ষীরা">📍 সাতক্ষীরা</option>
+              <option value="ঝিনাইদহ">📍 ঝিনাইদহ</option>
+              <option value="মাগুরা">📍 মাগুরা</option>
+              <option value="নড়াইল">📍 নড়াইল</option>
+              <option value="মেহেরপুর">📍 মেহেরপুর</option>
+              <option value="চুয়াডাঙ্গা">📍 চুয়াডাঙ্গা</option>
+            </optgroup>
+            <optgroup label="বরিশাল বিভাগ">
+              <option value="বরিশাল">📍 বরিশাল</option>
+              <option value="পটুয়াখালী">📍 পটুয়াখালী</option>
+              <option value="ভোলা">📍 ভোলা</option>
+              <option value="পিরোজপুর">📍 পিরোজপুর</option>
+              <option value="বরগুনা">📍 বরগুনা</option>
+              <option value="ঝালকাঠি">📍 ঝালকাঠি</option>
+            </optgroup>
+            <optgroup label="সিলেট বিভাগ">
+              <option value="সিলেট">📍 সিলেট</option>
+              <option value="মৌলভীবাজার">📍 মৌলভীবাজার</option>
+              <option value="হবিগঞ্জ">📍 হবিগঞ্জ</option>
+              <option value="সুনামগঞ্জ">📍 সুনামগঞ্জ</option>
+            </optgroup>
+            <optgroup label="ময়মনসিংহ বিভাগ">
+              <option value="ময়মনসিংহ">📍 ময়মনসিংহ</option>
+              <option value="জামালপুর">📍 জামালপুর</option>
+              <option value="নেত্রকোণা">📍 নেত্রকোণা</option>
+              <option value="শেরপুর">📍 শেরপুর</option>
+            </optgroup>
+          </select>
+          <span class="absolute right-2.5 pointer-events-none text-emerald-600 text-xs font-bold">▼</span>
+        </div>
+
+        <!-- Live GPS Button -->
+        <button id="gps-refresh-btn" title="আমার বর্তমান জিপিএস অবস্থান সনাক্ত করুন" class="p-2.5 md:px-3.5 md:py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm active:scale-95">
+          <span class="text-base">🛰️</span>
+          <span class="hidden md:inline">লাইভ GPS</span>
+        </button>
+
+        <!-- Google Auth / Profile Widget -->
+        <div id="auth-section" class="relative">
+          <button id="auth-login-btn" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs md:text-sm shadow-md shadow-emerald-600/20 transition-all flex items-center gap-1.5 active:scale-95">
+            <span>👤</span>
+            <span>লগইন</span>
+          </button>
+
+          <div id="user-profile-widget" class="hidden flex items-center space-x-2.5 bg-white border border-emerald-200 p-1 md:pr-3 rounded-full shadow-sm cursor-pointer hover:border-emerald-400 transition-all">
+            <img id="user-avatar" src="" alt="কৃষক" class="w-8 h-8 rounded-full border-2 border-emerald-500 object-cover shadow-sm">
+            <div class="hidden sm:block text-left text-xs leading-tight">
+              <p id="user-name" class="font-extrabold text-slate-800 truncate max-w-[130px]"></p>
+              <p id="user-role" class="text-[10px] text-emerald-700 font-semibold"></p>
+            </div>
+            <span class="text-xs text-slate-400">▼</span>
+          </div>
+
+          <!-- Profile Dropdown Menu -->
+          <div id="user-profile-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-emerald-200 p-3 z-50 font-bengali animate-fade-in">
+            <div class="flex items-center space-x-3 pb-3 border-b border-slate-100">
+              <img id="menu-user-avatar" src="" class="w-10 h-10 rounded-full border border-emerald-400 object-cover">
+              <div class="min-w-0 flex-1">
+                <h5 id="menu-user-name" class="font-black text-slate-900 text-sm truncate"></h5>
+                <p id="menu-user-role" class="text-xs text-emerald-700 font-bold truncate"></p>
+                <p id="menu-user-email" class="text-[10px] text-slate-400 truncate"></p>
+              </div>
+            </div>
+            <div class="py-2 space-y-1">
+              <a href="/history" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center gap-2 transition-colors">
+                <span>📜</span>
+                <span>আমার পূর্বের রেকর্ড</span>
+              </a>
+              <button id="dropdown-switch-btn" type="button" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center gap-2 transition-colors">
+                <span>🔄</span>
+                <span>ডেমো প্রোফাইল পরিবর্তন</span>
+              </button>
+            </div>
+            <div class="pt-2 border-t border-slate-100">
+              <button id="dropdown-logout-btn" type="button" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 flex items-center gap-2 transition-colors">
+                <span>🚪</span>
+                <span>লগআউট করুন</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       2. Desktop Segmented Navigation Dock
+       ==================================================================== -->
+  <div class="max-w-7xl mx-auto px-4 md:px-8 pt-5">
+    <div class="hidden md:flex items-center justify-center">
+      <div class="glass-panel p-1.5 flex items-center space-x-2 rounded-2xl shadow-md border border-emerald-200">
+        <a href="/" data-nav-page="home" class="px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 flex items-center space-x-1.5">
+          <span class="text-base">🏠</span>
+          <span>হোম</span>
+        </a>
+        <a href="/scan" data-nav-page="scanner" class="px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 flex items-center space-x-1.5">
+          <span class="text-base">📷</span>
+          <span>এআই স্ক্যানার</span>
+        </a>
+        <a href="/roadmap" data-nav-page="roadmap" class="px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 flex items-center space-x-1.5">
+          <span class="text-base">🌾</span>
+          <span>চাষাবাদ রোডম্যাপ</span>
+        </a>
+        <a href="/grafting" data-nav-page="grafting" class="px-5 py-3 rounded-xl font-bold text-sm transition-all duration-300 text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 flex items-center space-x-2">
+          <span class="text-base">✂️</span>
+          <span>কলম ও নার্সারি</span>
+        </a>
+        <a href="/calculator" data-nav-page="calculator" class="px-5 py-3 rounded-xl font-black text-sm transition-all duration-300 bg-emerald-600 text-white shadow-lg shadow-emerald-600/30 flex items-center space-x-2">
+          <span class="text-base">⚖️</span>
+          <span>সার ক্যালকুলেটর</span>
+        </a>
+        <a href="/history" data-nav-page="history" class="px-5 py-3 rounded-xl font-bold text-sm transition-all duration-300 text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 flex items-center space-x-2">
+          <span class="text-base">🕒</span>
+          <span>পূর্বের রেকর্ড</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       3. Main Fertilizer Calculator Content
+       ==================================================================== -->
+  <main class="max-w-7xl mx-auto px-4 md:px-8 pt-6 space-y-7 relative z-10">
+
+    <!-- Hero Header -->
+    <section class="glass-panel p-6 md:p-8 border-t-4 border-t-emerald-500 shadow-md text-center max-w-4xl mx-auto space-y-2">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-black text-xs border border-emerald-300 shadow-xs">
+        <span>⚖️</span>
+        <span>বাংলাদেশ কৃষি গবেষণা কাউন্সিল (BARC) মানসম্মত হিসাব</span>
+      </div>
+      <h2 class="text-2xl md:text-4xl font-black text-slate-900">সুষম সার প্রয়োগ ও কিস্তি ক্যালকুলেটর</h2>
+      <p class="text-xs md:text-sm text-slate-600 font-semibold max-w-2xl mx-auto">
+        ফসলের জাত, জমির পরিমাণ অথবা চারা/গাছের সংখ্যা অনুযায়ী ইউরিয়া, টিএসপি, পটাশ, জিপসাম ও জিংক সারের সঠিক বৈজ্ঞানিক হিসাব এবং কিস্তিতে প্রয়োগের সময়সূচি বের করুন।
+      </p>
+    </section>
+
+    <!-- Dual Mode Switcher: Land Area vs Seedling / Tree Count -->
+    <div class="flex items-center justify-center p-1.5 rounded-2xl bg-emerald-100/80 border border-emerald-300 max-w-md mx-auto shadow-inner">
+      <button type="button" id="mode-land-btn" class="flex-1 py-2.5 px-4 rounded-xl font-black text-xs md:text-sm transition-all flex items-center justify-center gap-2 bg-emerald-600 text-white shadow-md active:scale-95">
+        <span>📐</span>
+        <span>জমির পরিমাপ অনুযায়ী</span>
+      </button>
+      <button type="button" id="mode-seedling-btn" class="flex-1 py-2.5 px-4 rounded-xl font-bold text-xs md:text-sm transition-all flex items-center justify-center gap-2 text-slate-700 hover:text-emerald-900 active:scale-95">
+        <span>🌱</span>
+        <span>চারা / গাছ সংখ্যা অনুযায়ী</span>
+      </button>
+    </div>
+
+    <!-- Input Form Card -->
+    <section class="glass-panel p-6 md:p-10 border-t-4 border-t-emerald-500 shadow-md max-w-4xl mx-auto">
+      <div class="space-y-6">
+        
+        <!-- Helpful Smart Agro Extension Tip -->
+        <div id="crop-mode-hint" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-300 text-xs text-amber-900 font-bold leading-relaxed">
+          <!-- Dynamic Hint populated by JS -->
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          
+          <!-- Crop Selector (40+ Crops Grouped by Agricultural Category) -->
+          <div>
+            <label class="block text-xs md:text-sm font-black text-slate-800 mb-2">
+              🌾 ফসলের নাম নির্বাচন করুন:
+            </label>
+            <select id="calc-crop-select" class="w-full bg-white border-2 border-emerald-300 text-slate-900 text-sm font-bold rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm cursor-pointer">
+              <optgroup label="🌾 প্রধান দানা শস্য ও জাতসমূহ">
+                <option value="বোরো ধান" selected>🌾 বোরো ধান (Boro Rice)</option>
+                <option value="রোপা আমন ধান">🌾 রোপা আমন ধান (Aman Rice)</option>
+                <option value="আউশ ধান">🌾 আউশ ধান (Aus Rice)</option>
+                <option value="সুগন্ধি ধান">🌾 সুগন্ধি ও পোলাও ধান (Aromatic Rice)</option>
+                <option value="গম">🌾 গম (Wheat)</option>
+                <option value="ভুট্টা">🌽 ভুট্টা (Maize)</option>
+              </optgroup>
+              <optgroup label="🍅 চারা রোপণকৃত সবজি ও কন্দ">
+                <option value="টমেটো">🍅 টমেটো (Tomato)</option>
+                <option value="গোল বেগুন">🍆 গোল তাল বেগুন (Round Eggplant)</option>
+                <option value="লম্বা বেগুন">🍆 লম্বা শিংনাথ বেগুন (Long Eggplant)</option>
+                <option value="বারি বিটি বেগুন">🍆 বারি বিটি বেগুন (Bt Brinjal)</option>
+                <option value="সবুজ বেগুন">🍆 সবুজ ও ডোরা বেগুন (Green Eggplant)</option>
+                <option value="মরিচ">🌶️ মরিচ (Chilli)</option>
+                <option value="ফুলকপি">🥦 ফুলকপি (Cauliflower)</option>
+                <option value="বাঁধাকপি">🥬 বাঁধাকপি (Cabbage)</option>
+                <option value="আলু">🥔 আলু (Potato)</option>
+                <option value="কচুর লতি">🥢 কচুর লতি (Taro Stolon)</option>
+              </optgroup>
+              <optgroup label="🌳 ফলবাগান ও উদ্যান ফসল (গাছপ্রতি হিসাব)">
+                <option value="পেঁপে">🍈 পেঁপে (Papaya)</option>
+                <option value="পেয়ারা">🍐 উন্নত জাতের পেয়ারা (Guava)</option>
+                <option value="লেবু">🍋 কাগজি ও সিডলেস লেবু (Lemon / Lime)</option>
+                <option value="আম">🥭 উন্নত জাতের আম (Commercial Mango)</option>
+                <option value="ড্রাগন ফল">🐉 ড্রাগন ফল (Dragon Fruit)</option>
+                <option value="মাল্টা">🍊 বারি মাল্টা-১ (Sweet Orange / Malta)</option>
+              </optgroup>
+              <optgroup label="🏡 বসতবাড়ি ও মাচার লতানো সবজি (মাদাপ্রতি)">
+                <option value="লাউ">🍈 লাউ (Bottle Gourd)</option>
+                <option value="মিষ্টি কুমড়া">🎃 মিষ্টি কুমড়া (Sweet Gourd)</option>
+                <option value="শসা">🥒 শসা (Cucumber)</option>
+                <option value="করলা">🥒 করলা ও উচ্ছে (Bitter Gourd)</option>
+                <option value="পটল">🥒 পটল (Pointed Gourd)</option>
+                <option value="শিম">🫘 শিম (Hyacinth Bean)</option>
+                <option value="চিচিঙ্গা">🌱 চিচিঙ্গা (Snake Gourd)</option>
+                <option value="ঝিঙা">🌱 ঝিঙা (Ridge Gourd)</option>
+                <option value="চাল কুমড়া">🍈 চাল কুমড়া (Ash Gourd)</option>
+                <option value="ঢেঁড়শ">🌱 ঢেঁড়শ (Okra / Lady Finger)</option>
+              </optgroup>
+              <optgroup label="🌶️ মসলা, ডাল ও তৈলবীজ">
+                <option value="পেঁয়াজ">🧅 পেঁয়াজ (Onion)</option>
+                <option value="রসুন">🧄 রসুন (Garlic)</option>
+                <option value="আদা">🫚 আদা (Ginger)</option>
+                <option value="হলুদ">🟡 হলুদ (Turmeric)</option>
+                <option value="সরিষা">🌼 সরিষা (Mustard)</option>
+                <option value="মসুর">🥣 মসুর ডাল (Lentil)</option>
+              </optgroup>
+              <optgroup label="🥬 শাকসবজি">
+                <option value="লাল শাক">🥬 লাল শাক (Red Amaranth)</option>
+                <option value="পালং শাক">🥬 পালং শাক (Spinach)</option>
+                <option value="ডাঁটা শাক">🌿 ডাঁটা শাক (Stem Amaranth)</option>
+                <option value="পুঁইশাক">🌿 পুঁইশাক (Malabar Spinach)</option>
+                <option value="কলমি শাক">🌿 কলমি শাক (Water Spinach)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <!-- Amount Input (Dynamic Label & Placeholder for Land vs Seedling) -->
+          <div>
+            <label id="calc-amount-label" class="block text-xs md:text-sm font-black text-slate-800 mb-2">
+              📐 জমির পরিমাণ:
+            </label>
+            <input type="number" id="calc-land-amount" value="33" min="1" step="any" placeholder="যেমন: ৩৩" class="w-full bg-white border-2 border-emerald-300 text-slate-900 text-sm font-black rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm">
+          </div>
+
+          <!-- Unit Selector (Dynamic Options for Land vs Seedlings/Trees/Pits) -->
+          <div>
+            <label class="block text-xs md:text-sm font-black text-slate-800 mb-2">
+              📏 পরিমাপের একক:
+            </label>
+            <select id="calc-land-unit" class="w-full bg-white border-2 border-emerald-300 text-slate-900 text-sm font-bold rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 outline-none shadow-sm cursor-pointer">
+              <option value="শতাংশ" selected>শতাংশ / শতক (Decimal)</option>
+              <option value="বিঘা">বিঘা (৩৩ শতাংশ)</option>
+              <option value="একর">একর (১০০ শতাংশ)</option>
+              <option value="কাঠা">কাঠা (১.৬৫ শতাংশ)</option>
+              <option value="হেক্টর">হেক্টর (২৪৭.১ শতাংশ)</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Dynamic 1-Click Quick Preset Buttons -->
+        <div class="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-2.5">
+          <span class="text-xs font-black text-slate-700 flex items-center gap-1.5 shrink-0">
+            <span>⚡</span>
+            <span>এক-ক্লিকে দ্রুত নির্বাচন:</span>
+          </span>
+          <div id="calc-presets-container" class="flex flex-wrap items-center gap-1.5">
+            <button type="button" data-preset-val="10" data-unit-val="শতাংশ" class="preset-btn px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-600 hover:text-white border border-emerald-300 text-emerald-900 text-xs font-bold transition-all shadow-2xs active:scale-95">
+              ১০ শতক
+            </button>
+            <button type="button" data-preset-val="33" data-unit-val="শতাংশ" class="preset-btn px-3 py-1.5 rounded-xl bg-emerald-600 text-white border border-emerald-500 text-xs font-black transition-all shadow-xs active:scale-95">
+              ৩৩ শতক (১ বিঘা)
+            </button>
+            <button type="button" data-preset-val="50" data-unit-val="শতাংশ" class="preset-btn px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-600 hover:text-white border border-emerald-300 text-emerald-900 text-xs font-bold transition-all shadow-2xs active:scale-95">
+              ৫০ শতক
+            </button>
+            <button type="button" data-preset-val="100" data-unit-val="শতাংশ" class="preset-btn px-3 py-1.5 rounded-xl bg-white hover:bg-emerald-600 hover:text-white border border-emerald-300 text-emerald-900 text-xs font-bold transition-all shadow-2xs active:scale-95">
+              ১০০ শতক (১ একর)
+            </button>
+          </div>
+        </div>
+
+        <!-- Calculate Action Button -->
+        <div class="text-center pt-2">
+          <button id="calculate-fertilizer-btn" class="w-full max-w-md mx-auto py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-black text-base md:text-lg shadow-xl shadow-emerald-600/30 transition-all active:scale-95 flex items-center justify-center space-x-2">
+            <span class="text-xl">⚖️</span>
+            <span>সারের সঠিক পরিমাণ হিসাব করুন</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Results Container -->
+    <section id="fertilizer-results-container" class="space-y-6 max-w-4xl mx-auto">
+      
+      <!-- Summary Header -->
+      <div class="glass-panel p-6 rounded-2xl border-l-4 border-emerald-500 shadow-md">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <h3 id="fert-summary-title" class="text-lg md:text-xl font-black text-slate-900">
+              ৩৩ শতাংশ (১ বিঘা) জমিতে ধান চাষের সার সুপারিশ:
+            </h3>
+            <p class="text-xs text-slate-600 font-semibold mt-1">
+              অতিরিক্ত সার ব্যবহারে ফসলে পোকার আক্রমণ বাড়ে ও মাটির স্বাস্থ্যহানি ঘটে। নিচের নির্দেশিত সুষম মাত্রায় সার দিন।
+            </p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <a id="fert-roadmap-link" href="/crop-detail?crop=rice" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs">
+              <span>🌾</span>
+              <span>চাষাবাদ রোডম্যাপ দেখুন</span>
+            </a>
+            <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-slate-700 flex items-center gap-1.5 transition-all shadow-xs">
+              <span>🖨️</span>
+              <span>প্রিন্ট করুন</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7 Core BARC Fertilizer Cards Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        
+        <!-- Urea -->
+        <div class="glass-panel p-5 rounded-2xl border-t-4 border-emerald-500 shadow-sm flex flex-col justify-between hover:scale-[1.02] transition-transform">
+          <div class="flex items-center space-x-2.5 mb-2">
+            <span class="text-3xl">🌱</span>
+            <div>
+              <h4 class="font-black text-slate-900 text-sm md:text-base">ইউরিয়া সার</h4>
+              <span class="text-[10px] text-emerald-700 font-bold block">নাইট্রোজেন (N)</span>
+            </div>
+          </div>
+          <div class="mt-2 text-right">
+            <span id="fert-urea-val" class="text-2xl md:text-3xl font-black text-emerald-700">৩৩ কেজি</span>
+          </div>
+        </div>
+
+        <!-- TSP -->
+        <div class="glass-panel p-5 rounded-2xl border-t-4 border-amber-500 shadow-sm flex flex-col justify-between hover:scale-[1.02] transition-transform">
+          <div class="flex items-center space-x-2.5 mb-2">
+            <span class="text-3xl">🪨</span>
+            <div>
+              <h4 class="font-black text-slate-900 text-sm md:text-base">টিএসপি / ডিএপি</h4>
+              <span class="text-[10px] text-amber-700 font-bold block">ফসফরাস (P)</span>
+            </div>
+          </div>
+          <div class="mt-2 text-right">
+            <span id="fert-tsp-val" class="text-2xl md:text-3xl font-black text-amber-700">১৩.২ কেজি</span>
+          </div>
+        </div>
+
+        <!-- MoP -->
+        <div class="glass-panel p-5 rounded-2xl border-t-4 border-rose-500 shadow-sm flex flex-col justify-between hover:scale-[1.02] transition-transform">
+          <div class="flex items-center space-x-2.5 mb-2">
+            <span class="text-3xl">🧂</span>
+            <div>
+              <h4 class="font-black text-slate-900 text-sm md:text-base">এমওপি সার</h4>
+              <span class="text-[10px] text-rose-700 font-bold block">পটাশিয়াম (K)</span>
+            </div>
+          </div>
+          <div class="mt-2 text-right">
+            <span id="fert-mop-val" class="text-2xl md:text-3xl font-black text-rose-700">১৯.৮ কেজি</span>
+          </div>
+        </div>
+
+        <!-- Gypsum -->
+        <div class="glass-panel p-5 rounded-2xl border-t-4 border-sky-500 shadow-sm flex flex-col justify-between hover:scale-[1.02] transition-transform">
+          <div class="flex items-center space-x-2.5 mb-2">
+            <span class="text-3xl">🌫️</span>
+            <div>
+              <h4 class="font-black text-slate-900 text-sm md:text-base">জিপসাম</h4>
+              <span class="text-[10px] text-sky-700 font-bold block">গন্ধক / সালফার (S)</span>
+            </div>
+          </div>
+          <div class="mt-2 text-right">
+            <span id="fert-gypsum-val" class="text-2xl md:text-3xl font-black text-sky-700">১১.৬ কেজি</span>
+          </div>
+        </div>
+
+        <!-- Zinc -->
+        <div class="glass-panel p-5 rounded-2xl border-t-4 border-purple-500 shadow-sm flex flex-col justify-between hover:scale-[1.02] transition-transform">
+          <div class="flex items-center space-x-2.5 mb-2">
+            <span class="text-3xl">⚡</span>
+            <div>
+              <h4 class="font-black text-slate-900 text-sm md:text-base">দস্তা / জিংক</h4>
+              <span class="text-[10px] text-purple-700 font-bold block">মাইক্রোনিউট্রিয়েন্ট (Zn)</span>
+            </div>
+          </div>
+          <div class="mt-2 text-right">
+            <span id="fert-zinc-val" class="text-2xl md:text-3xl font-black text-purple-700">১.৬৫ কেজি</span>
+          </div>
+        </div>
+
+        <!-- Boron -->
+        <div class="glass-panel p-5 rounded-2xl border-t-4 border-indigo-500 shadow-sm flex flex-col justify-between hover:scale-[1.02] transition-transform">
+          <div class="flex items-center space-x-2.5 mb-2">
+            <span class="text-3xl">🧪</span>
+            <div>
+              <h4 class="font-black text-slate-900 text-sm md:text-base">বোরন / সলুবোর</h4>
+              <span class="text-[10px] text-indigo-700 font-bold block">মাইক্রোনিউট্রিয়েন্ট (B)</span>
+            </div>
+          </div>
+          <div class="mt-2 text-right">
+            <span id="fert-boron-val" class="text-2xl md:text-3xl font-black text-indigo-700">০.৯৯ কেজি</span>
+          </div>
+        </div>
+
+        <!-- Organic Compost -->
+        <div class="glass-panel p-5 rounded-2xl border-t-4 border-teal-500 shadow-sm flex flex-col justify-between hover:scale-[1.02] transition-transform col-span-2 sm:col-span-1 lg:col-span-2">
+          <div class="flex items-center space-x-2.5 mb-2">
+            <span class="text-3xl">🍂</span>
+            <div>
+              <h4 class="font-black text-slate-900 text-sm md:text-base">জৈব সার / পচা গোবর / কম্পোস্ট</h4>
+              <span class="text-[10px] text-teal-700 font-bold block">মাটির স্বাস্থ্য, অণুজীব ও হিউমাস</span>
+            </div>
+          </div>
+          <div class="mt-2 text-right">
+            <span id="fert-organic-val" class="text-2xl md:text-3xl font-black text-teal-700">৪৯৫ কেজি</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Split Application Schedule -->
+      <div class="glass-panel p-6 rounded-2xl shadow-md border-t-4 border-emerald-500">
+        <div class="flex items-center space-x-2.5 mb-4">
+          <span class="text-2xl">📅</span>
+          <div>
+            <h4 class="text-base md:text-lg font-black text-slate-900">কিস্তিতে সার প্রয়োগের সময়সূচি (BARC Calendar)</h4>
+            <p class="text-xs text-slate-500 font-semibold">একবারে সব সার না দিয়ে ধাপ অনুযায়ী প্রয়োগ করলে ফলন সর্বোচ্চ হয়।</p>
+          </div>
+        </div>
+        <div id="fert-split-schedule" class="space-y-3 font-bengali">
+          <div class="p-4 rounded-xl bg-emerald-50/80 border border-emerald-200 flex items-start space-x-3.5">
+            <span class="w-7 h-7 rounded-full bg-emerald-600 text-white text-xs font-black flex items-center justify-center shrink-0 mt-0.5 shadow-sm">1</span>
+            <div>
+              <span class="font-black text-slate-900 text-xs md:text-sm block">শেষ চাষের সময় (জমি তৈরি)</span>
+              <p class="text-xs md:text-sm text-slate-700 font-semibold mt-1">টিএসপি (১৩.২ কেজি), এমওপি (৯.৯ কেজি), জিপসাম (১১.৬ কেজি), জিংক (১.৬৫ কেজি) এবং সকল জৈব সার মাটির সাথে মিশিয়ে দিন।</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl bg-emerald-50/80 border border-emerald-200 flex items-start space-x-3.5">
+            <span class="w-7 h-7 rounded-full bg-emerald-600 text-white text-xs font-black flex items-center justify-center shrink-0 mt-0.5 shadow-sm">2</span>
+            <div>
+              <span class="font-black text-slate-900 text-xs md:text-sm block">প্রথম কিস্তি (চারা রোপণের ১৫-২০ দিন পর)</span>
+              <p class="text-xs md:text-sm text-slate-700 font-semibold mt-1">ইউরিয়া সারের এক-তৃতীয়াংশ (১১.০ কেজি) উপরিপ্রয়োগ করুন।</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl bg-emerald-50/80 border border-emerald-200 flex items-start space-x-3.5">
+            <span class="w-7 h-7 rounded-full bg-emerald-600 text-white text-xs font-black flex items-center justify-center shrink-0 mt-0.5 shadow-sm">3</span>
+            <div>
+              <span class="font-black text-slate-900 text-xs md:text-sm block">দ্বিতীয় কিস্তি (কুশি গজানোর সময় / ৩০-৩৫ দিন)</span>
+              <p class="text-xs md:text-sm text-slate-700 font-semibold mt-1">ইউরিয়া সারের দ্বিতীয় কিস্তি (১১.০ কেজি) উপরিপ্রয়োগ করুন।</p>
+            </div>
+          </div>
+          <div class="p-4 rounded-xl bg-emerald-50/80 border border-emerald-200 flex items-start space-x-3.5">
+            <span class="w-7 h-7 rounded-full bg-emerald-600 text-white text-xs font-black flex items-center justify-center shrink-0 mt-0.5 shadow-sm">4</span>
+            <div>
+              <span class="font-black text-slate-900 text-xs md:text-sm block">তৃতীয় কিস্তি (থোড় আসার ৫-৭ দিন আগে)</span>
+              <p class="text-xs md:text-sm text-slate-700 font-semibold mt-1">অবশিষ্ট ইউরিয়া (১১.০ কেজি) এবং অবশিষ্ট পটাশ (৯.৯ কেজি) জমিতে পর্যাপ্ত রস থাকা অবস্থায় ছিটিয়ে দিন।</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Caution Banner -->
+      <div class="p-4 rounded-xl bg-amber-50 border border-amber-300 flex items-start space-x-3 text-xs md:text-sm text-amber-900 font-semibold shadow-sm">
+        <span class="text-xl shrink-0">💡</span>
+        <span>
+          <strong>বিশেষ বৈজ্ঞানিক পরামর্শ:</strong> ডিএপি সার ব্যবহার করলে ইউরিয়া সারের পরিমাণ সমপরিমাণ কমিয়ে দিতে হবে। দুপুরের কড়া রোদে সার ছিটাবেন না; বিকালে বা সেচের পূর্বে জমিতে পরিমিত রস থাকা অবস্থায় সার প্রয়োগ করুন।
+        </span>
+      </div>
+
+    </section>
+
+    <!-- Emergency Krishi Helpline Widget -->
+    <section class="glass-panel p-6 md:p-8 border-t-4 border-t-teal-600 shadow-md">
+      <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div class="space-y-1.5 text-center lg:text-left">
+          <div class="flex items-center justify-center lg:justify-start gap-2">
+            <span class="text-2xl">📞</span>
+            <h3 class="text-xl md:text-2xl font-black text-slate-900">জরুরি কৃষি সেবা ও বিশেষজ্ঞ সহায়তা</h3>
+          </div>
+          <p class="text-xs md:text-sm text-slate-600 font-semibold max-w-xl">
+            যে কোনো জটিল রোগবালাই, প্রাকৃতিক দুর্যোগ বা বীজ সংক্রান্ত সমস্যায় সরাসরি সরকারি কৃষি কর্মকর্তা ও গবেষকদের সহায়তা নিন।
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <a href="tel:16123" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-sm flex items-center space-x-2.5 shadow-lg shadow-emerald-600/25 transition-all active:scale-95">
+            <span class="text-lg">☎️</span>
+            <div>
+              <span class="block text-[10px] text-emerald-100 font-bold uppercase">টোল ফ্রি কল সেন্টার</span>
+              <span class="text-base font-black tracking-wider">১৬১২৩</span>
+            </div>
+          </a>
+
+          <a href="tel:333" class="px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 border-2 border-emerald-500 text-emerald-900 font-black text-sm flex items-center space-x-2.5 shadow-sm transition-all active:scale-95">
+            <span class="text-lg">🏛️</span>
+            <div>
+              <span class="block text-[10px] text-slate-500 font-bold uppercase">জাতীয় তথ্য বাতায়ন</span>
+              <span class="text-base font-black tracking-wider">৩৩৩</span>
+            </div>
+          </a>
+
+          <a href="https://wa.me/8801700000000" target="_blank" rel="noopener noreferrer" class="px-4 py-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-900 font-bold text-xs flex items-center space-x-2 shadow-sm transition-all active:scale-95">
+            <span class="text-lg">💬</span>
+            <span>হোয়াটসঅ্যাপ সহায়তা</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Global Production Footer -->
+    <footer class="text-center text-xs text-slate-500 font-bold flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-emerald-200/60 pt-6 pb-2">
+      <p>© ২০২৬ স্মার্ট এগ্রো (Smart Agro) • বাংলাদেশের কৃষকদের জন্য ডিজিটাল কৃষি সেবা</p>
+      <div class="flex items-center gap-3">
+        <span class="text-emerald-700 font-bold">কৃষি তথ্য ও প্রযুক্তি বাতায়ন</span>
+        <span class="text-slate-300">|</span>
+        <span class="text-slate-500 font-semibold">ভার্সন ২.৫.০ (Production)</span>
+      </div>
+    </footer>
+
+  </main>
+
+    <!-- ====================================================================
+       Floating Glass Bottom Mobile Navigation Bar (Unified across all pages)
+       ==================================================================== -->
+  <nav class="md:hidden fixed bottom-3 left-3 right-3 z-50 glass-header bg-white/95 backdrop-blur-md border border-emerald-200 rounded-2xl p-1.5 shadow-xl">
+    <div class="grid grid-cols-6 gap-1 text-center">
+      <a href="/" data-nav-page="home" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs transition-all text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold">
+        <span class="text-base">🏠</span>
+        <span class="text-[9px] mt-0.5 font-bold">হোম</span>
+      </a>
+
+      <a href="/scan" data-nav-page="scanner" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs transition-all text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold">
+        <span class="text-base">📷</span>
+        <span class="text-[9px] mt-0.5 font-bold">স্ক্যানার</span>
+      </a>
+
+      <a href="/roadmap" data-nav-page="roadmap" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs transition-all text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold">
+        <span class="text-base">🌾</span>
+        <span class="text-[9px] mt-0.5 font-bold">গাইড</span>
+      </a>
+
+      <a href="/calculator" data-nav-page="calculator" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs transition-all bg-emerald-600 text-white font-black shadow-md">
+        <span class="text-base">⚖️</span>
+        <span class="text-[9px] mt-0.5 font-bold">সার</span>
+      </a>
+
+      <a href="/grafting" data-nav-page="grafting" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs transition-all text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold">
+        <span class="text-base">🌱</span>
+        <span class="text-[9px] mt-0.5 font-bold">কলম</span>
+      </a>
+
+      <a href="/history" data-nav-page="history" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs transition-all text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold">
+        <span class="text-base">📜</span>
+        <span class="text-[9px] mt-0.5 font-bold">ইতিহাস</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- ====================================================================
+       5. Client Application Scripts
+       ==================================================================== -->
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/weather.js"></script>
+  <script src="/js/fertilizer.js"></script>
+  <script src="/js/voice-assistant.js"></script>
+  <script src="/js/app.js"></script>
+
+</body>
+</html>

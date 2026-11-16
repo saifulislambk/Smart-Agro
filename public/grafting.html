@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="bn" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>আধুনিক গ্রাফটিং, বাডিং ও কলম পদ্ধতি মাস্টারক্লাস - স্মার্ট এগ্রো</title>
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✂️</text></svg>">
+
+  <!-- Google Fonts: Noto Sans Bengali & Hind Siliguri -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+              950: '#022c22',
+            }
+          },
+          fontFamily: {
+            bengali: ['"Noto Sans Bengali"', '"Hind Siliguri"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom CSS for Laser Animation, Glassmorphism & Print Layout -->
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Firebase Compat SDKs for Google Authentication -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+</head>
+<body class="bg-slate-900 text-slate-800 font-bengali min-h-screen relative antialiased selection:bg-emerald-500 selection:text-white pb-24 md:pb-12">
+
+  <!-- Decorative Animated Ambient Background & Floating Pollen -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse"></div>
+    <div class="absolute top-1/3 -right-40 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 2s;"></div>
+    <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-lime-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 4s;"></div>
+  </div>
+
+    <!-- ====================================================================
+       1. Top Fixed Navigation Header (Unified across all pages)
+       ==================================================================== -->
+  <header class="sticky top-0 z-50 glass-header px-4 py-3 md:px-8 bg-white/90 backdrop-blur-md border-b border-emerald-100 shadow-xs">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 md:gap-4">
+      
+      <!-- Logo & Branding -->
+      <a href="/" class="flex items-center space-x-2.5 md:space-x-3 cursor-pointer group shrink-0">
+        <div class="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-xl md:text-2xl shadow-md group-hover:scale-105 transition-transform border border-white/40">
+          🌾
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5 md:gap-2">
+            <span class="text-lg md:text-xl font-black text-slate-900 tracking-tight">স্মার্ট এগ্রো</span>
+            <span class="text-[10px] md:text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 hidden sm:inline-block">এআই কৃষি সহকারী</span>
+          </div>
+          <p class="text-[11px] text-slate-500 font-medium hidden lg:block">ডিজিটাল কৃষি তথ্য ও রোগ নির্ণয় সেবা</p>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Menu -->
+      <nav class="hidden md:flex items-center space-x-1">
+        <a href="/" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">হোম</a>
+        <a href="/scan" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">এআই স্ক্যানার</a>
+        <a href="/roadmap" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">ফসলের গাইড</a>
+        <a href="/calculator" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">সার ক্যালকুলেটর</a>
+        <a href="/grafting" class="px-3.5 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-xs">কলম পদ্ধতি</a>
+        <a href="/history" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">স্ক্যান ইতিহাস</a>
+      </nav>
+
+      <!-- 64 District Selector, GPS Button & Auth -->
+      <div class="flex items-center space-x-2 md:space-x-3">
+        
+        <!-- District Picker Grouped by 8 Divisions -->
+        <div class="relative flex items-center">
+          <select id="district-select" class="appearance-none bg-white border border-emerald-300 text-slate-800 text-xs md:text-sm font-bold rounded-xl pl-3.5 pr-8 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-sm max-w-[130px] md:max-w-none">
+            <optgroup label="চট্টগ্রাম বিভাগ">
+              <option value="ব্রাহ্মণবাড়িয়া" selected>📍 ব্রাহ্মণবাড়িয়া</option>
+              <option value="কুমিল্লা">📍 কুমিল্লা</option>
+              <option value="চট্টগ্রাম">📍 চট্টগ্রাম</option>
+              <option value="কক্সবাজার">📍 কক্সবাজার</option>
+              <option value="চাঁদপুর">📍 চাঁদপুর</option>
+              <option value="নোয়াখালী">📍 নোয়াখালী</option>
+              <option value="ফেনী">📍 ফেনী</option>
+              <option value="লক্ষ্মীপুর">📍 লক্ষ্মীপুর</option>
+              <option value="খাগড়াছড়ি">📍 খাগড়াছড়ি</option>
+              <option value="রাঙ্গামাটি">📍 রাঙ্গামাটি</option>
+              <option value="বান্দরবান">📍 বান্দরবান</option>
+            </optgroup>
+            <optgroup label="ঢাকা বিভাগ">
+              <option value="ঢাকা">📍 ঢাকা</option>
+              <option value="গাজীপুর">📍 গাজীপুর</option>
+              <option value="নারায়ণগঞ্জ">📍 নারায়ণগঞ্জ</option>
+              <option value="নরসিংদী">📍 নরসিংদী</option>
+              <option value="মুন্সীগঞ্জ">📍 মুন্সীগঞ্জ</option>
+              <option value="মানিকগঞ্জ">📍 মানিকগঞ্জ</option>
+              <option value="টাঙ্গাইল">📍 টাঙ্গাইল</option>
+              <option value="কিশোরগঞ্জ">📍 কিশোরগঞ্জ</option>
+              <option value="ফরিদপুর">📍 ফরিদপুর</option>
+              <option value="গোপালগঞ্জ">📍 গোপালগঞ্জ</option>
+              <option value="মাদারীপুর">📍 মাদারীপুর</option>
+              <option value="রাজবাড়ী">📍 রাজবাড়ী</option>
+              <option value="শরীয়তপুর">📍 শরীয়তপুর</option>
+            </optgroup>
+            <optgroup label="রাজশাহী বিভাগ">
+              <option value="রাজশাহী">📍 রাজশাহী</option>
+              <option value="বগুড়া">📍 বগুড়া</option>
+              <option value="পাবনা">📍 পাবনা</option>
+              <option value="সিরাজগঞ্জ">📍 সিরাজগঞ্জ</option>
+              <option value="নওগাঁ">📍 নওগাঁ</option>
+              <option value="নাটোর">📍 নাটোর</option>
+              <option value="চাঁপাইনবাবগঞ্জ">📍 চাঁপাইনবাবগঞ্জ</option>
+              <option value="জয়পুরহাট">📍 জয়পুরহাট</option>
+            </optgroup>
+            <optgroup label="রংপুর বিভাগ">
+              <option value="রংপুর">📍 রংপুর</option>
+              <option value="দিনাজপুর">📍 দিনাজপুর</option>
+              <option value="গাইবান্ধা">📍 গাইবান্ধা</option>
+              <option value="কুড়িগ্রাম">📍 কুড়িগ্রাম</option>
+              <option value="নীলফামারী">📍 নীলফামারী</option>
+              <option value="লালমনিরহাট">📍 লালমনিরহাট</option>
+              <option value="পঞ্চগড়">📍 পঞ্চগড়</option>
+              <option value="ঠাকুরগাঁও">📍 ঠাকুরগাঁও</option>
+            </optgroup>
+            <optgroup label="খুলনা বিভাগ">
+              <option value="খুলনা">📍 খুলনা</option>
+              <option value="যশোর">📍 যশোর</option>
+              <option value="কুষ্টিয়া">📍 কুষ্টিয়া</option>
+              <option value="বাগেরহাট">📍 বাগেরহাট</option>
+              <option value="সাতক্ষীরা">📍 সাতক্ষীরা</option>
+              <option value="ঝিনাইদহ">📍 ঝিনাইদহ</option>
+              <option value="মাগুরা">📍 মাগুরা</option>
+              <option value="নড়াইল">📍 নড়াইল</option>
+              <option value="মেহেরপুর">📍 মেহেরপুর</option>
+              <option value="চুয়াডাঙ্গা">📍 চুয়াডাঙ্গা</option>
+            </optgroup>
+            <optgroup label="বরিশাল বিভাগ">
+              <option value="বরিশাল">📍 বরিশাল</option>
+              <option value="পটুয়াখালী">📍 পটুয়াখালী</option>
+              <option value="ভোলা">📍 ভোলা</option>
+              <option value="পিরোজপুর">📍 পিরোজপুর</option>
+              <option value="বরগুনা">📍 বরগুনা</option>
+              <option value="ঝালকাঠি">📍 ঝালকাঠি</option>
+            </optgroup>
+            <optgroup label="সিলেট বিভাগ">
+              <option value="সিলেট">📍 সিলেট</option>
+              <option value="মৌলভীবাজার">📍 মৌলভীবাজার</option>
+              <option value="হবিগঞ্জ">📍 হবিগঞ্জ</option>
+              <option value="সুনামগঞ্জ">📍 সুনামগঞ্জ</option>
+            </optgroup>
+            <optgroup label="ময়মনসিংহ বিভাগ">
+              <option value="ময়মনসিংহ">📍 ময়মনসিংহ</option>
+              <option value="জামালপুর">📍 জামালপুর</option>
+              <option value="নেত্রকোণা">📍 নেত্রকোণা</option>
+              <option value="শেরপুর">📍 শেরপুর</option>
+            </optgroup>
+          </select>
+          <span class="absolute right-2.5 pointer-events-none text-emerald-600 text-xs font-bold">▼</span>
+        </div>
+
+        <!-- Live GPS Button -->
+        <button id="gps-refresh-btn" title="আমার বর্তমান জিপিএস অবস্থান সনাক্ত করুন" class="p-2.5 md:px-3.5 md:py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm active:scale-95">
+          <span class="text-base">🛰️</span>
+          <span class="hidden md:inline">লাইভ GPS</span>
+        </button>
+
+        <!-- Google Auth / Profile Widget -->
+        <div id="auth-section" class="relative">
+          <button id="auth-login-btn" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs md:text-sm shadow-md shadow-emerald-600/20 transition-all flex items-center gap-1.5 active:scale-95">
+            <span>👤</span>
+            <span>লগইন</span>
+          </button>
+
+          <div id="user-profile-widget" class="hidden flex items-center space-x-2.5 bg-white border border-emerald-200 p-1 md:pr-3 rounded-full shadow-sm cursor-pointer hover:border-emerald-400 transition-all">
+            <img id="user-avatar" src="" alt="কৃষক" class="w-8 h-8 rounded-full border-2 border-emerald-500 object-cover shadow-sm">
+            <div class="hidden sm:block text-left text-xs leading-tight">
+              <p id="user-name" class="font-extrabold text-slate-800 truncate max-w-[130px]"></p>
+              <p id="user-role" class="text-[10px] text-emerald-700 font-semibold"></p>
+            </div>
+            <span class="text-xs text-slate-400">▼</span>
+          </div>
+
+          <!-- Profile Dropdown Menu -->
+          <div id="user-profile-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-emerald-200 p-3 z-50 font-bengali animate-fade-in">
+            <div class="flex items-center space-x-3 pb-3 border-b border-slate-100">
+              <img id="menu-user-avatar" src="" class="w-10 h-10 rounded-full border border-emerald-400 object-cover">
+              <div class="min-w-0 flex-1">
+                <h5 id="menu-user-name" class="font-black text-slate-900 text-sm truncate"></h5>
+                <p id="menu-user-role" class="text-xs text-emerald-700 font-bold truncate"></p>
+                <p id="menu-user-email" class="text-[10px] text-slate-400 truncate"></p>
+              </div>
+            </div>
+            <div class="py-2 space-y-1">
+              <a href="/history" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center gap-2 transition-colors">
+                <span>📜</span>
+                <span>আমার পূর্বের রেকর্ড</span>
+              </a>
+              <button id="dropdown-switch-btn" type="button" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center gap-2 transition-colors">
+                <span>🔄</span>
+                <span>ডেমো প্রোফাইল পরিবর্তন</span>
+              </button>
+            </div>
+            <div class="pt-2 border-t border-slate-100">
+              <button id="dropdown-logout-btn" type="button" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 flex items-center gap-2 transition-colors">
+                <span>🚪</span>
+                <span>লগআউট করুন</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       2. Desktop Segmented Navigation Dock (5 Modules)
+       ==================================================================== -->
+  <div class="max-w-7xl mx-auto px-4 md:px-8 pt-5 no-print">
+    <div class="hidden md:flex items-center justify-center">
+      <div class="glass-panel p-1.5 flex items-center space-x-2 rounded-2xl shadow-md border border-emerald-200">
+        <a href="/" data-nav-page="home" class="px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 flex items-center space-x-1.5">
+          <span class="text-base">🏠</span>
+          <span>হোম</span>
+        </a>
+        <a href="/scan" data-nav-page="scanner" class="px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 flex items-center space-x-1.5">
+          <span class="text-base">📷</span>
+          <span>এআই স্ক্যানার</span>
+        </a>
+        <a href="/roadmap" data-nav-page="roadmap" class="px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 flex items-center space-x-1.5">
+          <span class="text-base">🌾</span>
+          <span>চাষাবাদ রোডম্যাপ</span>
+        </a>
+        <a href="/grafting" data-nav-page="grafting" class="px-5 py-3 rounded-xl font-black text-sm transition-all duration-300 bg-emerald-600 text-white shadow-lg shadow-emerald-600/30 flex items-center space-x-2">
+          <span class="text-base">✂️</span>
+          <span>কলম ও নার্সারি</span>
+        </a>
+        <a href="/calculator" data-nav-page="calculator" class="px-5 py-3 rounded-xl font-bold text-sm transition-all duration-300 text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 flex items-center space-x-2">
+          <span class="text-base">⚖️</span>
+          <span>সার ক্যালকুলেটর</span>
+        </a>
+        <a href="/history" data-nav-page="history" class="px-5 py-3 rounded-xl font-bold text-sm transition-all duration-300 text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 flex items-center space-x-2">
+          <span class="text-base">🕒</span>
+          <span>পূর্বের রেকর্ড</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       3. Main Grafting Masterclass Content
+       ==================================================================== -->
+  <main class="max-w-7xl mx-auto px-4 md:px-8 pt-6 space-y-8 relative z-10">
+
+    <!-- Hero Header -->
+    <section class="glass-panel p-6 md:p-8 border-t-4 border-t-emerald-500 shadow-md text-center max-w-4xl mx-auto space-y-3">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-black text-xs border border-emerald-300 shadow-xs">
+        <span>🌱</span>
+        <span>কৃষি বিজ্ঞানী ও নার্সারি বিশেষজ্ঞদের প্রমাণিত সফল গ্রাফটিং প্রযুক্তি</span>
+      </div>
+      <h2 class="text-2xl md:text-4xl font-black text-slate-900">আধুনিক উদ্ভিদ কলম, বাডিং ও নার্সারি গাইড</h2>
+      <p class="text-xs md:text-sm text-slate-600 font-semibold max-w-2xl mx-auto leading-relaxed">
+        টমেটো, বেগুন, পেয়ারা, লেবু, আম ও সাইট্রাস ফসলের রোগ-প্রতিরোধী শিকড়, দ্রুত ফলন এবং উন্নত জাত তৈরির সম্পূর্ণ চিত্রভিত্তিক বৈজ্ঞানিক নির্দেশিকা ও অ্যানিমেশন।
+      </p>
+
+      <div class="flex flex-wrap items-center justify-center gap-2 pt-2 no-print">
+        <button onclick="window.print()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1.5 shadow-md active:scale-95 transition-all">
+          <span>🖨️</span>
+          <span>কলম ম্যানুয়াল প্রিন্ট করুন</span>
+        </button>
+        <a href="#simulator-section" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-emerald-600/25 active:scale-95 transition-all">
+          <span>🎬</span>
+          <span>ভার্চুয়াল অ্যানিমেশন দেখুন</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         Interactive Animated Virtual Grafting Simulator
+         ==================================================================== -->
+    <section id="simulator-section" class="glass-panel p-6 md:p-8 border-2 border-emerald-300 rounded-3xl shadow-xl space-y-6">
+      
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🔬</span>
+            <h3 class="text-xl md:text-2xl font-black text-slate-900">ভার্চুয়াল গ্রাফটিং অ্যানিমেশন সিমুলেটর</h3>
+          </div>
+          <p class="text-xs md:text-sm text-slate-500 font-semibold mt-0.5">
+            ধাপভিত্তিক অ্যানিমেশনে শিখুন কীভাবে রুটস্টক ও সায়নের ক্যাম্বিয়াম স্তর সঠিকভাবে মেলাতে হয়।
+          </p>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex items-center gap-2 shrink-0">
+          <button id="sim-prev-btn" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-slate-700 transition-all active:scale-95">
+            ← পূর্ববর্তী ধাপ
+          </button>
+          <button id="sim-play-btn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow-md shadow-emerald-600/20 transition-all flex items-center gap-1 active:scale-95">
+            <span id="sim-play-icon">▶️</span>
+            <span id="sim-play-text">অটো প্লে</span>
+          </button>
+          <button id="sim-next-btn" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-bold text-slate-700 transition-all active:scale-95">
+            পরবর্তী ধাপ →
+          </button>
+        </div>
+      </div>
+
+      <!-- Method Switcher Tab Bar -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-black text-slate-800 flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>কলম পদ্ধতি সিমুলেশন:</span>
+          </span>
+          <span id="sim-method-title" class="text-xs font-black text-emerald-800 px-2.5 py-0.5 rounded-full bg-emerald-100 border border-emerald-300">
+            জোড় কলম (Cleft Grafting)
+          </span>
+        </div>
+
+        <div class="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+          <button onclick="SmartAgroGrafting.selectMethod('cleft')" id="sim-method-cleft" class="sim-method-btn px-3 py-1.5 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-md transition-all shrink-0">
+            🍅 জোড় কলম (Cleft)
+          </button>
+          <button onclick="SmartAgroGrafting.selectMethod('air')" id="sim-method-air" class="sim-method-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all shrink-0">
+            🍐 গুটি কলম (Air Layering)
+          </button>
+          <button onclick="SmartAgroGrafting.selectMethod('bud')" id="sim-method-bud" class="sim-method-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all shrink-0">
+            🍋 চোখ কলম (T-Budding)
+          </button>
+          <button onclick="SmartAgroGrafting.selectMethod('lotus')" id="sim-method-lotus" class="sim-method-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 transition-all shrink-0">
+            🪷 পদ্ম ও স্থলপদ্ম (Lotus)
+          </button>
+        </div>
+      </div>
+
+      <!-- Step Indicator Dots -->
+      <div class="grid grid-cols-5 gap-2 text-center text-xs font-bold">
+        <button onclick="SmartAgroGrafting.goToStep(1)" id="step-pill-1" class="p-2.5 rounded-xl border-2 transition-all border-emerald-500 bg-emerald-50 text-emerald-900 font-black shadow-xs">
+          ১. রুটস্টক কাটিং
+        </button>
+        <button onclick="SmartAgroGrafting.goToStep(2)" id="step-pill-2" class="p-2.5 rounded-xl border-2 transition-all border-slate-200 bg-white text-slate-600">
+          ২. সায়ন কীলক তৈরি
+        </button>
+        <button onclick="SmartAgroGrafting.goToStep(3)" id="step-pill-3" class="p-2.5 rounded-xl border-2 transition-all border-slate-200 bg-white text-slate-600">
+          ৩. ক্যাম্বিয়াম স্তর সংযোগ
+        </button>
+        <button onclick="SmartAgroGrafting.goToStep(4)" id="step-pill-4" class="p-2.5 rounded-xl border-2 transition-all border-slate-200 bg-white text-slate-600">
+          ৪. টেপ ও ক্লিপিং
+        </button>
+        <button onclick="SmartAgroGrafting.goToStep(5)" id="step-pill-5" class="p-2.5 rounded-xl border-2 transition-all border-slate-200 bg-white text-slate-600">
+          ৫. হিলিং ও নার্সিং
+        </button>
+      </div>
+
+      <!-- Animation Canvas & Interactive Display -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        
+        <!-- Left: Visual Animated Stage Illustration (SVG / Canvas) -->
+        <div class="lg:col-span-7 bg-gradient-to-b from-slate-900 to-slate-950 p-6 rounded-2xl border-2 border-emerald-500/50 shadow-inner flex flex-col items-center justify-center min-h-[340px] relative overflow-hidden">
+          
+          <!-- Interactive SVG Animation Canvas -->
+          <div id="grafting-anim-viewport" class="w-full max-w-md h-72 relative flex items-center justify-center">
+            <!-- Dynamically injected animated SVG graphic based on active step -->
+          </div>
+
+          <div class="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[11px] text-emerald-300 font-bold bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-emerald-500/30">
+            <span id="anim-stage-badge">ধাপ ১/৫: রুটস্টক চারা নির্বাচন ও কর্তন</span>
+            <span class="text-amber-300">💡 নিখুঁত সংযোগ নিশ্চিত করুন</span>
+          </div>
+        </div>
+
+        <!-- Right: Agronomic Step Details & Scientific Rationale -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-white/90 p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-3">
+            <div class="flex items-center justify-between">
+              <span id="detail-step-number" class="text-xs font-black px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                ধাপ ০১
+              </span>
+              <span id="detail-step-duration" class="text-xs text-slate-500 font-bold">সময়কাল: রোপণের পূর্বে</span>
+            </div>
+
+            <h4 id="detail-step-title" class="text-lg md:text-xl font-black text-slate-900">
+              রুটস্টক চারা নির্বাচন ও মসৃণ কাটিং
+            </h4>
+
+            <p id="detail-step-desc" class="text-xs md:text-sm text-slate-700 font-semibold leading-relaxed">
+              রোগ-প্রতিরোধী সুস্থ চারার (যেমন তিতবেগুন) মাটির ৫-৭ সেমি ওপরে ধারালো জীবাণুমুক্ত ব্লেড দিয়ে ৪৫ ডিগ্রি কোণে বা লম্বালম্বি ১.৫ সেমি খাঁজ কাটতে হবে। কাটার সময় টিস্যু যাতে থেঁতলে না যায় সেদিকে খেয়াল রাখুন।
+            </p>
+
+            <div class="p-3 rounded-xl bg-amber-50 border border-amber-300 text-xs text-amber-900 font-bold space-y-1">
+              <span class="block text-amber-800 font-black">⚠️ গুরুত্বপূর্ণ বৈজ্ঞানিক সতর্কতা:</span>
+              <p id="detail-step-warning">
+                ব্লেড অবশ্যই ৭০% অ্যালকোহল বা গরম পানিতে ফুটিয়ে জীবাণুমুক্ত করে নিতে হবে, নতুবা ব্যাকটেরিয়া সংক্রমণে জোড় পচে যাবে।
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         Specific Plant Grafting Method Cards (Guava, Lemon, Eggplant, Tomato)
+         ==================================================================== -->
+    <section class="space-y-6">
+      
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div>
+          <h3 class="text-xl md:text-3xl font-black text-slate-900">নির্দিষ্ট ফসলের বিশেষ কলম প্রযুক্তি</h3>
+          <p class="text-xs md:text-sm text-slate-600 font-semibold mt-1">
+            টমেটো-বেগুন, পেয়ারা, লেবু ও অন্যান্য প্রধান অর্থকরী ফসলের প্রমাণিত পদ্ধতি।
+          </p>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs no-print">
+          <button onclick="SmartAgroGrafting.filterMethods('all')" class="method-filter-btn px-3.5 py-2 rounded-xl font-black bg-emerald-600 text-white shadow-md shrink-0">
+            সকল কলম (৭টি)
+          </button>
+          <button onclick="SmartAgroGrafting.filterMethods('veg')" class="method-filter-btn px-3.5 py-2 rounded-xl font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 shrink-0">
+            🍅 সবজি কলম (টমেটো-বেগুন)
+          </button>
+          <button onclick="SmartAgroGrafting.filterMethods('air')" class="method-filter-btn px-3.5 py-2 rounded-xl font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 shrink-0">
+            🍐 গুটি কলম (পেয়ারা)
+          </button>
+          <button onclick="SmartAgroGrafting.filterMethods('bud')" class="method-filter-btn px-3.5 py-2 rounded-xl font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 shrink-0">
+            🍋 চোখ কলম (লেবু ও মাল্টা)
+          </button>
+          <button onclick="SmartAgroGrafting.filterMethods('lotus')" class="method-filter-btn px-3.5 py-2 rounded-xl font-bold bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 shrink-0">
+            🪷 পদ্ম ও স্থলপদ্ম (কলম-পদ্ম)
+          </button>
+        </div>
+      </div>
+
+      <!-- 6 Comprehensive Cards Grid -->
+      <div id="grafting-methods-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Card 1: Tomato & Eggplant Solanaceous Cleft Grafting -->
+        <div data-method-cat="veg" class="glass-panel p-6 rounded-3xl border-2 border-emerald-400/80 shadow-lg flex flex-col justify-between hover:shadow-xl transition-all group bg-white">
+          <div class="space-y-4">
+            <div class="relative h-48 rounded-2xl overflow-hidden border border-emerald-200 shadow-sm bg-slate-100">
+              <img src="/images/grafting/veg_cleft_grafting.jpg" alt="টমেটো ও বেগুনের জোড় কলম" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2.5 left-2.5 px-3 py-1 rounded-full text-xs font-black bg-emerald-600 text-white shadow-md">
+                🍅 সবজির জোড় কলম
+              </span>
+              <span class="absolute bottom-2 right-2 text-xs bg-slate-900/80 text-white px-2 py-0.5 rounded backdrop-blur-xs font-bold">
+                Solanaceous Cleft Grafting
+              </span>
+            </div>
+
+            <div>
+              <h4 class="text-lg md:text-xl font-black text-slate-900">
+                টমেটো ও বেগুনের রোগ-প্রতিরোধী জোড় কলম
+              </h4>
+              <p class="text-xs text-emerald-800 font-bold mt-0.5">
+                বন্য তিতবেগুন রুটস্টক + হাইব্রিড টমেটো/বেগুন সায়ন
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-slate-700 leading-relaxed space-y-1.5 font-semibold">
+              <p><strong>🎯 কেন করবেন:</strong> ব্যাকটেরিয়াল উইল্ট (ঢলে পড়া রোগ) ও শিকড় গ্রন্থি কৃমি (নেমাটোড) থেকে ১০০% সুরক্ষা। অতিবৃষ্টি ও বর্ষায় শিকড় পচে না এবং ফলন সাধারণ গাছের দ্বিগুণ হয়।</p>
+              <p><strong>🌱 বয়স:</strong> তিতবেগুন বীজ বপনের ৩৫-৪০ দিন পর এবং টমেটো বীজ বপনের ২০-২৫ দিন পর কাটিং করতে হয়।</p>
+              <p><strong>🛡️ হিলিং চেম্বার:</strong> কলম করার পর ৪-৫ দিন ৮৫-৯৫% আর্দ্রতায় অন্ধকার হিলিং চেম্বারে রাখতে হয়।</p>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
+            <span class="text-emerald-700">সাফল্য হার: ৯৫%</span>
+            <span class="text-slate-500">সময়: মে - অক্টোবর</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Guava Air Layering (পেয়ারার গুটি কলম) -->
+        <div data-method-cat="air" class="glass-panel p-6 rounded-3xl border-2 border-emerald-400/80 shadow-lg flex flex-col justify-between hover:shadow-xl transition-all group bg-white">
+          <div class="space-y-4">
+            <div class="relative h-48 rounded-2xl overflow-hidden border border-emerald-200 shadow-sm bg-slate-100">
+              <img src="/images/grafting/air_layering_guava.jpg" alt="পেয়ারার গুটি কলম" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2.5 left-2.5 px-3 py-1 rounded-full text-xs font-black bg-lime-600 text-white shadow-md">
+                🍐 পেয়ারার গুটি কলম
+              </span>
+              <span class="absolute bottom-2 right-2 text-xs bg-slate-900/80 text-white px-2 py-0.5 rounded backdrop-blur-xs font-bold">
+                Air Layering / Marcotting
+              </span>
+            </div>
+
+            <div>
+              <h4 class="text-lg md:text-xl font-black text-slate-900">
+                থাই ও বারি পেয়ারার সফল গুটি কলম
+              </h4>
+              <p class="text-xs text-lime-800 font-bold mt-0.5">
+                বারি পেয়ারা-২, থাই পেয়ারা-৭ ও কাজী পেয়ারা
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-lime-50 border border-lime-200 text-xs text-slate-700 leading-relaxed space-y-1.5 font-semibold">
+              <p><strong>🎯 কেন করবেন:</strong> বীজ থেকে গাছ হলে ফল ছোট ও মিষ্টি কম হয়। গুটি কলমের গাছে হুবহু মাতৃগাছের মতো বড় সাইজের পেয়ারা রোপণের মাত্র ১ বছরের মধ্যেই ধরে।</p>
+              <p><strong>✂️ বাকল কর্তন:</strong> পেন্সিলের সমান পুরু ১ বছর বয়সী ডালে ৩-৪ সেমি বাকল গোল করে তুলে সবুজ স্তর চেঁছে ফেলতে হবে।</p>
+              <p><strong>🌱 মাটির বল:</strong> ৫০% দোআঁশ মাটি + ৫০% পচা গোবর মিশিয়ে বল বানিয়ে স্বচ্ছ পলিথিন দিয়ে বায়ুরোধী করে বাঁধতে হবে।</p>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
+            <span class="text-emerald-700">শিকড় আসতে: ৩৫-৪০ দিন</span>
+            <span class="text-slate-500">মৌসুম: আষাঢ় - শ্রাবণ (বর্ষা)</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Lemon & Malta T-Budding (লেবুর চোখ কলম) -->
+        <div data-method-cat="bud" class="glass-panel p-6 rounded-3xl border-2 border-emerald-400/80 shadow-lg flex flex-col justify-between hover:shadow-xl transition-all group bg-white">
+          <div class="space-y-4">
+            <div class="relative h-48 rounded-2xl overflow-hidden border border-emerald-200 shadow-sm bg-slate-100">
+              <img src="/images/crops/lemon.jpg" alt="লেবুর চোখ কলম" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2.5 left-2.5 px-3 py-1 rounded-full text-xs font-black bg-amber-600 text-white shadow-md">
+                🍋 লেবুর চোখ কলম
+              </span>
+              <span class="absolute bottom-2 right-2 text-xs bg-slate-900/80 text-white px-2 py-0.5 rounded backdrop-blur-xs font-bold">
+                T-Budding / Shield Budding
+              </span>
+            </div>
+
+            <div>
+              <h4 class="text-lg md:text-xl font-black text-slate-900">
+                কাগজি লেবু ও বারি মাল্টা-১ চোখ কলম
+              </h4>
+              <p class="text-xs text-amber-800 font-bold mt-0.5">
+                জাবীর লেবু রুটস্টক + উন্নত কাগজি/মাল্টা কুঁড়ি
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-slate-700 leading-relaxed space-y-1.5 font-semibold">
+              <p><strong>🎯 কেন করবেন:</strong> ভাইরাস ও ডাইব্যাক মুক্ত দীর্ঘজীবী লেবু ও মাল্টা বাগান তৈরিতে চোখ কলম হলো সবচেয়ে বিশ্বস্ত আন্তর্জাতিক পদ্ধতি।</p>
+              <p><strong>✂️ T-খাঁজ কাটা:</strong> রুটস্টকের বাকলে 'T' আকৃতির খাঁজ কেটে উন্নত জাতের শাখা থেকে একটি সুস্থ কুঁড়ি বা চোখ সাবধানে ঢুকিয়ে দিতে হয়।</p>
+              <p><strong>🎗️ টেপ বাঁধন:</strong> কুঁড়ির চোখ খোলা রেখে বাকি অংশ বাডিং টেপ দিয়ে শক্ত করে মুড়ে দিলে ১৫ দিনেই চোখ ফুটে নতুন ডাল বের হয়।</p>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
+            <span class="text-emerald-700">সাফল্য হার: ৯২%</span>
+            <span class="text-slate-500">মৌসুম: বৈশাখ - আষাঢ় ও কার্তিক</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Approach Grafting (সংযুক্ত কলম - পেয়ারা ও আম) -->
+        <div data-method-cat="air" class="glass-panel p-6 rounded-3xl border-2 border-emerald-400/80 shadow-lg flex flex-col justify-between hover:shadow-xl transition-all group bg-white">
+          <div class="space-y-4">
+            <div class="relative h-48 rounded-2xl overflow-hidden border border-emerald-200 shadow-sm bg-slate-100">
+              <img src="/images/grafting/cleft_graft_tree.jpg" alt="সংযুক্ত কলম" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2.5 left-2.5 px-3 py-1 rounded-full text-xs font-black bg-teal-600 text-white shadow-md">
+                🌿 সংযুক্ত কলম
+              </span>
+              <span class="absolute bottom-2 right-2 text-xs bg-slate-900/80 text-white px-2 py-0.5 rounded backdrop-blur-xs font-bold">
+                Approach Grafting / Inarching
+              </span>
+            </div>
+
+            <div>
+              <h4 class="text-lg md:text-xl font-black text-slate-900">
+                পেয়ারা ও আমের সংযুক্ত কলম (ইনআর্চিং)
+              </h4>
+              <p class="text-xs text-teal-800 font-bold mt-0.5">
+                ১০০% কলম টিকে থাকার প্রাচীন ও নিরাপদ প্রযুক্তি
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-xs text-slate-700 leading-relaxed space-y-1.5 font-semibold">
+              <p><strong>🎯 বৈশিষ্ট্য:</strong> যেখানে সাধারণ কলমে সায়নের শুকিয়ে যাওয়ার ভয় থাকে, সেখানে সংযুক্ত কলমে রুটস্টক ও মাতৃগাছ দুটোই জীবিত অবস্থায় মাটিতে রস পেতে থাকে।</p>
+              <p><strong>✂️ পদ্ধতি:</strong> টবের রুটস্টক চারাকে মাতৃগাছের ডালের পাশে এনে উভয়ের ছাল ও পাতলা কাঠ ছেঁটে মুখোমুখি বেঁধে দেওয়া হয়।</p>
+              <p><strong>🌱 কাটিং:</strong> ৬০-৭০ দিনে জোড়া শক্ত হলে মাতৃগাছ থেকে সায়নের নিচের অংশ এবং রুটস্টকের মাথার অংশ কেটে আলাদা করা হয়।</p>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
+            <span class="text-emerald-700">ব্যর্থতার ঝুঁকি: শূন্যের কাছাকাছি</span>
+            <span class="text-slate-500">মৌসুম: মে - আগস্ট</span>
+          </div>
+        </div>
+
+        <!-- Card 5: Mango & Jackfruit Veneer Grafting -->
+        <div data-method-cat="veg" class="glass-panel p-6 rounded-3xl border-2 border-emerald-400/80 shadow-lg flex flex-col justify-between hover:shadow-xl transition-all group bg-white">
+          <div class="space-y-4">
+            <div class="relative h-48 rounded-2xl overflow-hidden border border-emerald-200 shadow-sm bg-slate-100">
+              <img src="/images/crops/mango.jpg" alt="আমের ভিনিয়ার কলম" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2.5 left-2.5 px-3 py-1 rounded-full text-xs font-black bg-orange-600 text-white shadow-md">
+                🥭 ভিনিয়ার কলম
+              </span>
+              <span class="absolute bottom-2 right-2 text-xs bg-slate-900/80 text-white px-2 py-0.5 rounded backdrop-blur-xs font-bold">
+                Veneer & Wedge Grafting
+              </span>
+            </div>
+
+            <div>
+              <h4 class="text-lg md:text-xl font-black text-slate-900">
+                আম্রপালি ও হিমসাগর আমের ভিনিয়ার কলম
+              </h4>
+              <p class="text-xs text-orange-800 font-bold mt-0.5">
+                বাণিজ্যিক আম নার্সারির প্রধান হাতিয়ার
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-orange-50 border border-orange-200 text-xs text-slate-700 leading-relaxed space-y-1.5 font-semibold">
+              <p><strong>🎯 সায়ন প্রস্তুতি (Defoliation):</strong> কলম করার ৭-১০ দিন পূর্বে কাক্সিক্ষত ডালের পাতা কেটে শুধু বোঁটা রেখে দিতে হয়, যাতে কুঁড়ি ফুলে ওঠে।</p>
+              <p><strong>✂️ জিভ আকৃতির কাটা:</strong> রুটস্টকে জিভের মতো পাতলা ছিলন কেটে সায়নের কীলক ভেতরে বসিয়ে প্যারাফিল্ম দিয়ে শক্ত করে মোড়ানো হয়।</p>
+              <p><strong>🌟 সুবিধা:</strong> গাছ দ্রুত সোজা হয়ে বাড়ে এবং বাণিজ্যিক নার্সারিতে এক মৌসুমে হাজার হাজার চারা উৎপাদন সম্ভব।</p>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
+            <span class="text-emerald-700">সাফল্য হার: ৯০-৯৫%</span>
+            <span class="text-slate-500">মৌসুম: আষাঢ় - ভাদ্র</span>
+          </div>
+        </div>
+
+        <!-- Card 6: Top Working (বুড়ো গাছকে নতুন জাত বানানো) -->
+        <div data-method-cat="all" class="glass-panel p-6 rounded-3xl border-2 border-emerald-400/80 shadow-lg flex flex-col justify-between hover:shadow-xl transition-all group bg-white">
+          <div class="space-y-4">
+            <div class="relative h-48 rounded-2xl overflow-hidden border border-emerald-200 shadow-sm bg-slate-100">
+              <img src="/images/grafting/cleft_graft_tree.jpg" alt="টপ ওয়ার্কিং" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2.5 left-2.5 px-3 py-1 rounded-full text-xs font-black bg-purple-600 text-white shadow-md">
+                🌳 টপ-ওয়ার্কিং
+              </span>
+              <span class="absolute bottom-2 right-2 text-xs bg-slate-900/80 text-white px-2 py-0.5 rounded backdrop-blur-xs font-bold">
+                Top Working Regeneration
+              </span>
+            </div>
+
+            <div>
+              <h4 class="text-lg md:text-xl font-black text-slate-900">
+                বুড়ো অনুৎপাদনশীল গাছে উন্নত জাত প্রতিস্থাপন
+              </h4>
+              <p class="text-xs text-purple-800 font-bold mt-0.5">
+                আম, কুল ও পেয়ারা গাছের বৈপ্লবিক রূপান্তর
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-purple-50 border border-purple-200 text-xs text-slate-700 leading-relaxed space-y-1.5 font-semibold">
+              <p><strong>🎯 উদ্দেশ্য:</strong> উঠোনের বা বাগানের ২০-৩০ বছরের টক বা খারাপ জাতের গাছ না কেটে তার ওপর আম্রপালি বা বাউ কুলের সায়ন জোড়া লাগানো।</p>
+              <p><strong>✂️ পদ্ধতি:</strong> গাছের প্রধান ডালপালা ছেঁটে দেওয়ার পর যে নতুন নরম ডাল গজায়, তার ওপর ভিনিয়ার বা ফাটল কলম করে জাত বদলে ফেলা হয়।</p>
+              <p><strong>⚡ ফলাফল:</strong> বিশাল শিকড়তন্ত্র প্রস্তুত থাকায় মাত্র ২ বছরেই শত শত কেজি উন্নত সুস্বাদু ফল পাওয়া যায়।</p>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
+            <span class="text-emerald-700">সময় সাশ্রয়: ৫ বছর</span>
+            <span class="text-slate-500">মৌসুম: শীতের শেষ ও বর্ষা</span>
+          </div>
+        </div>
+
+        <!-- Card 7: Lotus & Land Lotus Propagation (পদ্ম ও স্থলপদ্মের সফল কলম ও কন্দ বিস্তার) -->
+        <div data-method-cat="lotus" class="glass-panel p-6 rounded-3xl border-2 border-rose-400/80 shadow-lg flex flex-col justify-between hover:shadow-xl transition-all group bg-white">
+          <div class="space-y-4">
+            <div class="relative h-48 rounded-2xl overflow-hidden border border-rose-200 shadow-sm bg-slate-900">
+              <img src="/images/grafting/lotus_propagation.jpg" alt="পদ্ম ও স্থলপদ্মের সফল কলম" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <span class="absolute top-2.5 left-2.5 px-3 py-1 rounded-full text-xs font-black bg-rose-600 text-white shadow-md">
+                🪷 পদ্ম ও স্থলপদ্ম কলম
+              </span>
+              <span class="absolute bottom-2 right-2 text-xs bg-slate-900/80 text-white px-2 py-0.5 rounded backdrop-blur-xs font-bold">
+                Lotus Tuber & Cutting
+              </span>
+            </div>
+
+            <div>
+              <h4 class="text-lg md:text-xl font-black text-slate-900">
+                পদ্ম ও স্থলপদ্মের সফল কলম ও কন্দ বিস্তার প্রযুক্তি
+              </h4>
+              <p class="text-xs text-rose-800 font-bold mt-0.5">
+                পানির পদ্ম (Nelumbo nucifera) ও মাটির স্থলপদ্ম (Hibiscus mutabilis)
+              </p>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-slate-700 leading-relaxed space-y-1.5 font-semibold">
+              <p><strong>🎯 কেন করবেন:</strong> বীজ থেকে পদ্ম ফোটাতে ২ বছরের বেশি সময় লাগে এবং ফুল ছোট হয়। কিন্তু সুপ্ত কন্দ (Tuber) বিভাজনে মাত্র ৬০-৭৫ দিনে হুবহু মাতৃগাছের মতো বড় ফুল ফোটে। স্থলপদ্মে শাখা ও গুটি কলমে একই গাছে সাদা ও গোলাপি বহুরূপী ফুল পাওয়া যায়।</p>
+              <p><strong>🪷 কন্দ কাটার নিয়ম:</strong> বসন্তকালে সুপ্তাবস্থা শেষে কন্দ তুলে কমপক্ষে ২-৩টি সুস্থ পর্ব (nodes) ও অক্ষত অগ্রমুকুল (Growing Tip) রেখে কাটতে হবে। কাটা ক্ষতে কার্বেনডাজিম ছত্রাকনাশক লেপন অত্যন্ত জরুরি।</p>
+              <p><strong>🪴 কাদামাটি ও রোপণ কৌশল:</strong> ড্রেনেজ ছিদ্রহীন গামলায় ৫০% এঁটেল দোআঁশ কাদা ও ৪০% পুরাতন পচা গোবর দিয়ে কন্দ ১৫-২০° কোণে এমনভাবে বসাতে হবে যেন অগ্রমুকুল কাদার ওপরে খোলা থাকে।</p>
+              <p><strong>🌸 স্থলপদ্ম শাখা কলম:</strong> ১ বছর বয়সী পেন্সিল সমান ডাল কেটে ৪৫° কোণে ছাঁট দিয়ে রুটিং হরমোন মেখে বালু-মাটিতে লাগালে ৩৫ দিনেই মূলসহ নতুন চারা তৈরি হয়।</p>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold">
+            <span class="text-rose-700">সাফল্য হার: ৯৫% (ফুল ৬০-৭৫ দিনে)</span>
+            <span class="text-slate-500">মৌসুম: বসন্ত (মাঘ-চৈত্র) ও বর্ষা</span>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         Essential Grafting Tools & Sterilization Guide
+         ==================================================================== -->
+    <section class="glass-panel p-6 md:p-8 rounded-3xl border border-emerald-200 shadow-md space-y-6">
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-100 border border-emerald-300 flex items-center justify-center text-2xl text-emerald-800">
+          🛠️
+        </div>
+        <div>
+          <h3 class="text-lg md:text-2xl font-black text-slate-900">কলমের অপরিহার্য যন্ত্রপাতি ও রাসায়নিক</h3>
+          <p class="text-xs md:text-sm text-slate-500 font-semibold">সফল কলমের পূর্বশর্ত হলো সঠিক সারফেস ফিনিশিং ও জীবাণুমুক্ত উপকরণ।</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 text-center text-xs">
+        
+        <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2 hover:border-emerald-400 transition-colors">
+          <span class="text-3xl block">🔪</span>
+          <span class="font-black text-slate-900 block">গ্রাফটিং নাইফ</span>
+          <p class="text-[11px] text-slate-500 font-semibold">একপাশ ধারালো বিশেষ ছুরি যা টিস্যু না থেঁতলে কাটে।</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2 hover:border-emerald-400 transition-colors">
+          <span class="text-3xl block">✂️</span>
+          <span class="font-black text-slate-900 block">প্রুনিং শিয়ার</span>
+          <p class="text-[11px] text-slate-500 font-semibold">ডাল সমানভাবে কর্তনের জন্য প্রিমিয়াম সেকেচার।</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2 hover:border-emerald-400 transition-colors">
+          <span class="text-3xl block">🎗️</span>
+          <span class="font-black text-slate-900 block">প্যারাফিল্ম টেপ</span>
+          <p class="text-[11px] text-slate-500 font-semibold">আর্দ্রতারোধী ও বায়ুরোধী স্বয়ংক্রিয় পচনশীল বিশেষ টেপ।</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2 hover:border-emerald-400 transition-colors">
+          <span class="text-3xl block">📎</span>
+          <span class="font-black text-slate-900 block">গ্রাফটিং ক্লিপ</span>
+          <p class="text-[11px] text-slate-500 font-semibold">টমেটো-বেগুন চারার কাণ্ড শক্তভাবে জোড়া ধরে রাখার ক্লিপ।</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2 hover:border-emerald-400 transition-colors">
+          <span class="text-3xl block">🧪</span>
+          <span class="font-black text-slate-900 block">রুটিং হরমোন (IBA)</span>
+          <p class="text-[11px] text-slate-500 font-semibold">গুটি কলমে দ্রুত ও ঘন শিকড় গজানোর জন্য ইন্ডোল বিউটারিক এসিড।</p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2 hover:border-emerald-400 transition-colors">
+          <span class="text-3xl block">🧴</span>
+          <span class="font-black text-slate-900 block">ছত্রাকনাশক পেস্ট</span>
+          <p class="text-[11px] text-slate-500 font-semibold">কপার অক্সিক্লোরাইড বা ডাইথেন এম-৪৫ ক্ষতস্থানে লেপন।</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         10 Golden Rules for 100% Grafting Success
+         ==================================================================== -->
+    <section class="glass-panel p-6 md:p-8 rounded-3xl border-t-4 border-emerald-600 shadow-lg space-y-4">
+      <div class="flex items-center space-x-2.5">
+        <span class="text-2xl">🏆</span>
+        <h3 class="text-xl md:text-2xl font-black text-slate-900">কলম শতভাগ সফল করার ১০টি সোনালী নিয়ম</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm font-semibold text-slate-800 font-bengali">
+        <div class="flex items-start space-x-3 p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200">
+          <span class="w-6 h-6 rounded-full bg-emerald-600 text-white font-black flex items-center justify-center shrink-0 mt-0.5">১</span>
+          <p><strong>ক্যাম্বিয়াম লেয়ার মেলানো:</strong> রুটস্টক ও সায়নের বাকলের ঠিক নিচের সবুজ ক্যাম্বিয়াম স্তর যেন অন্তত একপাশে হলেও নিখুঁতভাবে মেলে।</p>
+        </div>
+        <div class="flex items-start space-x-3 p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200">
+          <span class="w-6 h-6 rounded-full bg-emerald-600 text-white font-black flex items-center justify-center shrink-0 mt-0.5">২</span>
+          <p><strong>এক টানে মসৃণ কর্তন:</strong> করাতের মতো ঘষে ডাল কাটা যাবে না; ধারালো ব্লেড দিয়ে এক টানে মসৃণভাবে কাটতে হবে।</p>
+        </div>
+        <div class="flex items-start space-x-3 p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200">
+          <span class="w-6 h-6 rounded-full bg-emerald-600 text-white font-black flex items-center justify-center shrink-0 mt-0.5">৩</span>
+          <p><strong>আর্দ্রতা সংরক্ষণ:</strong> কলম বাঁধার সময় ভেতরে যাতে বাতাস বা বৃষ্টির পানি ঢুকতে না পারে সেজন্য প্যারাফিল্ম দিয়ে শক্ত করে মোড়াতে হবে।</p>
+        </div>
+        <div class="flex items-start space-x-3 p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200">
+          <span class="w-6 h-6 rounded-full bg-emerald-600 text-white font-black flex items-center justify-center shrink-0 mt-0.5">৪</span>
+          <p><strong>টমেটো-বেগুনের হিলিং চেম্বার:</strong> সবজির চারায় কলম করার পর ৪-৫ দিন ৮৫-৯৫% আর্দ্রতায় ছায়াযুক্ত স্থানে রাখতে হবে।</p>
+        </div>
+        <div class="flex items-start space-x-3 p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200">
+          <span class="w-6 h-6 rounded-full bg-emerald-600 text-white font-black flex items-center justify-center shrink-0 mt-0.5">৫</span>
+          <p><strong>সায়নের সুপ্তাবস্থা:</strong> ফলদ গাছের সায়ন সংগ্রহের ৭ দিন আগে পাতা ঝরিয়ে (Defoliation) কুঁড়ি সতেজ করে নিতে হবে।</p>
+        </div>
+        <div class="flex items-start space-x-3 p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200">
+          <span class="w-6 h-6 rounded-full bg-emerald-600 text-white font-black flex items-center justify-center shrink-0 mt-0.5">৬</span>
+          <p><strong>রুটস্টকের কুশি ছাঁটাই:</strong> কলম সংযোগস্থলের নিচে রুটস্টক থেকে কোনো নতুন কুশি গজালে তা সাথে সাথে ভেঙে ফেলতে হবে।</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Emergency Krishi Helpline Widget -->
+    <section class="helpline-widget glass-panel p-6 md:p-8 border-t-4 border-t-teal-600 shadow-md">
+      <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
+        <div class="space-y-1.5 text-center lg:text-left">
+          <div class="flex items-center justify-center lg:justify-start gap-2">
+            <span class="text-2xl">📞</span>
+            <h3 class="text-xl md:text-2xl font-black text-slate-900">জরুরি নার্সারি ও কৃষি বিশেষজ্ঞ সহায়তা</h3>
+          </div>
+          <p class="text-xs md:text-sm text-slate-600 font-semibold max-w-xl">
+            কলম শুকিয়ে যাওয়া, চারা মরে যাওয়া বা হিলিং চেম্বার তৈরিতে সরাসরি সরকারি কৃষি কর্মকর্তাদের পরামর্শ নিন।
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-3">
+          <a href="tel:16123" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-sm flex items-center space-x-2.5 shadow-lg shadow-emerald-600/25 transition-all active:scale-95">
+            <span class="text-lg">☎️</span>
+            <div>
+              <span class="block text-[10px] text-emerald-100 font-bold uppercase">টোল ফ্রি কল সেন্টার</span>
+              <span class="text-base font-black tracking-wider">১৬১২৩</span>
+            </div>
+          </a>
+          <a href="tel:333" class="px-5 py-3 rounded-2xl bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 font-bold text-sm flex items-center space-x-2 transition-all shadow-sm active:scale-95">
+            <span>🌾 কৃষি বাতায়ন: ৩৩৩</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Global Production Footer -->
+    <footer class="text-center text-xs text-slate-500 font-bold flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-emerald-200/60 pt-6 pb-2 no-print">
+      <p>© ২০২৬ স্মার্ট এগ্রো (Smart Agro) • বাংলাদেশের কৃষকদের জন্য ডিজিটাল কৃষি সেবা</p>
+      <div class="flex items-center gap-3">
+        <span class="text-emerald-700 font-bold">কৃষি তথ্য ও প্রযুক্তি বাতায়ন</span>
+        <span class="text-slate-300">|</span>
+        <span class="text-slate-500 font-semibold">ভার্সন ২.৫.০ (Production)</span>
+      </div>
+    </footer>
+
+  </main>
+
+    <!-- ====================================================================
+       Floating Glass Bottom Mobile Navigation Bar (Unified across all pages)
+       ==================================================================== -->
+  <nav class="md:hidden fixed bottom-3 left-3 right-3 z-50 glass-header bg-white/95 backdrop-blur-md border border-emerald-200 rounded-2xl p-1.5 shadow-xl">
+    <div class="grid grid-cols-6 gap-1 text-center">
+      <a href="/" data-nav-page="home" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs transition-all text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold">
+        <span class="text-base">🏠</span>
+        <span class="text-[9px] mt-0.5 font-bold">হোম</span>
+      </a>
+
+      <a href="/scan" data-nav-page="scanner" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs transition-all text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold">
+        <span class="text-base">📷</span>
+        <span class="text-[9px] mt-0.5 font-bold">স্ক্যানার</span>
+      </a>
+
+      <a href="/roadmap" data-nav-page="roadmap" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs transition-all text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold">
+        <span class="text-base">🌾</span>
+        <span class="text-[9px] mt-0.5 font-bold">গাইড</span>
+      </a>
+
+      <a href="/calculator" data-nav-page="calculator" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs transition-all text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold">
+        <span class="text-base">⚖️</span>
+        <span class="text-[9px] mt-0.5 font-bold">সার</span>
+      </a>
+
+      <a href="/grafting" data-nav-page="grafting" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs transition-all bg-emerald-600 text-white font-black shadow-md">
+        <span class="text-base">🌱</span>
+        <span class="text-[9px] mt-0.5 font-bold">কলম</span>
+      </a>
+
+      <a href="/history" data-nav-page="history" class="flex flex-col items-center justify-center py-1.5 rounded-xl text-xs transition-all text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold">
+        <span class="text-base">📜</span>
+        <span class="text-[9px] mt-0.5 font-bold">ইতিহাস</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Scripts -->
+  <script src="/js/firebase-config.js"></script>
+  <script src="/js/weather.js"></script>
+  <script src="/js/grafting.js"></script>
+  <script src="/js/voice-assistant.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
+

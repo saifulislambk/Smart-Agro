@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  # Smart Agro Express Web Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smart_agro_app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgres://agro_user:agro_pass@postgres:5432/smart_agro_db
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY:-""}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - uploads_data:/app/public/uploads
+
+  # Managed PostgreSQL Database Service
+  postgres:
+    image: postgres:15-alpine
+    container_name: smart_agro_db
+    restart: always
+    environment:
+      POSTGRES_USER: agro_user
+      POSTGRES_PASSWORD: agro_pass
+      POSTGRES_DB: smart_agro_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agro_user -d smart_agro_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  uploads_data:
+

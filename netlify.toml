@@ -1,0 +1,85 @@
+# Smart Agro - Netlify Alternative Production Configuration
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+  command = "npm run build"
+
+# API Proxy to Serverless Function
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/server/:splat"
+  status = 200
+
+# Client-Side Application Clean Routes
+[[redirects]]
+  from = "/scan"
+  to = "/scan.html"
+  status = 200
+
+[[redirects]]
+  from = "/scanner"
+  to = "/scan.html"
+  status = 200
+
+[[redirects]]
+  from = "/roadmap"
+  to = "/roadmap.html"
+  status = 200
+
+[[redirects]]
+  from = "/guides"
+  to = "/roadmap.html"
+  status = 200
+
+[[redirects]]
+  from = "/crop-detail"
+  to = "/crop-detail.html"
+  status = 200
+
+[[redirects]]
+  from = "/crop-guide"
+  to = "/crop-detail.html"
+  status = 200
+
+[[redirects]]
+  from = "/grafting"
+  to = "/grafting.html"
+  status = 200
+
+[[redirects]]
+  from = "/nursery"
+  to = "/grafting.html"
+  status = 200
+
+[[redirects]]
+  from = "/kalom"
+  to = "/grafting.html"
+  status = 200
+
+[[redirects]]
+  from = "/calculator"
+  to = "/calculator.html"
+  status = 200
+
+[[redirects]]
+  from = "/fertilizer"
+  to = "/calculator.html"
+  status = 200
+
+[[redirects]]
+  from = "/history"
+  to = "/history.html"
+  status = 200
+
+[[redirects]]
+  from = "/roadmap/*"
+  to = "/crop-detail.html"
+  status = 200
+
+# CORS Headers for Mobile and External Clients
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With, Accept, Origin"

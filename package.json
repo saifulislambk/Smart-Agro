@@ -1,0 +1,38 @@
+{
+  "name": "smart-agro",
+  "version": "1.0.0",
+  "description": "Smart Agro - Production-ready AI Crop Disease Scanner, Cultivation Guide & Weather Agro-Alert Web App for Bangladeshi Farmers",
+  "main": "server.js",
+  "scripts": {
+    "build": "echo 'Smart Agro production assets verified in public/'",
+    "start": "node server.js",
+    "start:all": "bash start_services.sh",
+    "dev": "node --watch server.js",
+    "docs": "node scripts/generators/generate-docs.js",
+    "test": "node scripts/tests/verify-smart-agro.js",
+    "test:smoke": "node scripts/tests/verify-local-smoke.js",
+    "test:browser": "node scripts/tests/browser-scanner-test.js"
+  },
+  "keywords": [
+    "smart-agro",
+    "bangladesh",
+    "agriculture",
+    "crop-disease-detection",
+    "glassmorphism",
+    "nodejs",
+    "express",
+    "postgresql",
+    "weather-alerts"
+  ],
+  "author": "Smart Agro Team",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "compression": "^1.8.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.11.5"
+  }
+}

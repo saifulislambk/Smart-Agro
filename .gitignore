@@ -1,0 +1,39 @@
+# Node modules & logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python virtual environment & bytecode
+ai_service/venv/
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+ai_service/__pycache__/
+
+# Internal agent scratch & logs
+.agents/
+.vscode/
+.idea/
+
+# Environment & Secrets
+.env
+.env.production
+.env.local
+
+# Non-deployment Documentation & PDFs
+docs/pdfs/*.pdf
+*.pdf
+
+# Dynamic uploads (preserve sample leaves)
+public/uploads/crop-*
+public/uploads/*.tmp
+
+# Raw local phone photo
+1000161056.jpeg
+
+# OS files
+.DS_Store
+Thumbs.db

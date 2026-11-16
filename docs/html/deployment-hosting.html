@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>স্মার্ট এগ্রো - ক্লাউড ডেপ্লয়মেন্ট ও হোস্টিং পূর্ণাঙ্গ গাইড (Smart Agro Deployment Guide)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @page {
+      size: A4;
+      margin: 14mm 12mm 14mm 12mm;
+    }
+    body {
+      font-family: 'Noto Sans Bengali', 'Hind Siliguri', sans-serif;
+      color: #1e293b;
+      line-height: 1.6;
+      background: #ffffff;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    code, pre {
+      font-family: 'Fira Code', monospace;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+    .no-break {
+      page-break-inside: avoid;
+    }
+    .section-title {
+      border-left: 5px solid #059669;
+      padding-left: 12px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="p-4 md:p-8 max-w-5xl mx-auto space-y-8 text-sm">
+
+  <!-- Header Banner -->
+  <div class="border-b-4 border-emerald-600 pb-6 space-y-3">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-14 h-14 rounded-2xl bg-emerald-700 text-white flex items-center justify-center text-3xl font-black shadow-md">
+          🚀
+        </div>
+        <div>
+          <h1 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">স্মার্ট এগ্রো (Smart Agro)</h1>
+          <p class="text-xs font-bold text-emerald-800 uppercase tracking-widest">ক্লাউড ডেপ্লয়মেন্ট, হোস্টিং ও প্রোডাকশন পরিচালনা ম্যানুয়াল</p>
+        </div>
+      </div>
+      <div class="text-right text-xs text-slate-500 font-semibold">
+        <p>ডকুমেন্ট কোড: <b>SAG-DEP-2026</b></p>
+        <p>ভার্সন: <b>2.5.0 Production Ready</b></p>
+        <p>ক্যাটাগরি: <b>DevOps, Cloud Hosting & Security</b></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Executive Summary -->
+  <div class="bg-emerald-50/80 border border-emerald-300 rounded-2xl p-5 no-break space-y-2">
+    <h2 class="text-base font-black text-emerald-950 flex items-center gap-2">
+      <span>🌐</span>
+      <span>হোস্টিং পরিচিতি ও মূল বিষয়বস্তু</span>
+    </h2>
+    <p class="text-xs text-slate-700 leading-relaxed">
+      স্মার্ট এগ্রো প্ল্যাটফর্মটি প্রোডাকশনে হোস্ট করার জন্য ৩টি নির্ভরযোগ্য পথ রয়েছে: <b>Render / Railway</b> (ফ্রি ও সহজতম ক্লাউড PaaS), <b>Google Cloud Run</b> (সার্ভারলেস ডকার কন্টেইনার) এবং <b>স্বয়ংসম্পূর্ণ লিনাক্স VPS</b> (Ubuntu + Nginx + PM2 + SSL)। এই গাইডে ডোমেন সেটআপ থেকে শুরু করে ডাটাবেস মাইগ্রেশন ও সার্বক্ষণিক সার্ভার মনিটরিং পর্যন্ত সবকিছু বিশদভাবে নির্দেশ করা হয়েছে।
+    </p>
+  </div>
+
+  <!-- SECTION 1 -->
+  <section class="space-y-3 no-break">
+    <h2 class="text-lg font-black text-slate-900 section-title">১. ডেপ্লয়মেন্ট প্রি-ফ্লাইট চেকলিস্ট ও এনভায়রনমেন্ট ভেরিয়েবলস</h2>
+    <p class="text-xs text-slate-700 leading-relaxed">
+      প্রোডাকশন সার্ভারে তোলার পূর্বে নিশ্চিত করুন যে নিচের এনভায়রনমেন্ট ভেরিয়েবলগুলো কনফিগার করা আছে:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>ভেরিয়েবল নাম</th>
+          <th>প্রয়োজনীয়তা</th>
+          <th>ডিফল্ট মান</th>
+          <th>বিবরণ ও উদাহরণ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>PORT</code></td>
+          <td>ঐচ্ছিক</td>
+          <td><code>3000</code></td>
+          <td>যে পোর্টে এক্সপ্রেস ওয়েব সার্ভারটি রান করবে।</td>
+        </tr>
+        <tr>
+          <td><code>NODE_ENV</code></td>
+          <td><b>বাধ্যতামূলক</b></td>
+          <td><code>production</code></td>
+          <td>পারফরম্যান্স অপ্টিমাইজেশন ও ক্যাশিং সক্রিয় করতে।</td>
+        </tr>
+        <tr>
+          <td><code>DATABASE_URL</code></td>
+          <td>প্রস্তাবিত</td>
+          <td><i>ইন-মেমোরি</i></td>
+          <td>PostgreSQL ডাটাবেসের ফুল কানেকশন স্ট্রিং।</td>
+        </tr>
+        <tr>
+          <td><code>OPENWEATHER_API_KEY</code></td>
+          <td>ঐচ্ছিক</td>
+          <td><i>ফলব্যাক মডেল</i></td>
+          <td>লাইভ আবহাওয়ার জন্য ওপেনওয়েদার এপিআই কি।</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section class="space-y-4 no-break">
+    <h2 class="text-lg font-black text-slate-900 section-title">২. অপশন ১: Render.com এ ১-ক্লিকে ডেপ্লয় (সবচেয়ে সহজ ও ঝামেলামুক্ত)</h2>
+    <p class="text-xs text-slate-700 leading-relaxed">
+      প্রজেক্টের রুটে পূর্ব থেকেই একটি প্রোডাকশন-রেডি ব্লুপ্রিন্ট <code>render.yaml</code> দেওয়া আছে।
+    </p>
+
+    <div class="space-y-2 text-xs text-slate-800">
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+        <p class="font-black text-emerald-800">ধাপ ১: কোড GitHub-এ পুশ করুন</p>
+        <p class="text-slate-600 font-mono">git init && git add . && git commit -m "Production ready" && git push origin main</p>
+      </div>
+
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+        <p class="font-black text-emerald-800">ধাপ ২: Render ড্যাশবোর্ডে ব্লুপ্রিন্ট কানেক্ট করুন</p>
+        <p class="text-slate-600">১. <a href="https://dashboard.render.com/" class="underline text-emerald-700">dashboard.render.com</a> এ লগইন করুন।<br>২. <b>New > Blueprint</b> এ ক্লিক করে আপনার রিপোজিটরিটি সিলেক্ট করুন।<br>৩. Render স্বয়ংক্রিয়ভাবে Node.js ওয়েব সার্ভিস ও Managed PostgreSQL তৈরি করে লাইভ URL দেবে।</p>
+      </div>
+
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1">
+        <p class="font-black text-emerald-800">ধাপ ৩: ডেটাবেস স্কিমা এক্সিকিউট করুন</p>
+        <p class="text-slate-600">Render PostgreSQL-এর Shell ট্যাবে গিয়ে প্রজেক্টের <code>schema.sql</code> ফাইলের কুয়েরি রান করলেই সকল টেবিল তৈরি হয়ে যাবে।</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE BREAK -->
+  <div class="page-break"></div>
+
+  <!-- SECTION 3 -->
+  <section class="space-y-4 no-break">
+    <h2 class="text-lg font-black text-slate-900 section-title">৩. অপশন ২: উবুন্টু VPS ডেপ্লয়মেন্ট (Ubuntu 22.04 / 24.04 LTS)</h2>
+    <p class="text-xs text-slate-700 leading-relaxed">
+      সম্পূর্ণ নিয়ন্ত্রণ, সর্বোচ্চ গতি ও স্বল্প খরচে বড় ট্রাফিক সামলাতে একটি ভিপিএস (DigitalOcean, Hetzner, AWS EC2, বা দেশীয় হোস্টিং) ব্যবহার করুন।
+    </p>
+
+    <div class="space-y-3">
+      <!-- Step 1 -->
+      <div>
+        <h3 class="font-black text-slate-900 text-xs mb-1">ক. সার্ভার আপডেট ও Node.js ইনস্টলেশন:</h3>
+        <div class="bg-slate-900 text-emerald-300 p-3 rounded-xl text-xs font-mono">
+<pre>sudo apt update && sudo apt upgrade -y
+# Node.js 20 LTS ইনস্টল করুন
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs git nginx ufw</pre>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div>
+        <h3 class="font-black text-slate-900 text-xs mb-1">খ. প্রজেক্ট সেটআপ ও PM2 দিয়ে সার্ভার ব্যাকগ্রাউন্ডে চালানো:</h3>
+        <div class="bg-slate-900 text-emerald-300 p-3 rounded-xl text-xs font-mono">
+<pre># কোড ক্লোন ও ডিপেন্ডেন্সি ইনস্টল
+git clone &lt;your-repo-url&gt; /var/www/smart-agro
+cd /var/www/smart-agro
+npm install --production
+
+# গ্লোবাল প্রসেস ম্যানেজার PM2 ইনস্টল
+sudo npm install -g pm2
+
+# ক্লাস্টার মোডে সার্ভার স্টার্ট
+pm2 start server.js -i max --name "smart-agro"
+pm2 save
+pm2 startup</pre>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div>
+        <h3 class="font-black text-slate-900 text-xs mb-1">গ. Nginx রিভার্স প্রক্সি কনফিগারেশন (<code>/etc/nginx/sites-available/smart-agro</code>):</h3>
+        <div class="bg-slate-900 text-emerald-300 p-3.5 rounded-xl text-xs font-mono overflow-x-auto leading-relaxed">
+<pre>server {
+    listen 80;
+    server_name yourdomain.com www.yourdomain.com;
+
+    client_max_body_size 25M;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}</pre>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div>
+        <h3 class="font-black text-slate-900 text-xs mb-1">ঘ. Nginx সক্রিয়করণ ও ফ্রি SSL সার্টিফিকেট (Let's Encrypt HTTPS):</h3>
+        <div class="bg-slate-900 text-emerald-300 p-3 rounded-xl text-xs font-mono">
+<pre>sudo ln -s /etc/nginx/sites-available/smart-agro /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+
+# Certbot দিয়ে লাইফটাইম ফ্রি অটো-রিনিউয়িং SSL নিন
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAGE BREAK -->
+  <div class="page-break"></div>
+
+  <!-- SECTION 4 -->
+  <section class="space-y-4 no-break">
+    <h2 class="text-lg font-black text-slate-900 section-title">৪. কাস্টম ডোমেন ও ডিএনএস সেটআপ (.com বা .com.bd ডোমেন)</h2>
+    <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
+      <p class="text-slate-700">
+        ডোমেন প্রোভাইডার (যেমন: BTCL, Namecheap, GoDaddy, বা Cloudflare)-এর DNS Management প্যানেলে গিয়ে নিচের দুটি রেকর্ড যুক্ত করুন:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>রেকর্ড টাইপ</th>
+            <th>হোস্ট / নেম</th>
+            <th>টার্গেট / ভ্যালু</th>
+            <th>TTL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>A Record</b></td>
+            <td><code>@</code> (রুট)</td>
+            <td>আপনার সার্ভারের পাবলিক আইপি (যেমন: <code>159.65.12.34</code>)</td>
+            <td>Automatic / 300s</td>
+          </tr>
+          <tr>
+            <td><b>CNAME</b></td>
+            <td><code>www</code></td>
+            <td><code>yourdomain.com.</code></td>
+            <td>Automatic / 300s</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SECTION 5 -->
+  <section class="space-y-4 no-break">
+    <h2 class="text-lg font-black text-slate-900 section-title">৫. ডেটাবেস অটোমেটেড ব্যাকআপ ও মেইনটেনেন্স</h2>
+    <p class="text-xs text-slate-700 leading-relaxed">
+      কৃষকদের রোগ নির্ণয় রেকর্ড ও ডেটা সুরক্ষার জন্য প্রতিদিন মধ্যরাতে স্বয়ংক্রিয় ব্যাকআপ নিতে নিচের ক্রনজবটি সেট করুন:
+    </p>
+    <div class="bg-slate-900 text-emerald-300 p-3 rounded-xl text-xs font-mono">
+<pre># ক্রনজব ওপেন করুন
+crontab -e
+
+# প্রতিদিন রাত ২:০০ টায় অটোমেটিক ব্যাকআপ ফাইল সংরক্ষণ করুন
+0 2 * * * pg_dump -U postgres smart_agro > /var/backups/smart_agro_$(date +\%F).sql</pre>
+    </div>
+  </section>
+
+  <!-- SECTION 6 -->
+  <section class="space-y-3 no-break">
+    <h2 class="text-lg font-black text-slate-900 section-title">৬. সার্বক্ষণিক হেলথ মনিটরিং ও জিরো-ডাউনটাইম রিলোড</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+      <div class="p-3 bg-emerald-50/60 border border-emerald-300 rounded-xl space-y-1">
+        <h4 class="font-black text-emerald-900">🔄 জিরো-ডাউনটাইম কোড আপডেট:</h4>
+        <p class="text-slate-700 font-mono">git pull origin main<br>npm install --production<br>pm2 reload all</p>
+      </div>
+      <div class="p-3 bg-emerald-50/60 border border-emerald-300 rounded-xl space-y-1">
+        <h4 class="font-black text-emerald-900">📊 রিয়েল-টাইম পারফরম্যান্স ট্র্যাকিং:</h4>
+        <p class="text-slate-700 font-mono">pm2 monit<br>pm2 logs smart-agro --lines 50</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Signoff -->
+  <div class="border-t-2 border-slate-200 pt-4 text-center text-xs text-slate-500 font-bold">
+    স্মার্ট এগ্রো (Smart Agro) • ক্লাউড ইনফ্রাস্ট্রাকচার ও ডেভঅপ্স টিম • ২০২৬
+  </div>
+
+</body>
+</html>
+
