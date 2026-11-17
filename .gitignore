@@ -26,6 +26,7 @@ ai_service/__pycache__/
 # Non-deployment Documentation & PDFs
 docs/pdfs/*.pdf
 *.pdf
+!docs/pdfs/Smart_Agro_Master_Project_Guideline.pdf
 
 # Dynamic uploads (preserve sample leaves)
 public/uploads/crop-*

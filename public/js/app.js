@@ -1,6 +1,63 @@
 // ====================================================================
-// Smart Agro (স্মارت এগ্রো) - Master Frontend Application Coordinator
+// Smart Agro (স্মার্ট এগ্রো) - Master Frontend Application Coordinator
 // ====================================================================
+
+// ====================================================================
+// XSS Sanitization & Input Defense Utility (Bilingual: বাংলা ও ইংরেজি)
+// ====================================================================
+/**
+ * Sanitizes untrusted strings to prevent XSS (Cross-Site Scripting) attacks.
+ * ক্ষতিকর স্ক্রিপ্ট ও এইচটিএমএল ট্যাগ নিষ্ক্রিয় করার জন্য ইনপুট স্যানিটাইজার।
+ * Converts &, <, >, ", ', / and blocks javascript: pseudo-protocols.
+ */
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  const stringified = String(str);
+  // Block dangerous pseudo-protocols like javascript:
+  if (/^\s*javascript:/i.test(stringified)) {
+    return '#';
+  }
+  return stringified
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+}
+window.escapeHtml = escapeHtml;
+
+// Close dropdown on Escape key press
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const profileDropdown = document.getElementById('user-profile-dropdown');
+    if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+      profileDropdown.classList.add('hidden');
+    }
+    if (window.SmartAgroAuth && window.SmartAgroAuth.closeProfileDropdown) {
+      window.SmartAgroAuth.closeProfileDropdown();
+    }
+  }
+});
+
+// Window resize handler: Synchronize mobile navigation vs desktop dropdown
+window.addEventListener('resize', () => {
+  if (window.innerWidth >= 1280) {
+    const drawer = document.getElementById('smart-agro-mobile-drawer');
+    if (drawer && !drawer.classList.contains('hidden')) {
+      if (typeof toggleSmartAgroMobileMenu === 'function') {
+        toggleSmartAgroMobileMenu(false);
+      } else {
+        drawer.classList.add('hidden');
+      }
+    }
+  } else {
+    const profileDropdown = document.getElementById('user-profile-dropdown');
+    if (profileDropdown && !profileDropdown.classList.contains('hidden')) {
+      profileDropdown.classList.add('hidden');
+    }
+  }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   // 1. Initialize Auth and Profile UI on All Pages
@@ -96,11 +153,26 @@ function setupAuthUI() {
   // Toggle user profile dropdown
   if (userProfile) {
     userProfile.addEventListener('click', (e) => {
+      e.stopPropagation();
       // Don't toggle if clicked directly on logout inside dropdown
       if (e.target.id !== 'auth-logout-btn' && !e.target.closest('#auth-logout-btn')) {
         if (window.SmartAgroAuth) {
           SmartAgroAuth.toggleProfileDropdown();
         }
+      }
+    });
+  }
+
+  // Prevent dropdown from closing prematurely when clicking inside its container
+  if (profileDropdown) {
+    profileDropdown.addEventListener('click', (e) => {
+      const isAction = e.target.closest('#dropdown-logout-btn') || 
+                       e.target.closest('#dropdown-switch-btn') || 
+                       e.target.closest('#auth-logout-btn') ||
+                       e.target.closest('#account-settings-btn') ||
+                       e.target.closest('a');
+      if (!isAction) {
+        e.stopPropagation();
       }
     });
   }

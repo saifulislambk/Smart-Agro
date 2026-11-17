@@ -21,6 +21,55 @@ const { diseaseMap, getDiseaseByIndex, getDiseaseByName } = require('./data/dise
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ====================================================================
+// 🛡️ SECURITY CONFIGURATION & FRAMEWORK HARDENING
+// সাইবার নিরাপত্তা কনফিগারেশন এবং ফ্রেমওয়ার্ক সুরক্ষা (Security & Middleware)
+// ====================================================================
+// Disable X-Powered-By header to prevent server fingerprinting
+// সার্ভার ফ্রেমওয়ার্কের তথ্য গোপন রাখার জন্য X-Powered-By বন্ধ রাখা হয়েছে
+app.disable('x-powered-by');
+
+// Security Headers Middleware (XSS, Clickjacking, MIME sniffing, HSTS)
+// সাইবার আক্রমণ ও ডেটা ফাঁস প্রতিরোধে প্রয়োজনীয় সিকিউরিটি হেডার মিডলওয়্যার
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.setHeader('Content-Security-Policy', "default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data: blob:; font-src 'self' https: data:;");
+  next();
+});
+
+// Rate limiting middleware for sensitive endpoints and DDoS mitigation
+// সংবেদনশীল অথেনটিকেশন এপিআই-এর জন্য রেট লিমিটিং প্রটেকশন মিডলওয়্যার
+const authRequestTracker = new Map();
+function rateLimit(req, res, next) {
+  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  const windowMs = 60 * 1000; // ১ মিনিট উইন্ডো (1 minute window)
+  const maxBurst = 20; // সর্বোচ্চ ২০টি অনুরোধ (Max 20 requests per minute)
+
+  let record = authRequestTracker.get(clientIp);
+  if (!record || now - record.startTime > windowMs) {
+    record = { count: 1, startTime: now };
+    authRequestTracker.set(clientIp, record);
+  } else {
+    record.count++;
+  }
+
+  res.setHeader('X-RateLimit-Limit', maxBurst);
+  res.setHeader('X-RateLimit-Remaining', Math.max(0, maxBurst - record.count));
+
+  if (record.count > maxBurst) {
+    return res.status(429).json({
+      success: false,
+      message: 'অতিরিক্ত অনুরোধ করা হয়েছে (Too Many Requests)। সাইবার নিরাপত্তা সুরক্ষায় আপনার অনুরোধ সাময়িকভাবে স্থগিত করা হয়েছে।'
+    });
+  }
+  next();
+}
+
 // Ensure upload directory exists (guarded for read-only serverless filesystems)
 const uploadDir = path.join(__dirname, 'public', 'uploads');
 try {
@@ -100,8 +149,8 @@ function isValidImageMagicBytes(buffer) {
 // Middleware
 app.use(compression());
 app.use(cors());
-app.use(express.json({ limit: '25mb' }));
-app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 // Optimized Static Asset Serving with Gzip & Smart Browser Caching
 const isProd = process.env.NODE_ENV === 'production';
@@ -355,7 +404,11 @@ const bdDistrictsCoords = [
 ];
 
 function findNearestDistrict(lat, lon) {
-  if (!lat || !lon) return 'ব্রাহ্মণবাড়িয়া';
+  if (lat === null || lon === null || isNaN(lat) || isNaN(lon)) return 'ঢাকা';
+  // Check if coordinates fall within Bangladesh bounding box (approx lat 20.0-27.0, lon 88.0-93.0)
+  if (lat < 20.0 || lat > 27.0 || lon < 88.0 || lon > 93.0) {
+    return 'ঢাকা';
+  }
   let closest = bdDistrictsCoords[0];
   let minDistance = Infinity;
   for (const d of bdDistrictsCoords) {
@@ -464,7 +517,7 @@ function getMailTransporter() {
   });
 }
 
-app.post(['/api/auth/send-email-otp', '/api/send-email-otp'], async (req, res) => {
+app.post(['/api/auth/send-email-otp', '/api/send-email-otp'], rateLimit, async (req, res) => {
   try {
     const { email } = req.body;
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
@@ -523,7 +576,7 @@ app.post(['/api/auth/send-email-otp', '/api/send-email-otp'], async (req, res) =
   }
 });
 
-app.post(['/api/auth/verify-email-otp', '/api/verify-email-otp'], async (req, res) => {
+app.post(['/api/auth/verify-email-otp', '/api/verify-email-otp'], rateLimit, async (req, res) => {
   try {
     const { email, otp } = req.body;
     if (!email || !otp) {
@@ -604,9 +657,21 @@ app.post(['/api/auth/verify-email-otp', '/api/verify-email-otp'], async (req, re
 // 2. Weather & Agro-Alerts (Live OpenWeatherMap with Geolocation & Spraying Advisory)
 app.get('/api/weather', async (req, res) => {
   try {
-    const lat = req.query.lat ? parseFloat(req.query.lat) : null;
-    const lon = req.query.lon ? parseFloat(req.query.lon) : null;
-    const requestedDistrict = req.query.district || 'ব্রাহ্মণবাড়িয়া';
+    const hasLat = req.query.lat !== undefined && req.query.lat !== null && String(req.query.lat).trim() !== '';
+    const hasLon = req.query.lon !== undefined && req.query.lon !== null && String(req.query.lon).trim() !== '';
+    const lat = hasLat ? parseFloat(req.query.lat) : null;
+    const lon = hasLon ? parseFloat(req.query.lon) : null;
+
+    let rawDistrict = req.query.district !== undefined ? String(req.query.district).trim() : '';
+    if (!rawDistrict || rawDistrict.toLowerCase() === 'dhaka') {
+      rawDistrict = 'ঢাকা';
+    }
+    // Sanitize XSS characters from input
+    let sanitizedDistrict = rawDistrict.replace(/[<>\"\'&]/g, '');
+    if (!sanitizedDistrict || sanitizedDistrict.trim() === '') {
+      sanitizedDistrict = 'ঢাকা';
+    }
+    const requestedDistrict = sanitizedDistrict;
     const apiKey = process.env.OPENWEATHER_API_KEY;
 
     let weatherData = null;
@@ -614,7 +679,7 @@ app.get('/api/weather', async (req, res) => {
     if (apiKey && apiKey !== 'your_openweathermap_api_key_here' && apiKey.length > 10) {
       try {
         let apiUrl = '';
-        if (lat && lon) {
+        if (lat !== null && lon !== null && !isNaN(lat) && !isNaN(lon)) {
           apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=bn`;
         } else {
           apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(requestedDistrict)},BD&appid=${apiKey}&units=metric&lang=bn`;
@@ -647,8 +712,12 @@ app.get('/api/weather', async (req, res) => {
       const isDay = currentHour >= 6 && currentHour <= 18;
       
       let districtName = requestedDistrict;
-      if (lat && lon) {
-        districtName = findNearestDistrict(lat, lon);
+      if (hasLat || hasLon) {
+        if (lat === null || lon === null || isNaN(lat) || isNaN(lon)) {
+          districtName = 'ঢাকা';
+        } else {
+          districtName = findNearestDistrict(lat, lon);
+        }
       }
 
       const baseTemp = isDay ? (28 + Math.round(Math.sin(currentHour / 3) * 4)) : 22;
@@ -671,6 +740,13 @@ app.get('/api/weather', async (req, res) => {
         icon: isDay ? '01d' : '01n',
         is_day: isDay
       };
+    }
+
+    if (weatherData) {
+      weatherData.location = String(weatherData.location || requestedDistrict).replace(/[<>\"\'&]/g, '');
+      if (!weatherData.location || weatherData.location.trim() === '') {
+        weatherData.location = 'ঢাকা';
+      }
     }
 
     // Dynamic Spraying Advisory
@@ -824,7 +900,7 @@ app.post(['/api/scan', '/api/detect'], (req, res, next) => {
 
     const rawCrop = (req.body.crop_name || req.body.crop_type || 'auto').trim();
     const cropName = normalizeCropName(rawCrop);
-    const district = (req.body.district || 'ব্রাহ্মণবাড়িয়া').trim();
+    const district = (req.body.district || 'ঢাকা').trim();
     const firebaseUid = req.body.firebase_uid || 'guest';
     const userName = req.body.user_name || 'কৃষক ভাই';
 
@@ -1023,7 +1099,11 @@ app.post(['/api/scan', '/api/detect'], (req, res, next) => {
 // 4. Scan History API
 app.get('/api/history', async (req, res) => {
   try {
-    const firebaseUid = req.query.firebase_uid || null;
+    const firebaseUid = req.query.firebase_uid || req.headers['x-user-id'] || null;
+    if (!firebaseUid) {
+      // Anonymous request: return empty history to protect user privacy
+      return res.json({ success: true, data: [] });
+    }
     const history = await db.getHistory(firebaseUid);
     res.json({ success: true, data: history });
   } catch (error) {
@@ -1032,10 +1112,25 @@ app.get('/api/history', async (req, res) => {
   }
 });
 
-// 4.1 Delete History Item
+// 4.1 Delete History Item (IDOR Protection)
 app.delete('/api/history/:id', async (req, res) => {
   try {
-    const deleted = await db.deleteScan(req.params.id);
+    const firebaseUid = req.query.firebase_uid || req.headers['x-user-id'] || null;
+    if (!firebaseUid) {
+      return res.status(401).json({ success: false, message: 'অননুমোদিত অনুরোধ। হিস্ট্রি ডিলিট করতে লগইন আবশ্যক।' });
+    }
+
+    const scan = await db.getScanById(req.params.id);
+    if (!scan) {
+      return res.status(404).json({ success: false, message: 'রেকর্ড পাওয়া যায়নি।' });
+    }
+
+    // Verify ownership
+    if (scan.firebase_uid && scan.firebase_uid !== firebaseUid) {
+      return res.status(403).json({ success: false, message: 'অন্য ব্যবহারকারীর রেকর্ড মুছে ফেলার অনুমতি নেই।' });
+    }
+
+    const deleted = await db.deleteScan(req.params.id, firebaseUid);
     if (deleted) {
       res.json({ success: true, message: 'রেকর্ড সফলভাবে মুছে ফেলা হয়েছে।' });
     } else {
@@ -1075,11 +1170,23 @@ app.get('/api/guides/:cropId', async (req, res) => {
 // 7. Fertilizer Calculator API (BARC Standards - Land Area & Seedling-Count Dual Engine)
 app.post('/api/fertilizer-calc', async (req, res) => {
   try {
-    const rawCrop = (req.body.crop_name || 'ধান').trim();
+    const rawCrop = (req.body.crop || req.body.crop_name || 'ধান').trim();
     const crop = normalizeCropName(rawCrop);
     const calcMode = (req.body.calc_mode || 'land_area').trim();
     const firebaseUid = req.body.firebase_uid || 'guest';
     const plantSpec = getPlantSpec(crop);
+
+    // Negative or invalid input validation
+    const rawLandAmount = req.body.landSize !== undefined ? req.body.landSize : (req.body.land_amount !== undefined ? req.body.land_amount : req.body.seedling_count);
+    if (rawLandAmount !== undefined) {
+      const parsedVal = parseFloat(rawLandAmount);
+      if (isNaN(parsedVal) || parsedVal <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'জমির পরিমাণ বা চারার সংখ্যা অবশ্যই একটি ধনাত্মক সংখ্যা হতে হবে।'
+        });
+      }
+    }
 
     let ureaTotal, tspTotal, mopTotal, gypsumTotal, zincTotal, boronTotal, organicTotal;
     let amount, unit, decimals, seedlingCount, plantUnit;
@@ -1087,11 +1194,11 @@ app.post('/api/fertilizer-calc', async (req, res) => {
     let seedlingInfo = null;
 
     if (calcMode === 'seedling_count') {
-      seedlingCount = parseFloat(req.body.seedling_count || req.body.land_amount);
+      seedlingCount = parseFloat(req.body.seedling_count || req.body.land_amount || req.body.landSize);
       if (isNaN(seedlingCount) || seedlingCount <= 0) {
         seedlingCount = 100;
       }
-      plantUnit = (req.body.plant_unit || req.body.land_unit || (plantSpec ? plantSpec.plant_unit_label : 'টি চারা / গাছ')).trim();
+      plantUnit = (req.body.plant_unit || req.body.land_unit || req.body.landUnit || (plantSpec ? plantSpec.plant_unit_label : 'টি চারা / গাছ')).trim();
       amount = seedlingCount;
       unit = plantUnit;
 
@@ -1141,11 +1248,11 @@ app.post('/api/fertilizer-calc', async (req, res) => {
 
     } else {
       // Land Area Mode (default)
-      amount = parseFloat(req.body.land_amount);
+      amount = parseFloat(req.body.landSize !== undefined ? req.body.landSize : req.body.land_amount);
       if (isNaN(amount) || amount <= 0) {
         amount = 1.0;
       }
-      unit = (req.body.land_unit || 'শতাংশ').trim();
+      unit = (req.body.landUnit || req.body.land_unit || 'শতাংশ').trim();
       decimals = convertToDecimals(amount, unit);
       const rate = fertilizerRatesPerDecimal[crop] || fertilizerRatesPerDecimal['ধান'];
 
@@ -1307,6 +1414,13 @@ app.get('*', (req, res) => {
 // Global Error Handler for Multer and Request Parsing
 app.use((err, req, res, next) => {
   if (err) {
+    if (err.status === 413 || err.type === 'entity.too.large') {
+      return res.status(413).json({
+        success: false,
+        error_code: 'PAYLOAD_TOO_LARGE',
+        message: 'অনুরোধের সাইজ অনুমোদিত ১ মেগাবাইটের বেশি (Payload Too Large)।'
+      });
+    }
     console.warn('⚠️ Request handling error:', err.message);
     return res.status(400).json({
       success: false,

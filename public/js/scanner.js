@@ -568,7 +568,7 @@ async function executeCropScan() {
   }
 
   const districtEl = document.getElementById('district-select');
-  const district = districtEl ? districtEl.value : 'ব্রাহ্মণবাড়িয়া';
+  const district = districtEl ? districtEl.value : 'ঢাকা';
 
   const cropSelectEl = document.getElementById('crop-type-select');
   const cropType = cropSelectEl ? cropSelectEl.value : 'auto';

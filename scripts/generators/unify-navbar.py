@@ -205,7 +205,7 @@ def make_mobile_nav(active_key):
           <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-xs">👤</div>
           <div>
             <div class="text-xs font-black text-slate-800">অ্যাকাউন্ট সেটিংস ও যোগাযোগ</div>
-            <div class="text-[10px] text-slate-600">মোবাইল নম্বর ও ইমেইল যুক্ত করুন</div>
+            <div class="text-[10px] text-slate-600">প্রোফাইল সেটিংস ও ইমেইল যুক্ত করুন</div>
           </div>
         </div>
         <span class="text-xs text-emerald-700 font-black">খুলুন ➔</span>
@@ -263,6 +263,7 @@ def process_file(rel_path, active_key):
     
     mobile_nav_pattern = re.compile(
         r'<!-- START: Unified Mobile Navigation & Drawer -->.*?<!-- END: Unified Mobile Navigation & Drawer -->'
+        r'|<!--\s*=*\s*4\.\s*Bottom Navigation for Mobile.*?-->\s*<nav class="fixed bottom-0.*?</nav>'
         r'|<!--\s*=*\s*Floating Glass Bottom Mobile.*?-->\s*<nav class="(md:hidden|xl:hidden) fixed bottom-.*?</nav>'
         r'|<!--\s*=*\s*4\.\s*Floating Glass Bottom Mobile.*?-->\s*<nav class="(md:hidden|xl:hidden) fixed bottom-.*?</nav>'
         r'|<!--.*?Mobile Bottom Navigation.*?-->\s*<nav class="(md:hidden|xl:hidden) fixed bottom-.*?</nav>'

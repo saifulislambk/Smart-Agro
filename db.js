@@ -13,7 +13,7 @@ const inMemoryStore = {
       id: 1,
       firebase_uid: 'guest',
       user_name: 'কৃষক ভাই',
-      district: 'ব্রাহ্মণবাড়িয়া',
+      district: 'ঢাকা',
       crop_name: 'ধান',
       disease_bn: 'ধানের ব্লাস্ট রোগ (Leaf Blast)',
       disease_en: 'Rice Blast',
@@ -232,12 +232,35 @@ async function getFertilizerPlans(firebase_uid = null) {
   return inMemoryStore.fertilizer_plans;
 }
 
-// Delete scan from history
-async function deleteScan(id) {
+// Get single scan by ID
+async function getScanById(id) {
   const numericId = parseInt(id, 10);
+  if (isNaN(numericId)) return null;
   if (isPostgresConnected && pool) {
     try {
-      const res = await pool.query('DELETE FROM scan_history WHERE id = $1 RETURNING *;', [numericId]);
+      const res = await pool.query('SELECT * FROM scan_history WHERE id = $1 LIMIT 1;', [numericId]);
+      return res.rows[0] || null;
+    } catch (err) {
+      console.error('Postgres getScanById error:', err.message);
+    }
+  }
+  return inMemoryStore.scan_history.find(s => s.id === numericId) || null;
+}
+
+// Delete scan from history
+async function deleteScan(id, firebaseUid = null) {
+  const numericId = parseInt(id, 10);
+  if (isNaN(numericId)) return false;
+  if (isPostgresConnected && pool) {
+    try {
+      let query = 'DELETE FROM scan_history WHERE id = $1';
+      let params = [numericId];
+      if (firebaseUid) {
+        query += ' AND (firebase_uid = $2 OR firebase_uid IS NULL)';
+        params.push(firebaseUid);
+      }
+      query += ' RETURNING *;';
+      const res = await pool.query(query, params);
       return res.rowCount > 0;
     } catch (err) {
       console.error('Postgres deleteScan error:', err.message);
@@ -245,7 +268,15 @@ async function deleteScan(id) {
   }
 
   const initialLength = inMemoryStore.scan_history.length;
-  inMemoryStore.scan_history = inMemoryStore.scan_history.filter(s => s.id !== numericId);
+  inMemoryStore.scan_history = inMemoryStore.scan_history.filter(s => {
+    if (s.id === numericId) {
+      if (firebaseUid && s.firebase_uid && s.firebase_uid !== firebaseUid) {
+        return true;
+      }
+      return false;
+    }
+    return true;
+  });
   return inMemoryStore.scan_history.length < initialLength;
 }
 
@@ -275,7 +306,7 @@ async function syncUser(userData) {
         email || null,
         phone_number || null,
         photo_url || null,
-        district || 'ব্রাহ্মণবাড়িয়া',
+        district || 'ঢাকা',
         role || 'কৃষক',
         auth_provider || 'google'
       ]);
@@ -303,7 +334,7 @@ async function syncUser(userData) {
     email: email || null,
     phone_number: phone_number || null,
     photo_url: photo_url || null,
-    district: district || 'ব্রাহ্মণবাড়িয়া',
+    district: district || 'ঢাকা',
     role: role || 'কৃষক',
     auth_provider: auth_provider || 'google',
     created_at: new Date().toISOString(),
@@ -384,6 +415,7 @@ module.exports = {
   initDb,
   saveScan,
   getHistory,
+  getScanById,
   deleteScan,
   getCropGuides,
   getCropGuideById,
