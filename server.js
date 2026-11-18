@@ -593,12 +593,12 @@ app.get('/api/user/profile', async (req, res) => {
 
 app.post('/api/user/link-contact', async (req, res) => {
   try {
-    const { firebase_uid, phone_number, email, display_name, district } = req.body;
+    const { firebase_uid, phone_number, email, display_name, district, photo_url, role } = req.body;
     if (!firebase_uid) {
       return res.status(400).json({ success: false, message: 'firebase_uid is required' });
     }
-    const updatedUser = await db.updateUserContact(firebase_uid, { phone_number, email, display_name, district });
-    res.json({ success: true, message: 'যোগাযোগের তথ্য সফলভাবে সংরক্ষিত হয়েছে!', user: updatedUser });
+    const updatedUser = await db.updateUserContact(firebase_uid, { phone_number, email, display_name, district, photo_url, role });
+    res.json({ success: true, message: 'প্রোফাইল তথ্য সফলভাবে সংরক্ষিত হয়েছে!', user: updatedUser });
   } catch (err) {
     console.error('Error linking contact info:', err);
     res.status(500).json({ success: false, message: 'তথ্য আপডেট করতে সমস্যা হয়েছে।' });

@@ -740,11 +740,100 @@ function showToast(message) {
 }
 
 // --------------------------------------------------------------------
-// 3. Account Settings & Profile Linking (Email & Profile Updates)
+// 3. Account Settings & Profile Linking (Email, Photo, District & Role Updates)
 // --------------------------------------------------------------------
+
+const BANGLADESH_DIVISIONS_DISTRICTS = [
+  { division: 'ঢাকা বিভাগ', districts: ['ঢাকা', 'গাজীপুর', 'নারায়ণগঞ্জ', 'নরসিংদী', 'মুন্সীগঞ্জ', 'মানিকগঞ্জ', 'টাঙ্গাইল', 'কিশোরগঞ্জ', 'ফরিদপুর', 'গোপালগঞ্জ', 'মাদারীপুর', 'রাজবাড়ী', 'শরীয়তপুর'] },
+  { division: 'চট্টগ্রাম বিভাগ', districts: ['চট্টগ্রাম', 'কুমিল্লা', 'ব্রাহ্মণবাড়িয়া', 'কক্সবাজার', 'চাঁদপুর', 'নোয়াখালী', 'ফেনী', 'লক্ষ্মীপুর', 'খাগড়াছড়ি', 'রাঙ্গামাটি', 'বান্দরবান'] },
+  { division: 'রাজশাহী বিভাগ', districts: ['রাজশাহী', 'বগুড়া', 'পাবনা', 'সিরাজগঞ্জ', 'নওগাঁ', 'নাটোর', 'চাঁপাইনবাবগঞ্জ', 'জয়পুরহাট'] },
+  { division: 'রংপুর বিভাগ', districts: ['রংপুর', 'দিনাজপুর', 'গাইবান্ধা', 'কুড়িগ্রাম', 'নীলফামারী', 'লালমনিরহাট', 'পঞ্চগড়', 'ঠাকুরগাঁও'] },
+  { division: 'খুলনা বিভাগ', districts: ['খুলনা', 'যশোর', 'বাগেরহাট', 'সাতক্ষীরা', 'ঝিনাইদহ', 'মাগুরা', 'নড়াইল', 'কুষ্টিয়া', 'মেহেরপুর', 'চুয়াডাঙ্গা'] },
+  { division: 'বরিশাল বিভাগ', districts: ['বরিশাল', 'পটুয়াখালী', 'ভোলা', 'পিরোজপুর', 'বরগুনা', 'ঝালকাঠি'] },
+  { division: 'সিলেট বিভাগ', districts: ['সিলেট', 'মৌলভীবাজার', 'হবিগঞ্জ', 'সুনামগঞ্জ'] },
+  { division: 'ময়মনসিংহ বিভাগ', districts: ['ময়মনসিংহ', 'জামালপুর', 'নেত্রকোণা', 'শেরপুর'] }
+];
+
+const PRESET_AVATARS = [
+  { label: '👨‍🌾 কৃষক ভাই', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80' },
+  { label: '👩‍🌾 কিষাণী আপা', url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80' },
+  { label: '🧑‍💼 কৃষি কর্মকর্তা', url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80' },
+  { label: '🔬 গবেষক', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' }
+];
+
+const ROLE_OPTIONS = [
+  { value: 'কৃষক', label: 'কৃষক (সাধারণ ফসল চাষী)' },
+  { value: 'কৃষি উদ্যোক্তা', label: 'কৃষি উদ্যোক্তা (বাণিজ্যিক খামার ও নার্সারি)' },
+  { value: 'উপ-সহকারী কৃষি কর্মকর্তা (SAAO)', label: 'উপ-সহকারী কৃষি কর্মকর্তা (SAAO)' },
+  { value: 'শিক্ষার্থী / কৃষি গবেষক', label: 'শিক্ষার্থী / কৃষি গবেষক' },
+  { value: 'ধান ও সবজি চাষী', label: 'ধান ও সবজি চাষী' },
+  { value: 'ফল ও বাগান চাষী', label: 'ফল ও বাগান চাষী' }
+];
+
+let currentSelectedPhotoURL = null;
+
+function handleProfilePhotoUpload(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    showToast('⚠️ অনুগ্রহ করে একটি সঠিক ছবি ফাইল নির্বাচন করুন।');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      try {
+        const canvas = document.createElement('canvas');
+        const size = 160;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        // Center crop to square
+        const minDim = Math.min(img.width, img.height);
+        const sx = (img.width - minDim) / 2;
+        const sy = (img.height - minDim) / 2;
+
+        ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        currentSelectedPhotoURL = dataUrl;
+
+        const previewImg = document.getElementById('account-modal-avatar-preview');
+        if (previewImg) previewImg.src = dataUrl;
+
+        document.querySelectorAll('.preset-avatar-btn').forEach(btn => {
+          btn.classList.remove('ring-4', 'ring-emerald-500', 'scale-110');
+        });
+        showToast('📷 ছবি সফলভাবে নির্বাচন করা হয়েছে! সংরক্ষণে ক্লিক করুন।');
+      } catch (err) {
+        console.error('Image compression error:', err);
+        showToast('ছবি প্রসেস করতে সমস্যা হয়েছে।');
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function selectProfilePresetAvatar(url, btnElement) {
+  currentSelectedPhotoURL = url;
+  const previewImg = document.getElementById('account-modal-avatar-preview');
+  if (previewImg) previewImg.src = url;
+
+  document.querySelectorAll('.preset-avatar-btn').forEach(btn => {
+    btn.classList.remove('ring-4', 'ring-emerald-500', 'scale-110');
+  });
+  if (btnElement) {
+    btnElement.classList.add('ring-4', 'ring-emerald-500', 'scale-110');
+  }
+}
+
 function openAccountSettingsModal() {
   const currentUser = getCurrentUser();
-  if (!currentUser || currentUser.isGuest) {
+  if (!currentUser) {
     openLoginModal();
     return;
   }
@@ -752,72 +841,164 @@ function openAccountSettingsModal() {
   const existing = document.getElementById('smart-agro-account-modal');
   if (existing) existing.remove();
 
+  currentSelectedPhotoURL = currentUser.photoURL || null;
+  const userPhoto = currentUser.photoURL || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150';
   const hasEmail = Boolean(currentUser.email && currentUser.email.includes('@'));
+  const userDistrict = currentUser.district || localStorage.getItem('smart_agro_district') || 'ঢাকা';
+  const userRole = currentUser.role || 'কৃষক';
+
+  const districtOptionsHtml = BANGLADESH_DIVISIONS_DISTRICTS.map(group => `
+    <optgroup label="${group.division}">
+      ${group.districts.map(dist => `
+        <option value="${dist}" ${dist === userDistrict ? 'selected' : ''}>${dist}</option>
+      `).join('')}
+    </optgroup>
+  `).join('');
+
+  const roleOptionsHtml = ROLE_OPTIONS.map(opt => `
+    <option value="${opt.value}" ${opt.value === userRole ? 'selected' : ''}>${opt.label}</option>
+  `).join('');
+
+  const presetAvatarsHtml = PRESET_AVATARS.map((p, idx) => `
+    <button type="button" 
+            onclick="SmartAgroAuth.selectProfilePresetAvatar('${p.url}', this)"
+            title="${p.label}"
+            class="preset-avatar-btn group relative w-10 h-10 rounded-full overflow-hidden border-2 border-slate-200 hover:border-emerald-500 focus:outline-none transition-all ${userPhoto === p.url ? 'ring-4 ring-emerald-500 scale-110' : ''}">
+      <img src="${p.url}" alt="${p.label}" class="w-full h-full object-cover">
+    </button>
+  `).join('');
 
   const modalDiv = document.createElement('div');
   modalDiv.id = 'smart-agro-account-modal';
   modalDiv.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in font-bengali';
 
   modalDiv.innerHTML = `
-    <div class="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-emerald-100 p-6 overflow-hidden">
+    <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border-2 border-emerald-400 p-6 md:p-7 overflow-y-auto max-h-[92vh]">
       
       <!-- Close Button -->
       <button onclick="SmartAgroAuth.closeAccountSettingsModal()" 
-              class="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center text-sm font-bold transition-colors">
+              class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center text-sm font-bold transition-colors">
         ✕
       </button>
 
-      <!-- Header -->
-      <div class="flex items-center space-x-3.5 pb-4 border-b border-slate-100">
-        <img src="${currentUser.photoURL || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150'}" 
-             alt="${currentUser.displayName}" 
-             class="w-12 h-12 rounded-full object-cover border-2 border-emerald-500 shadow-sm shrink-0">
-        <div class="min-w-0 flex-1">
-          <h3 class="text-base font-black text-slate-900 truncate">${currentUser.displayName}</h3>
-          <p class="text-xs text-emerald-700 font-bold">${currentUser.role || 'কৃষক'}</p>
+      <!-- Header & Title -->
+      <div class="text-center mb-5">
+        <h3 class="text-lg md:text-xl font-black text-slate-900">👤 প্রোফাইল ও সেটিংস</h3>
+        <p class="text-xs text-slate-500 font-semibold mt-0.5">আপনার ছবি, নিজ জেলা, পদবী ও যোগাযোগের তথ্য আপডেট করুন</p>
+      </div>
+
+      <!-- Photo Edit Section -->
+      <div class="flex flex-col items-center pb-5 mb-5 border-b border-slate-100">
+        <div class="relative group">
+          <div class="w-20 h-20 rounded-full border-4 border-emerald-500 shadow-md overflow-hidden bg-slate-100 flex items-center justify-center">
+            <img id="account-modal-avatar-preview" 
+                 src="${userPhoto}" 
+                 alt="${currentUser.displayName}" 
+                 class="w-full h-full object-cover">
+          </div>
+          <button type="button" 
+                  onclick="document.getElementById('link-photo-file').click()" 
+                  class="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center text-xs shadow-md border-2 border-white transition-all hover:scale-110"
+                  title="ছবি পরিবর্তন করুন">
+            📷
+          </button>
+        </div>
+
+        <input type="file" id="link-photo-file" accept="image/*" class="hidden" onchange="SmartAgroAuth.handleProfilePhotoUpload(event)">
+        
+        <div class="mt-3 flex items-center gap-2">
+          <button type="button" 
+                  onclick="document.getElementById('link-photo-file').click()" 
+                  class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-all">
+            <span>📷</span>
+            <span>ছবি আপলোড / ক্যামেরা</span>
+          </button>
+        </div>
+
+        <!-- Preset Avatars -->
+        <div class="mt-3 text-center">
+          <div class="text-[11px] font-bold text-slate-500 mb-1.5">অথবা নমুনা ছবি নির্বাচন করুন:</div>
+          <div class="flex items-center justify-center gap-2.5">
+            ${presetAvatarsHtml}
+          </div>
         </div>
       </div>
 
-      <!-- Account Linking Section -->
-      <div class="mt-4 space-y-4">
+      <!-- Form Fields -->
+      <div class="space-y-4">
         
         <div id="account-settings-msg" class="hidden p-2.5 rounded-xl text-xs font-bold text-center"></div>
 
-        <!-- Email Section -->
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">ইমেইল ঠিকানা</label>
-          ${hasEmail ? `
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-emerald-200">
-              <span class="text-xs font-bold text-slate-800 truncate">📧 ${currentUser.email}</span>
-              <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full shrink-0">✓ সংযুক্ত</span>
-            </div>
-          ` : `
-            <div class="flex gap-2">
-              <input id="link-email-input" type="email" placeholder="আপনার ইমেইল ঠিকানা দিন" 
-                     class="flex-1 px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold focus:ring-2 focus:ring-emerald-500 outline-none">
-            </div>
-            <p class="text-[10px] text-slate-400 mt-1">ইমেইল যোগ করলে পাসওয়ার্ডবিহীন বা গুগল লগইন ব্যাকআপ পাওয়া যাবে।</p>
-          `}
-        </div>
-
         <!-- Display Name -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">আপনার নাম</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1">
+            ✍️ আপনার নাম
+          </label>
           <input id="link-name-input" type="text" value="${currentUser.displayName || ''}" 
-                 class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold focus:ring-2 focus:ring-emerald-500 outline-none">
+                 placeholder="যেমন: মোঃ সাইফুল ইসলাম"
+                 class="w-full px-3.5 py-2.5 border-2 border-slate-200 focus:border-emerald-500 rounded-xl text-xs font-bold outline-none transition-colors">
         </div>
 
-        <!-- District Selector -->
+        <!-- Role Selector -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">নিজ জেলা</label>
-          <input id="link-district-input" type="text" value="${currentUser.district || 'ব্রাহ্মণবাড়িয়া'}" 
-                 class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs font-bold focus:ring-2 focus:ring-emerald-500 outline-none">
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-bold text-slate-700">
+              🏷️ পদবী / ভূমিকা (Role)
+            </label>
+            <span class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              প্রোফাইল ব্যাজ
+            </span>
+          </div>
+          <select id="link-role-input" 
+                  class="w-full px-3.5 py-2.5 border-2 border-slate-200 focus:border-emerald-500 rounded-xl text-xs font-bold outline-none bg-white text-slate-800 cursor-pointer transition-colors">
+            ${roleOptionsHtml}
+          </select>
+          <p class="text-[10px] text-slate-400 mt-1">
+            💡 অ্যাপে আপনার প্রোফাইল ব্যাজ ও সদস্য পরিচয় হিসেবে এটি প্রদর্শিত হবে।
+          </p>
+        </div>
+
+        <!-- District Selector (64 Districts by Division) -->
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-bold text-slate-700">
+              📍 নিজ জেলা (District)
+            </label>
+            <span class="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              ৬৪ জেলা সাপোর্ট
+            </span>
+          </div>
+          <select id="link-district-input" 
+                  class="w-full px-3.5 py-2.5 border-2 border-slate-200 focus:border-emerald-500 rounded-xl text-xs font-bold outline-none bg-white text-slate-800 cursor-pointer transition-colors">
+            ${districtOptionsHtml}
+          </select>
+          <p class="text-[10px] text-slate-400 mt-1">
+            🌤️ জেলা পরিবর্তনের সাথে সাথে স্থানীয় লাইভ আবহাওয়া ও স্প্রে সতর্কতাও আপডেট হবে।
+          </p>
+        </div>
+
+        <!-- Email Section -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">
+            📧 ইমেইল ঠিকানা
+          </label>
+          ${hasEmail ? `
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200">
+              <span class="text-xs font-bold text-emerald-900 truncate">📧 ${currentUser.email}</span>
+              <span class="text-[10px] bg-emerald-200 text-emerald-900 font-bold px-2 py-0.5 rounded-full shrink-0">✓ সংযুক্ত</span>
+            </div>
+          ` : `
+            <input id="link-email-input" type="email" placeholder="আপনার ইমেইল (যেমন: farmer@gmail.com)" 
+                   class="w-full px-3.5 py-2.5 border-2 border-slate-200 focus:border-emerald-500 rounded-xl text-xs font-bold outline-none transition-colors">
+            <p class="text-[10px] text-slate-400 mt-1">ইমেইল যোগ করলে গুগল ও ওটিপি দিয়ে ব্যাকআপ লগইন পাবেন।</p>
+          `}
         </div>
 
         <!-- Action Button -->
         <button id="save-account-settings-btn" onclick="SmartAgroAuth.saveAccountContactInfo()" 
-                class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs md:text-sm shadow-md active:scale-95 transition-all">
-          💾 তথ্য সংরক্ষণ ও একাউন্ট আপডেট করুন
+                class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs md:text-sm shadow-md active:scale-95 transition-all flex items-center justify-center gap-2">
+          <span>💾</span>
+          <span>তথ্য সংরক্ষণ ও প্রোফাইল আপডেট করুন</span>
         </button>
 
       </div>
@@ -843,10 +1024,13 @@ async function saveAccountContactInfo() {
   const emailInput = document.getElementById('link-email-input');
   const nameInput = document.getElementById('link-name-input');
   const distInput = document.getElementById('link-district-input');
+  const roleInput = document.getElementById('link-role-input');
 
   const newEmail = emailInput ? emailInput.value.trim() : (currentUser.email || '');
   const newName = nameInput ? nameInput.value.trim() : (currentUser.displayName || 'কৃষক ভাই');
-  const newDist = distInput ? distInput.value.trim() : (currentUser.district || 'ব্রাহ্মণবাড়িয়া');
+  const newDist = distInput ? distInput.value.trim() : (currentUser.district || 'ঢাকা');
+  const newRole = roleInput ? roleInput.value.trim() : (currentUser.role || 'কৃষক');
+  const newPhoto = currentSelectedPhotoURL || currentUser.photoURL || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150';
 
   if (btn) {
     btn.disabled = true;
@@ -858,10 +1042,12 @@ async function saveAccountContactInfo() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        firebase_uid: currentUser.uid,
+        firebase_uid: currentUser.uid || ('farmer_' + Date.now()),
         display_name: newName,
         email: newEmail,
-        district: newDist
+        district: newDist,
+        photo_url: newPhoto,
+        role: newRole
       })
     });
 
@@ -873,12 +1059,22 @@ async function saveAccountContactInfo() {
     // Update local state
     currentUser.displayName = newName;
     if (newEmail) currentUser.email = newEmail;
-    if (newDist) currentUser.district = newDist;
+    currentUser.district = newDist;
+    currentUser.role = newRole;
+    currentUser.photoURL = newPhoto;
+    currentUser.badge = '✓ ' + newRole;
 
     localStorage.setItem('smart_agro_user', JSON.stringify(currentUser));
+    localStorage.setItem('smart_agro_district', newDist);
+
+    // Sync live weather if weather component is loaded
+    if (window.SmartAgroWeather && SmartAgroWeather.selectDistrict) {
+      SmartAgroWeather.selectDistrict(newDist);
+    }
+
     notifySubscribers(currentUser);
     closeAccountSettingsModal();
-    showToast('✅ অ্যাকাউন্ট তথ্য সফলভাবে সংরক্ষিত ও লিঙ্ক হয়েছে!');
+    showToast('✅ প্রোফাইল, ছবি ও জেলা সফলভাবে সংরক্ষিত হয়েছে!');
   } catch (err) {
     if (msgDiv) {
       msgDiv.innerText = err.message || 'ত্রুটি ঘটেছে।';
@@ -888,7 +1084,7 @@ async function saveAccountContactInfo() {
   } finally {
     if (btn) {
       btn.disabled = false;
-      btn.innerText = '💾 তথ্য সংরক্ষণ ও একাউন্ট আপডেট করুন';
+      btn.innerText = '💾 তথ্য সংরক্ষণ ও প্রোফাইল আপডেট করুন';
     }
   }
 }
@@ -908,6 +1104,8 @@ window.SmartAgroAuth = {
   openAccountSettingsModal,
   closeAccountSettingsModal,
   saveAccountContactInfo,
+  handleProfilePhotoUpload,
+  selectProfilePresetAvatar,
   toggleProfileDropdown,
   closeProfileDropdown,
   showToast,

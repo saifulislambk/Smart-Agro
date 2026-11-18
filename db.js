@@ -386,6 +386,14 @@ async function updateUserContact(firebase_uid, updates) {
         fields.push(`district = $${idx++}`);
         values.push(updates.district);
       }
+      if (updates.photo_url !== undefined) {
+        fields.push(`photo_url = $${idx++}`);
+        values.push(updates.photo_url);
+      }
+      if (updates.role !== undefined) {
+        fields.push(`role = $${idx++}`);
+        values.push(updates.role);
+      }
 
       if (fields.length > 0) {
         fields.push(`updated_at = CURRENT_TIMESTAMP`);
@@ -404,6 +412,8 @@ async function updateUserContact(firebase_uid, updates) {
     if (updates.phone_number !== undefined) user.phone_number = updates.phone_number;
     if (updates.display_name !== undefined) user.display_name = updates.display_name;
     if (updates.district !== undefined) user.district = updates.district;
+    if (updates.photo_url !== undefined) user.photo_url = updates.photo_url;
+    if (updates.role !== undefined) user.role = updates.role;
     user.updated_at = new Date().toISOString();
     return user;
   }
