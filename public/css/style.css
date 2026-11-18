@@ -1,39 +1,33 @@
 /* ====================================================================
-   Smart Agro (স্মার্ট এগ্রো) - Ultra Premium Design System (2026)
-   Photorealistic Agricultural Landscape + Lush Emerald Glassmorphism
-   High-Contrast Typography, Vector Illustrations & Smooth Animations
+   Smart Agro (স্মার্ট এগ্রো) - Professional Agro Design System
+   Modern Enterprise Agri-Tech & Agronomic Advisory Interface
+   Built with: Deep Forest Moss, Warm Harvest Ochre, High-Contrast Typography
    ==================================================================== */
 
 :root {
-  --primary-emerald: #059669;
-  --primary-emerald-light: #10b981;
-  --primary-emerald-dark: #064e3b;
-  --forest-900: #064e3b;
-  --forest-800: #065f46;
+  --brand-primary: #0b3b2c;
+  --brand-primary-light: #15803d;
+  --brand-primary-dark: #062b20;
+  --brand-accent: #b45309;
+  --brand-accent-light: #d97706;
+  --brand-accent-bg: #fffbeb;
+  --surface-canvas: #f8faf8;
+  --surface-card: #ffffff;
+  --surface-card-subtle: #fbfcfb;
+  --surface-border: #e2e8f0;
+  --surface-border-brand: #cbd5e1;
   --text-primary: #0f172a;
   --text-secondary: #334155;
   --text-muted: #64748b;
-  --glass-bg: rgba(255, 255, 255, 0.90);
-  --glass-bg-hover: rgba(255, 255, 255, 0.98);
-  --glass-border: rgba(16, 185, 129, 0.30);
-  --glass-border-hover: rgba(16, 185, 129, 0.65);
-  --glass-shadow: 0 20px 45px -15px rgba(6, 78, 59, 0.12), 0 0 1px 1px rgba(16, 185, 129, 0.15);
-  --glass-shadow-hover: 0 25px 50px -10px rgba(16, 185, 129, 0.25), 0 0 1px 1px rgba(16, 185, 129, 0.35);
-  --laser-color: #10b981;
-  --laser-glow: rgba(52, 211, 153, 0.95);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
-/* Background Atmosphere - Real Lush Agricultural Landscape + Ambient Daylight Overlay */
+/* Base Body & Layout */
 body {
   font-family: 'Noto Sans Bengali', 'Hind Siliguri', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background-color: #ecfdf5;
-  background-image:
-    linear-gradient(135deg, rgba(240, 253, 244, 0.90) 0%, rgba(236, 253, 245, 0.86) 35%, rgba(209, 250, 229, 0.88) 100%),
-    url('/images/bg-field.jpg');
-  background-position: center center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+  background-color: var(--surface-canvas);
   color: var(--text-primary);
   min-height: 100vh;
   margin: 0;
@@ -43,255 +37,172 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Floating Nature Spores & Pollen Particles */
-.pollen-container {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
+/* High-Quality Card & Panel Utility */
+.agro-card {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--shadow-card);
+  border-radius: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.pollen-dot {
-  position: absolute;
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(52, 211, 153, 0.7) 0%, rgba(16, 185, 129, 0) 70%);
-  animation: floatUpward 15s linear infinite;
-  opacity: 0.6;
+.agro-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: var(--shadow-elevated);
 }
 
-.pollen-1 {
-  left: 10%;
-  width: 14px;
-  height: 14px;
-  bottom: -20px;
-  animation-duration: 16s;
-  animation-delay: 0s;
-}
-
-.pollen-2 {
-  left: 28%;
-  width: 18px;
-  height: 18px;
-  bottom: -20px;
-  animation-duration: 20s;
-  animation-delay: 3s;
-}
-
-.pollen-3 {
-  left: 55%;
-  width: 12px;
-  height: 12px;
-  bottom: -20px;
-  animation-duration: 14s;
-  animation-delay: 7s;
-}
-
-.pollen-4 {
-  left: 75%;
-  width: 22px;
-  height: 22px;
-  bottom: -20px;
-  animation-duration: 22s;
-  animation-delay: 2s;
-}
-
-.pollen-5 {
-  left: 90%;
-  width: 16px;
-  height: 16px;
-  bottom: -20px;
-  animation-duration: 18s;
-  animation-delay: 5s;
-}
-
-@keyframes floatUpward {
-  0% {
-    transform: translateY(0) translateX(0);
-    opacity: 0;
-  }
-
-  10% {
-    opacity: 0.7;
-  }
-
-  90% {
-    opacity: 0.7;
-  }
-
-  100% {
-    transform: translateY(-110vh) translateX(40px);
-    opacity: 0;
-  }
-}
-
-/* Glassmorphism Panels */
+/* Backward-compatible class for components expecting glass-panel */
 .glass-panel {
-  position: relative;
-  background: var(--glass-bg);
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  border-radius: 1.5rem;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: var(--shadow-card);
+  border-radius: 1rem;
+  transition: all 0.2s ease;
+}
+
+.glass-panel:hover {
+  border-color: #cbd5e1;
+  box-shadow: var(--shadow-elevated);
 }
 
 .glass-panel-interactive {
-  position: relative;
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px) saturate(190%);
-  -webkit-backdrop-filter: blur(20px) saturate(190%);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
-  border-radius: 1.25rem;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: var(--shadow-card);
+  border-radius: 1rem;
+  transition: all 0.2s ease;
 }
 
 .glass-panel-interactive:hover {
-  background: var(--glass-bg-hover);
-  border-color: var(--glass-border-hover);
-  transform: translateY(-4px);
-  box-shadow: var(--glass-shadow-hover);
+  border-color: #10b981;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
 }
 
+/* Top Header Bar */
 .glass-header {
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-bottom: 1px solid rgba(16, 185, 129, 0.25);
-  box-shadow: 0 4px 25px -5px rgba(6, 78, 59, 0.08);
+  background: rgba(255, 255, 255, 0.98);
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
 }
 
-/* Form Select Styling - Crystal Clear High Contrast */
+/* Form Select Styling - Clean, High-Contrast */
 select {
   background-color: #ffffff !important;
   color: #0f172a !important;
-  border-color: rgba(16, 185, 129, 0.4) !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+select:focus {
+  border-color: #15803d !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(21, 128, 61, 0.15) !important;
 }
 
 select option {
   background-color: #ffffff !important;
   color: #0f172a !important;
-  padding: 10px 14px;
+  padding: 8px 12px;
 }
 
-/* Tab Viewport Animation */
-.tab-viewport {
-  animation: tabFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+/* Custom Checkbox */
+.checkpoint-checkbox {
+  appearance: none;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 0.375rem;
+  border: 2px solid #cbd5e1;
+  background-color: #ffffff;
+  cursor: pointer;
+  display: inline-grid;
+  place-content: center;
+  transition: all 0.15s ease;
 }
 
-@keyframes tabFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.checkpoint-checkbox:checked {
+  background-color: #15803d;
+  border-color: #15803d;
 }
 
-/* High-Tech AI Laser Scanner Viewport (Cinematic Dark Box for uploaded leaf) */
+.checkpoint-checkbox:checked::before {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  transform: scale(1);
+  background-color: #ffffff;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+/* Diagnostic Laboratory Viewport (Clean, precision-engineered) */
 .scanner-viewport {
   position: relative;
   overflow: hidden;
-  border-radius: 1.25rem;
-  background: #091310;
-  border: 2px solid rgba(16, 185, 129, 0.5);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 0 50px rgba(0, 0, 0, 0.85);
+  border-radius: 0.75rem;
+  background: #0a1410;
+  border: 1px solid #1e3a2f;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-/* Viewfinder HUD Reticle Corners */
+/* Precision Viewfinder Corner Guides (Clean, architectural brackets) */
 .scanner-hud-corner {
   position: absolute;
-  width: 32px;
-  height: 32px;
+  width: 20px;
+  height: 20px;
   pointer-events: none;
   z-index: 25;
 }
 
 .scanner-hud-tl {
-  top: 14px;
-  left: 14px;
-  border-top: 3px solid #10b981;
-  border-left: 3px solid #10b981;
-  border-top-left-radius: 8px;
-  filter: drop-shadow(0 0 8px #10b981);
+  top: 12px;
+  left: 12px;
+  border-top: 2px solid #22c55e;
+  border-left: 2px solid #22c55e;
 }
 
 .scanner-hud-tr {
-  top: 14px;
-  right: 14px;
-  border-top: 3px solid #10b981;
-  border-right: 3px solid #10b981;
-  border-top-right-radius: 8px;
-  filter: drop-shadow(0 0 8px #10b981);
+  top: 12px;
+  right: 12px;
+  border-top: 2px solid #22c55e;
+  border-right: 2px solid #22c55e;
 }
 
 .scanner-hud-bl {
-  bottom: 14px;
-  left: 14px;
-  border-bottom: 3px solid #10b981;
-  border-left: 3px solid #10b981;
-  border-bottom-left-radius: 8px;
-  filter: drop-shadow(0 0 8px #10b981);
+  bottom: 12px;
+  left: 12px;
+  border-bottom: 2px solid #22c55e;
+  border-left: 2px solid #22c55e;
 }
 
 .scanner-hud-br {
-  bottom: 14px;
-  right: 14px;
-  border-bottom: 3px solid #10b981;
-  border-right: 3px solid #10b981;
-  border-bottom-right-radius: 8px;
-  filter: drop-shadow(0 0 8px #10b981);
+  bottom: 12px;
+  right: 12px;
+  border-bottom: 2px solid #22c55e;
+  border-right: 2px solid #22c55e;
 }
 
-/* Center HUD Crosshair Reticle */
+/* Center HUD Crosshair - Subtle Precision Marks */
 .scanner-crosshair {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 60px;
-  height: 60px;
+  width: 40px;
+  height: 40px;
   pointer-events: none;
   z-index: 20;
-  opacity: 0.45;
+  opacity: 0.4;
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
 }
 
-.laser-active .scanner-crosshair {
-  opacity: 0.95;
-  animation: reticleSpin 6s linear infinite;
-}
-
-@keyframes reticleSpin {
-  0% {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-
-  100% {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
-
-/* Laser Beam Sweeping Animation */
+/* Clean Scan Sweep Bar (Subtle progress sweep, non-gimmicky) */
 .laser-beam {
   position: absolute;
   left: 0;
   right: 0;
-  height: 4px;
-  background: linear-gradient(90deg,
-      transparent 0%,
-      rgba(6, 182, 212, 0.6) 15%,
-      #34d399 50%,
-      #10b981 75%,
-      transparent 100%);
-  box-shadow:
-    0 0 20px 5px rgba(52, 211, 153, 0.95),
-    0 0 40px 10px rgba(16, 185, 129, 0.6),
-    0 -12px 30px 4px rgba(6, 182, 212, 0.5);
+  height: 2px;
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
   z-index: 22;
   pointer-events: none;
   display: none;
@@ -299,208 +210,114 @@ select option {
 
 .laser-active .laser-beam {
   display: block;
-  animation: laserScan 2.2s ease-in-out infinite alternate;
+  animation: scanSweep 2s ease-in-out infinite alternate;
 }
 
-@keyframes laserScan {
+@keyframes scanSweep {
   0% {
-    top: 4%;
-    opacity: 0.95;
+    top: 5%;
+    opacity: 0.6;
   }
-
-  50% {
-    opacity: 1;
-  }
-
   100% {
-    top: 94%;
-    opacity: 0.95;
+    top: 95%;
+    opacity: 0.9;
   }
 }
 
-/* Futuristic Scanline Grid Overlay */
-.laser-active .scanner-grid-overlay {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(0deg,
-      rgba(16, 185, 129, 0.1) 0px,
-      rgba(16, 185, 129, 0.1) 2px,
-      transparent 2px,
-      transparent 6px);
-  z-index: 15;
-  pointer-events: none;
-  animation: gridFlicker 0.2s infinite;
+/* Dropzone Active Border */
+.dropzone-active {
+  border-color: #15803d !important;
+  background-color: #f0fdf4 !important;
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.12) !important;
 }
 
-@keyframes gridFlicker {
-
-  0%,
-  100% {
-    opacity: 0.85;
-  }
-
-  50% {
-    opacity: 1;
-  }
-}
-
-/* Animated Leaf Float in Dropzone */
-@keyframes leafFloat {
-  0% {
-    transform: translateY(0px) rotate(0deg);
-  }
-
-  50% {
-    transform: translateY(-10px) rotate(2deg);
-  }
-
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-}
-
-.leaf-float-animation {
-  animation: leafFloat 4.5s ease-in-out infinite;
-}
-
-/* Animated Sun Rays in Weather Card */
-@keyframes sunSpin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.sun-rotate-animation {
-  animation: sunSpin 24s linear infinite;
-  transform-origin: center center;
-}
-
-/* Animated Cloud Drift */
-@keyframes cloudDrift {
-  0% {
-    transform: translateX(0px);
-  }
-
-  50% {
-    transform: translateX(6px);
-  }
-
-  100% {
-    transform: translateX(0px);
-  }
-}
-
-.cloud-drift-animation {
-  animation: cloudDrift 6s ease-in-out infinite;
-}
-
-/* Radar Beacon for Weather & Alerts */
+/* Radar Beacon for Weather & Alerts (Clean, subtle pulse) */
 @keyframes beaconPing {
   0% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.4);
   }
-
   70% {
     transform: scale(1);
-    box-shadow: 0 0 0 16px rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 8px rgba(21, 128, 61, 0);
   }
-
   100% {
     transform: scale(0.95);
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 0 rgba(21, 128, 61, 0);
   }
 }
 
 .beacon-ping {
-  animation: beaconPing 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+  animation: beaconPing 2.5s infinite cubic-bezier(0.4, 0, 0.6, 1);
 }
 
 /* Cultivation Vertical Timeline */
 .timeline-container {
   position: relative;
-  padding-left: 3.5rem;
+  padding-left: 3.25rem;
 }
 
 @media (max-width: 640px) {
   .timeline-container {
-    padding-left: 2.75rem;
+    padding-left: 2.5rem;
   }
 }
 
 .timeline-line {
   position: absolute;
-  left: 24px;
-  top: 24px;
-  bottom: 30px;
-  width: 4px;
-  background: linear-gradient(180deg,
-      #10b981 0%,
-      #059669 40%,
-      #047857 70%,
-      rgba(16, 185, 129, 0.2) 100%);
+  left: 22px;
+  top: 20px;
+  bottom: 24px;
+  width: 3px;
+  background: #cbd5e1;
   border-radius: 9999px;
-  box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
 }
 
 @media (max-width: 640px) {
   .timeline-line {
-    left: 18px;
+    left: 16px;
   }
 }
 
 .timeline-node {
   position: absolute;
-  left: -3.5rem;
+  left: -3.25rem;
   top: 1.25rem;
-  width: 3rem;
-  height: 3rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 1.125rem;
+  font-size: 1rem;
   background: #ffffff;
-  border: 3px solid #10b981;
-  color: #047857;
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+  border: 2px solid #15803d;
+  color: #15803d;
+  box-shadow: var(--shadow-card);
   z-index: 10;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s ease;
 }
 
 @media (max-width: 640px) {
   .timeline-node {
-    left: -2.75rem;
-    width: 2.25rem;
-    height: 2.25rem;
-    font-size: 0.875rem;
-    border-width: 2.5px;
+    left: -2.5rem;
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.8125rem;
   }
 }
 
 .timeline-node:hover {
-  transform: scale(1.15);
-  background: #10b981;
+  transform: scale(1.1);
+  background: #15803d;
   color: #ffffff;
-  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
 }
 
-/* Dropzone Active Border */
-.dropzone-active {
-  border-color: #10b981 !important;
-  background-color: #ecfdf5 !important;
-  box-shadow: 0 0 35px rgba(16, 185, 129, 0.25) !important;
-}
-
-/* Custom Scrollbars */
+/* Clean Professional Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -508,50 +325,47 @@ select option {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(16, 185, 129, 0.4);
-  border-radius: 4px;
+  background: #cbd5e1;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(16, 185, 129, 0.8);
+  background: #94a3b8;
 }
 
 /* Bengali Typography fine-tuning */
 .font-bengali {
   font-family: 'Noto Sans Bengali', 'Hind Siliguri', sans-serif;
-  line-height: 1.7;
+  line-height: 1.65;
 }
 
 /* Modal and Fade-in Animation */
 .animate-fade-in {
-  animation: modalFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes modalFadeIn {
   from {
     opacity: 0;
-    transform: scale(0.96) translateY(6px);
+    transform: translateY(4px);
   }
-
   to {
     opacity: 1;
-    transform: scale(1) translateY(0);
+    transform: translateY(0);
   }
 }
 
 /* Mobile Drawer Slide-Up Animation */
 .animate-slide-up {
-  animation: slideUpSheet 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideUpSheet 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes slideUpSheet {
   from {
     transform: translateY(100%);
-    opacity: 0.5;
   }
   to {
     transform: translateY(0);
-    opacity: 1;
   }
 }
 
@@ -580,14 +394,21 @@ select option {
 
 /* Shadow utilities */
 .shadow-xs {
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
 }
 
 .shadow-2xs {
-  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.02);
 }
 
 /* Line clamp support */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -595,241 +416,29 @@ select option {
   overflow: hidden;
 }
 
-/* Interactive Action Checkpoints */
-.checkpoint-checkbox {
-  appearance: none;
-  width: 1.25rem;
-  height: 1.25rem;
-  border: 2px solid #10b981;
-  border-radius: 0.375rem;
-  background-color: #ffffff;
-  display: inline-grid;
-  place-content: center;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  flex-shrink: 0;
-  margin-top: 0.15rem;
+/* Official Agronomic Badge Styles */
+.badge-dae {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background-color: #f0fdf4;
+  color: #14532d;
+  border: 1px solid #bbf7d0;
 }
 
-.checkpoint-checkbox:checked {
-  background-color: #10b981;
-  border-color: #059669;
-}
-
-.checkpoint-checkbox:checked::before {
-  content: "✔";
-  color: white;
-  font-size: 0.8rem;
-  font-weight: 900;
-}
-
-.checkpoint-label {
-  cursor: pointer;
-  user-select: none;
-  transition: color 0.2s ease;
-}
-
-.checkpoint-checkbox:checked + .checkpoint-label {
-  color: #047857;
-  text-decoration: line-through;
-  opacity: 0.85;
-}
-
-/* Gallery Photo Viewers */
-.gallery-thumbnail {
-  transition: all 0.25s ease;
-  cursor: pointer;
-}
-
-.gallery-thumbnail.active-thumb {
-  border-color: #10b981 !important;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.35);
-  transform: translateY(-2px);
-}
-
-.gallery-thumbnail:hover {
-  transform: translateY(-2px);
-}
-
-/* Compact, Elegantly Sized YouTube Video Container */
-.video-compact-card {
-  max-width: 580px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.video-responsive-container {
-  position: relative;
-  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-  height: 0;
-  overflow: hidden;
-  border-radius: 0.875rem;
-}
-
-.video-responsive-container iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-/* Lightbox Modal */
-#image-lightbox-modal {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-/* ====================================================================
-   PRINT STYLES: OPTIMIZED FOR CRISP A4 WITH SLIM SIDE MARGINS
-   ==================================================================== */
-@page {
-  size: A4 portrait;
-  margin: 6mm 8mm 6mm 8mm; /* Slim 8mm side margins for maximum readable width */
-}
-
-@media print {
-  html, body {
-    background: #ffffff !important;
-    color: #0f172a !important;
-    font-size: 10pt !important;
-    line-height: 1.4 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-  }
-
-  /* Force hide all navigation shell components */
-  header,
-  nav,
-  footer,
-  .pollen-container,
-  .no-print,
-  button,
-  #gps-location-modal,
-  #login-modal,
-  #image-lightbox-modal,
-  #crops-grid-container,
-  #guide-search-input,
-  .search-filters-toolbar,
-  .helpline-widget,
-  .video-responsive-container,
-  .video-compact-card,
-  .quick-action-pills,
-  #auth-section,
-  #user-profile-dropdown,
-  .fixed-nav,
-  input[type="text"],
-  input[type="number"],
-  select {
-    display: none !important;
-    visibility: hidden !important;
-  }
-
-  /* Full-width roadmap print layout */
-  #printable-crop-roadmap {
-    display: block !important;
-    visibility: visible !important;
-    position: static !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #ffffff !important;
-    box-shadow: none !important;
-  }
-
-  #printable-crop-roadmap * {
-    visibility: visible !important;
-  }
-
-  /* Official Print Header */
-  .print-official-header {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    border-bottom: 2px solid #059669 !important;
-    padding-bottom: 6px !important;
-    margin-bottom: 10px !important;
-  }
-
-  .print-avoid-break {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* Remove timeline line in print */
-  .timeline-line {
-    display: none !important;
-  }
-
-  .timeline-node {
-    position: static !important;
-    display: inline-flex !important;
-    width: 1.6rem !important;
-    height: 1.6rem !important;
-    border: 2px solid #059669 !important;
-    font-size: 0.8rem !important;
-    color: #059669 !important;
-    margin-right: 0.4rem !important;
-    background: transparent !important;
-    box-shadow: none !important;
-  }
-
-  .glass-panel, .glass-panel-interactive {
-    background: #ffffff !important;
-    border: 1px solid #cbd5e1 !important;
-    color: #0f172a !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    border-radius: 6px !important;
-    padding: 8px 10px !important;
-    margin-bottom: 8px !important;
-  }
-
-  /* 4 Photos Row in Print */
-  .gallery-print-row {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 6px !important;
-    margin-bottom: 10px !important;
-  }
-
-  .gallery-print-row img {
-    height: 75px !important;
-    width: 100% !important;
-    object-fit: cover !important;
-    border: 1px solid #94a3b8 !important;
-    border-radius: 4px !important;
-  }
-
-  /* Fertilizer Calculator Slip Isolation */
-  body.calculator-page main > *:not(#fertilizer-results-container) {
-    display: none !important;
-  }
-
-  body.calculator-page #fertilizer-results-container {
-    display: block !important;
-    visibility: visible !important;
-    position: static !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  /* Prescription Modal print fallback */
-  #prescription-detail-modal {
-    position: static !important;
-    background: transparent !important;
-    backdrop-filter: none !important;
-    padding: 0 !important;
-    max-height: none !important;
-  }
-  #prescription-detail-modal > div {
-    max-height: none !important;
-    overflow: visible !important;
-    border: 1px solid #94a3b8 !important;
-    box-shadow: none !important;
-  }
+.badge-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background-color: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
 }

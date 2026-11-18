@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>এআই রোগ স্ক্যানার - স্মার্ট এগ্রো (Smart Agro)</title>
+  <title>এআই রোগ স্ক্যানার ও প্রেসক্রিপশন - স্মার্ট এগ্রো (Smart Agro)</title>
   
   <!-- Favicon -->
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌿%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%2315803d' d='M50 15 C30 35 25 65 50 85 C75 65 70 35 50 15 Z'/%3E%3Cpath stroke='%23ffffff' stroke-width='4' fill='none' d='M50 80 L50 25 M50 45 L35 35 M50 60 L65 50'/%3E%3C/svg%3E">
 
-  <!-- Google Fonts: Noto Sans Bengali & Hind Siliguri -->
+  <!-- Google Fonts: Hind Siliguri & Noto Sans Bengali -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -22,25 +22,20 @@
           colors: {
             forest: {
               950: '#06261c',
-              900: '#064e3b',
-              800: '#065f46',
-              700: '#047857'
+              900: '#0b3b2c',
+              800: '#14532d',
+              700: '#15803d'
             },
-            emerald: {
-              50: '#f0fdf4',
-              100: '#dcfce7',
-              200: '#bbf7d0',
-              300: '#86efac',
-              400: '#4ade80',
-              500: '#22c55e',
-              600: '#16a34a',
-              700: '#15803d',
-              800: '#166534',
-              900: '#14532d'
+            harvest: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              500: '#d97706',
+              600: '#b45309',
+              700: '#92400e'
             }
           },
           fontFamily: {
-            bengali: ['"Noto Sans Bengali"', '"Hind Siliguri"', 'sans-serif']
+            bengali: ['"Hind Siliguri"', '"Noto Sans Bengali"', 'sans-serif']
           }
         }
       }
@@ -55,173 +50,197 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 </head>
 
-<body class="font-bengali text-slate-800 bg-slate-50 selection:bg-emerald-500 selection:text-white pb-24 md:pb-16 antialiased">
+<body class="font-bengali text-slate-800 bg-[#f8faf8] selection:bg-emerald-600 selection:text-white pb-28 md:pb-16 antialiased">
 
-            <!-- ====================================================================
-       1. Top Fixed Navigation Header (Unified across all pages)
+  <!-- ====================================================================
+       1. Top Authoritative Navigation Bar (Single Unified Navigation)
        ==================================================================== -->
-  <header class="sticky top-0 z-50 glass-header px-2.5 sm:px-4 py-2.5 md:px-8 bg-white/90 backdrop-blur-md border-b border-emerald-100 shadow-xs">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2 md:gap-4">
+  <header class="sticky top-0 z-50 bg-white border-b border-slate-200/80 shadow-xs px-3 sm:px-4 py-2.5 md:px-8">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 md:gap-4">
       
-      <!-- Logo & Branding -->
-      <a href="/" class="flex items-center space-x-2 md:space-x-3 cursor-pointer group shrink-0">
-        <div class="w-9 h-9 md:w-11 md:h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-lg md:text-2xl shadow-md group-hover:scale-105 transition-transform border border-white/40">
-          🌾
+      <!-- Logo & Brand Identity -->
+      <a href="/" class="flex items-center space-x-2.5 md:space-x-3 cursor-pointer group shrink-0">
+        <div class="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-forest-900 text-white flex items-center justify-center shadow-xs transition-transform group-hover:scale-105">
+          <svg class="w-5 h-5 md:w-6 md:h-6 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+            <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+          </svg>
         </div>
         <div>
           <div class="flex items-center gap-1.5 md:gap-2">
             <span class="text-base sm:text-lg md:text-xl font-black text-slate-900 tracking-tight">স্মার্ট এগ্রো</span>
-            <span class="text-[10px] md:text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 hidden sm:inline-block">এআই কৃষি সহকারী</span>
+            <span class="text-[10px] md:text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 hidden sm:inline-block">ডিজিটাল কৃষি সেবা</span>
           </div>
-          <p class="text-[11px] text-slate-500 font-medium hidden lg:block">ডিজিটাল কৃষি তথ্য ও রোগ নির্ণয় সেবা</p>
+          <p class="text-[11px] text-slate-500 font-medium hidden lg:block">বাংলাদেশ কৃষি তথ্য ও রোগ নির্ণয় পোর্টাল</p>
         </div>
       </a>
 
-      <!-- Desktop Navigation Menu (Active on xl screens >= 1280px) -->
+      <!-- Desktop Primary Navigation Menu -->
       <nav class="hidden xl:flex items-center space-x-1">
-        <a href="/" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">হোম</a>
-        <a href="/scan" class="px-3.5 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-xs">এআই স্ক্যানার</a>
-        <a href="/roadmap" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">ফসলের গাইড</a>
-        <a href="/calculator" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">সার ক্যালকুলেটর</a>
-        <a href="/grafting" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">কলম পদ্ধতি</a>
-        <a href="/history" class="px-3 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors">স্ক্যান ইতিহাস</a>
+        <a href="/" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:text-forest-900 hover:bg-slate-100 transition-colors">হোম</a>
+        <a href="/scan" class="px-3 py-1.5 rounded-lg text-xs font-black bg-forest-900 text-white shadow-2xs">রোগ স্ক্যানার</a>
+        <a href="/roadmap" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:text-forest-900 hover:bg-slate-100 transition-colors">ফসলের গাইড</a>
+        <a href="/calculator" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:text-forest-900 hover:bg-slate-100 transition-colors">সার ক্যালকুলেটর</a>
+        <a href="/grafting" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:text-forest-900 hover:bg-slate-100 transition-colors">কলম পদ্ধতি</a>
+        <a href="/history" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700 hover:text-forest-900 hover:bg-slate-100 transition-colors">রেকর্ড আর্কাইভ</a>
       </nav>
 
-      <!-- 64 District Selector, GPS Button & Auth -->
+      <!-- 64 District Selector, GPS Button & Auth Widget -->
       <div class="flex items-center space-x-1.5 sm:space-x-2 md:space-x-3 shrink-0">
         
         <!-- District Picker Grouped by 8 Divisions -->
         <div class="relative flex items-center">
-          <select id="district-select" class="appearance-none bg-white border border-emerald-300 text-slate-800 text-[11px] sm:text-xs md:text-sm font-bold rounded-xl pl-2 sm:pl-3.5 pr-6 sm:pr-8 py-1.5 sm:py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer shadow-xs max-w-[95px] sm:max-w-[130px] md:max-w-none truncate">
+          <select id="district-select" class="appearance-none bg-white border border-slate-300 text-slate-800 text-[11px] sm:text-xs md:text-sm font-bold rounded-lg pl-2 sm:pl-3 pr-6 sm:pr-7 py-1.5 sm:py-2 focus:outline-none focus:ring-1 focus:ring-emerald-600 cursor-pointer shadow-2xs max-w-[95px] sm:max-w-[130px] md:max-w-none truncate">
             <optgroup label="চট্টগ্রাম বিভাগ">
-              <option value="ব্রাহ্মণবাড়িয়া">📍 ব্রাহ্মণবাড়িয়া</option>
-              <option value="কুমিল্লা">📍 কুমিল্লা</option>
-              <option value="চট্টগ্রাম">📍 চট্টগ্রাম</option>
-              <option value="কক্সবাজার">📍 কক্সবাজার</option>
-              <option value="চাঁদপুর">📍 চাঁদপুর</option>
-              <option value="নোয়াখালী">📍 নোয়াখালী</option>
-              <option value="ফেনী">📍 ফেনী</option>
-              <option value="লক্ষ্মীপুর">📍 লক্ষ্মীপুর</option>
-              <option value="খাগড়াছড়ি">📍 খাগড়াছড়ি</option>
-              <option value="রাঙ্গামাটি">📍 রাঙ্গামাটি</option>
-              <option value="বান্দরবান">📍 বান্দরবান</option>
+              <option value="ব্রাহ্মণবাড়িয়া">ব্রাহ্মণবাড়িয়া</option>
+              <option value="কুমিল্লা">কুমিল্লা</option>
+              <option value="চট্টগ্রাম">চট্টগ্রাম</option>
+              <option value="কক্সবাজার">কক্সবাজার</option>
+              <option value="চাঁদপুর">চাঁদপুর</option>
+              <option value="নোয়াখালী">নোয়াখালী</option>
+              <option value="ফেনী">ফেনী</option>
+              <option value="লক্ষ্মীপুর">লক্ষ্মীপুর</option>
+              <option value="খাগড়াছড়ি">খাগড়াছড়ি</option>
+              <option value="রাঙ্গামাটি">রাঙ্গামাটি</option>
+              <option value="বান্দরবান">বান্দরবান</option>
             </optgroup>
             <optgroup label="ঢাকা বিভাগ">
-              <option value="ঢাকা" selected>📍 ঢাকা</option>
-              <option value="গাজীপুর">📍 গাজীপুর</option>
-              <option value="নারায়ণগঞ্জ">📍 নারায়ণগঞ্জ</option>
-              <option value="নরসিংদী">📍 নরসিংদী</option>
-              <option value="মুন্সীগঞ্জ">📍 মুন্সীগঞ্জ</option>
-              <option value="মানিকগঞ্জ">📍 মানিকগঞ্জ</option>
-              <option value="টাঙ্গাইল">📍 টাঙ্গাইল</option>
-              <option value="কিশোরগঞ্জ">📍 কিশোরগঞ্জ</option>
-              <option value="ফরিদপুর">📍 ফরিদপুর</option>
-              <option value="গোপালগঞ্জ">📍 গোপালগঞ্জ</option>
-              <option value="মাদারীপুর">📍 মাদারীপুর</option>
-              <option value="রাজবাড়ী">📍 রাজবাড়ী</option>
-              <option value="শরীয়তপুর">📍 শরীয়তপুর</option>
+              <option value="ঢাকা" selected>ঢাকা</option>
+              <option value="গাজীপুর">গাজীপুর</option>
+              <option value="নারায়ণগঞ্জ">নারায়ণগঞ্জ</option>
+              <option value="নরসিংদী">নরসিংদী</option>
+              <option value="মুন্সীগঞ্জ">মুন্সীগঞ্জ</option>
+              <option value="মানিকগঞ্জ">মানিকগঞ্জ</option>
+              <option value="টাঙ্গাইল">টাঙ্গাইল</option>
+              <option value="কিশোরগঞ্জ">কিশোরগঞ্জ</option>
+              <option value="ফরিদপুর">ফরিদপুর</option>
+              <option value="গোপালগঞ্জ">গোপালগঞ্জ</option>
+              <option value="মাদারীপুর">মাদারীপুর</option>
+              <option value="রাজবাড়ী">রাজবাড়ী</option>
+              <option value="শরীয়তপুর">শরীয়তপুর</option>
             </optgroup>
             <optgroup label="রাজশাহী বিভাগ">
-              <option value="রাজশাহী">📍 রাজশাহী</option>
-              <option value="বগুড়া">📍 বগুড়া</option>
-              <option value="পাবনা">📍 পাবনা</option>
-              <option value="সিরাজগঞ্জ">📍 সিরাজগঞ্জ</option>
-              <option value="নওগাঁ">📍 নওগাঁ</option>
-              <option value="নাটোর">📍 নাটোর</option>
-              <option value="চাঁপাইনবাবগঞ্জ">📍 চাঁপাইনবাবগঞ্জ</option>
-              <option value="জয়পুরহাট">📍 জয়পুরহাট</option>
+              <option value="রাজশাহী">রাজশাহী</option>
+              <option value="বগুড়া">বগুড়া</option>
+              <option value="পাবনা">পাবনা</option>
+              <option value="সিরাজগঞ্জ">সিরাজগঞ্জ</option>
+              <option value="নওগাঁ">নওগাঁ</option>
+              <option value="নাটোর">নাটোর</option>
+              <option value="চাঁপাইনবাবগঞ্জ">চাঁপাইনবাবগঞ্জ</option>
+              <option value="জয়পুরহাট">জয়পুরহাট</option>
             </optgroup>
             <optgroup label="রংপুর বিভাগ">
-              <option value="রংপুর">📍 রংপুর</option>
-              <option value="দিনাজপুর">📍 দিনাজপুর</option>
-              <option value="গাইবান্ধা">📍 গাইবান্ধা</option>
-              <option value="কুড়িগ্রাম">📍 কুড়িগ্রাম</option>
-              <option value="নীলফামারী">📍 নীলফামারী</option>
-              <option value="লালমনিরহাট">📍 লালমনিরহাট</option>
-              <option value="পঞ্চগড়">📍 পঞ্চগড়</option>
-              <option value="ঠাকুরগাঁও">📍 ঠাকুরগাঁও</option>
+              <option value="রংপুর">রংপুর</option>
+              <option value="দিনাজপুর">দিনাজপুর</option>
+              <option value="গাইবান্ধা">গাইবান্ধা</option>
+              <option value="কুড়িগ্রাম">কুড়িগ্রাম</option>
+              <option value="নীলফামারী">নীলফামারী</option>
+              <option value="লালমনিরহাট">লালমনিরহাট</option>
+              <option value="পঞ্চগড়">পঞ্চগড়</option>
+              <option value="ঠাকুরগাঁও">ঠাকুরগাঁও</option>
             </optgroup>
             <optgroup label="খুলনা বিভাগ">
-              <option value="খুলনা">📍 খুলনা</option>
-              <option value="যশোর">📍 যশোর</option>
-              <option value="কুষ্টিয়া">📍 কুষ্টিয়া</option>
-              <option value="বাগেরহাট">📍 বাগেরহাট</option>
-              <option value="সাতক্ষীরা">📍 সাতক্ষীরা</option>
-              <option value="ঝিনাইদহ">📍 ঝিনাইদহ</option>
-              <option value="মাগুরা">📍 মাগুরা</option>
-              <option value="নড়াইল">📍 নড়াইল</option>
-              <option value="মেহেরপুর">📍 মেহেরপুর</option>
-              <option value="চুয়াডাঙ্গা">📍 চুয়াডাঙ্গা</option>
+              <option value="খুলনা">খুলনা</option>
+              <option value="যশোর">যশোর</option>
+              <option value="কুষ্টিয়া">কুষ্টিয়া</option>
+              <option value="বাগেরহাট">বাগেরহাট</option>
+              <option value="সাতক্ষীরা">সাতক্ষীরা</option>
+              <option value="ঝিনাইদহ">ঝিনাইদহ</option>
+              <option value="মাগুরা">মাগুরা</option>
+              <option value="নড়াইল">নড়াইল</option>
+              <option value="মেহেরপুর">মেহেরপুর</option>
+              <option value="চুয়াডাঙ্গা">চুয়াডাঙ্গা</option>
             </optgroup>
             <optgroup label="বরিশাল বিভাগ">
-              <option value="বরিশাল">📍 বরিশাল</option>
-              <option value="পটুয়াখালী">📍 পটুয়াখালী</option>
-              <option value="ভোলা">📍 ভোলা</option>
-              <option value="পিরোজপুর">📍 পিরোজপুর</option>
-              <option value="বরগুনা">📍 বরগুনা</option>
-              <option value="ঝালকাঠি">📍 ঝালকাঠি</option>
+              <option value="বরিশাল">বরিশাল</option>
+              <option value="পটুয়াখালী">পটুয়াখালী</option>
+              <option value="ভোলা">ভোলা</option>
+              <option value="পিরোজপুর">পিরোজপুর</option>
+              <option value="বরগুনা">বরগুনা</option>
+              <option value="ঝালকাঠি">ঝালকাঠি</option>
             </optgroup>
             <optgroup label="সিলেট বিভাগ">
-              <option value="সিলেট">📍 সিলেট</option>
-              <option value="মৌলভীবাজার">📍 মৌলভীবাজার</option>
-              <option value="হবিগঞ্জ">📍 হবিগঞ্জ</option>
-              <option value="সুনামগঞ্জ">📍 সুনামগঞ্জ</option>
+              <option value="সিলেট">সিলেট</option>
+              <option value="মৌলভীবাজার">মৌলভীবাজার</option>
+              <option value="হবিগঞ্জ">হবিগঞ্জ</option>
+              <option value="সুনামগঞ্জ">সুনামগঞ্জ</option>
             </optgroup>
             <optgroup label="ময়মনসিংহ বিভাগ">
-              <option value="ময়মনসিংহ">📍 ময়মনসিংহ</option>
-              <option value="জামালপুর">📍 জামালপুর</option>
-              <option value="নেত্রকোণা">📍 নেত্রকোণা</option>
-              <option value="শেরপুর">📍 শেরপুর</option>
+              <option value="ময়মনসিংহ">ময়মনসিংহ</option>
+              <option value="জামালপুর">জামালপুর</option>
+              <option value="নেত্রকোণা">নেত্রকোণা</option>
+              <option value="শেরপুর">শেরপুর</option>
             </optgroup>
           </select>
-          <span class="absolute right-1.5 sm:right-2.5 pointer-events-none text-emerald-600 text-[10px] sm:text-xs font-bold">▼</span>
+          <span class="absolute right-2 pointer-events-none text-slate-500 text-[10px]">▼</span>
         </div>
 
         <!-- Live GPS Button -->
-        <button id="gps-refresh-btn" title="আমার বর্তমান জিপিএস অবস্থান সনাক্ত করুন" class="p-1.5 sm:p-2.5 md:px-3.5 md:py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition-all shadow-xs active:scale-95 shrink-0">
-          <span class="text-sm sm:text-base">🛰️</span>
+        <button id="gps-refresh-btn" title="আমার বর্তমান জিপিএস অবস্থান সনাক্ত করুন" class="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs active:scale-95 shrink-0">
+          <svg class="w-3.5 h-3.5 text-forest-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="22" y1="12" x2="18" y2="12"/>
+            <line x1="6" y1="12" x2="2" y2="12"/>
+            <line x1="12" y1="6" x2="12" y2="2"/>
+            <line x1="12" y1="22" x2="12" y2="18"/>
+          </svg>
           <span class="hidden md:inline">লাইভ GPS</span>
         </button>
 
         <!-- Google Auth / Profile Widget -->
         <div id="auth-section" class="relative shrink-0">
-          <button id="auth-login-btn" class="px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs md:text-sm shadow-xs shadow-emerald-600/20 transition-all flex items-center gap-1 active:scale-95">
-            <span>👤</span>
+          <button id="auth-login-btn" class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-forest-900 hover:bg-forest-800 text-white font-bold text-xs md:text-sm shadow-xs transition-colors flex items-center gap-1.5 active:scale-95">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
             <span>লগইন</span>
           </button>
 
-          <div id="user-profile-widget" class="hidden flex items-center space-x-2.5 bg-white border border-emerald-200 p-1 md:pr-3 rounded-full shadow-sm cursor-pointer hover:border-emerald-400 transition-all">
-            <img id="user-avatar" src="" alt="কৃষক" class="w-8 h-8 rounded-full border-2 border-emerald-500 object-cover shadow-sm">
+          <div id="user-profile-widget" class="hidden flex items-center space-x-2 bg-white border border-slate-300 p-1 md:pr-3 rounded-lg shadow-2xs cursor-pointer hover:border-slate-400 transition-colors">
+            <img id="user-avatar" src="" alt="প্রোফাইল" class="w-7 h-7 rounded-md object-cover border border-slate-200">
             <div class="hidden sm:block text-left text-xs leading-tight">
-              <p id="user-name" class="font-extrabold text-slate-800 truncate max-w-[130px]"></p>
-              <p id="user-role" class="text-[10px] text-emerald-700 font-semibold"></p>
+              <p id="user-name" class="font-extrabold text-slate-900 truncate max-w-[120px]"></p>
+              <p id="user-role" class="text-[10px] text-emerald-700 font-bold"></p>
             </div>
-            <span class="text-xs text-slate-400">▼</span>
+            <span class="text-[10px] text-slate-400">▼</span>
           </div>
 
           <!-- Profile Dropdown Menu (Strictly positioned below the widget) -->
-          <div id="user-profile-dropdown" class="hidden absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-emerald-200 p-3 z-50 font-bengali animate-fade-in">
+          <div id="user-profile-dropdown" class="hidden absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-modal border border-slate-200 p-3 z-50 font-bengali animate-fade-in">
             <div class="flex items-center space-x-3 pb-3 border-b border-slate-100">
-              <img id="menu-user-avatar" src="" class="w-10 h-10 rounded-full border border-emerald-400 object-cover">
+              <img id="menu-user-avatar" src="" class="w-10 h-10 rounded-lg border border-slate-200 object-cover">
               <div class="min-w-0 flex-1">
                 <h5 id="menu-user-name" class="font-black text-slate-900 text-sm truncate"></h5>
-                <p id="menu-user-role" class="text-xs text-emerald-700 font-bold truncate"></p>
-                <p id="menu-user-email" class="text-[10px] text-slate-400 truncate"></p>
+                <p id="menu-user-role" class="text-xs text-emerald-800 font-bold truncate"></p>
+                <p id="menu-user-email" class="text-[10px] text-slate-500 truncate"></p>
               </div>
             </div>
             <div class="py-2 space-y-1">
-              <a href="/history" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center gap-2 transition-colors">
-                <span>📜</span>
+              <a href="/history" class="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 flex items-center gap-2 transition-colors">
+                <svg class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
                 <span>আমার পূর্বের রেকর্ড</span>
               </a>
-              <button onclick="SmartAgroAuth.openAccountSettingsModal(); SmartAgroAuth.closeProfileDropdown();" type="button" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 flex items-center gap-2 transition-colors">
-                <span>⚙️</span>
-                <span>অ্যাকাউন্ট সেটিংস ও লিঙ্ক</span>
+              <button onclick="SmartAgroAuth.openAccountSettingsModal(); SmartAgroAuth.closeProfileDropdown();" type="button" class="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 hover:text-slate-900 flex items-center gap-2 transition-colors">
+                <svg class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                </svg>
+                <span>অ্যাকাউন্ট সেটিংস</span>
               </button>
             </div>
             <div class="pt-2 border-t border-slate-100">
-              <button id="dropdown-logout-btn" type="button" class="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 flex items-center gap-2 transition-colors">
-                <span>🚪</span>
+              <button id="dropdown-logout-btn" type="button" class="w-full text-left px-3 py-2 rounded-lg text-xs font-bold text-rose-600 hover:bg-rose-50 flex items-center gap-2 transition-colors">
+                <svg class="w-4 h-4 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
                 <span>লগআউট করুন</span>
               </button>
             </div>
@@ -234,166 +253,179 @@
   </header>
 
   <!-- ====================================================================
-       2. Dedicated AI Disease Scanner Workspace
+       2. Agronomic Diagnostic Workbench
        ==================================================================== -->
-  <main class="max-w-4xl mx-auto px-4 py-8 space-y-7">
+  <main class="max-w-4xl mx-auto px-4 py-8 space-y-6">
     
-    <!-- Page Header & Instructions -->
+    <!-- Workbench Header -->
     <div class="text-center space-y-2">
-      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-1">
-        <span>🔬</span>
-        <span>MobileNetV2 গভীর নিউরাল নেটওয়ার্ক দ্বারা পরিচালিত</span>
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200">
+        <svg class="w-3.5 h-3.5 text-forest-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        <span>এআই নিউরাল ডায়াগনোসিস সিস্টেম</span>
       </div>
       <h1 class="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
-        ফসলের রোগ নির্ণয় ও সমাধান
+        ফসলের রোগ নির্ণয় ও বালাই ব্যবস্থাপনা
       </h1>
       <p class="text-xs md:text-sm text-slate-600 font-medium max-w-xl mx-auto">
-        আক্রান্ত পাতার একটি পরিষ্কার ছবি আপলোড করুন অথবা ক্যামেরা দিয়ে ছবি তুলুন। এআই মডেল রোগ শনাক্ত করে নির্ভরযোগ্য কৃষি সমাধান প্রদান করবে।
+        আক্রান্ত পাতার সুস্পষ্ট ছবি প্রদান করুন। এআই মডেল রোগের তীব্রতা নিরূপণ করে বিএআরআই অনুমোদিত প্রতিকার ও প্রেসক্রিপশন প্রদান করবে।
       </p>
     </div>
 
-    <!-- Scanner Box -->
-    <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm space-y-6">
+    <!-- Diagnostic Workspace Box -->
+    <div class="agro-card p-5 md:p-8 space-y-6">
 
-      <!-- 1. Upfront Leaf Photography Guide (Do's & Don'ts) - Rules FIRST -->
-      <div class="p-4 md:p-5 rounded-2xl bg-slate-50 border-2 border-emerald-300 space-y-3">
+      <!-- 1. Diagnostic Photography Guidelines (Do's & Don'ts) - Rules FIRST -->
+      <div class="p-4 md:p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div class="flex items-center gap-2">
-            <span class="text-xl">📸</span>
-            <h3 class="text-xs md:text-sm font-black text-slate-800">ছবি তোলার সঠিক নিয়মিকা (সঠিক এআই ফলাফলের জন্য করণীয়)</h3>
+            <svg class="w-4 h-4 text-forest-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 16v-4"/>
+              <path d="M12 8h.01"/>
+            </svg>
+            <h3 class="text-xs md:text-sm font-black text-slate-800">ছবি তোলার সঠিক নিয়মাবলী (নির্ভুল রোগ নির্ণয়ের পূর্বশর্ত)</h3>
           </div>
-          <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100/70 px-2.5 py-0.5 rounded-full border border-emerald-300 self-start sm:self-auto">১০০% সঠিক রোগ নির্ণয়ের শর্ত</span>
+          <span class="text-[11px] font-bold text-forest-800 bg-white px-2.5 py-0.5 rounded-md border border-slate-200 self-start sm:self-auto">১০০% সঠিক ফলাফলের নির্দেশিকা</span>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
           <!-- Do's -->
-          <div class="p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-300 space-y-2">
-            <div class="flex items-center gap-1.5 text-emerald-900 font-black">
-              <span>✅</span>
-              <span>কী করবেন (Do's)</span>
+          <div class="p-3.5 rounded-lg bg-emerald-50/60 border border-emerald-200 space-y-2">
+            <div class="flex items-center gap-1.5 text-forest-900 font-black">
+              <span>✓ করণীয় (Do's):</span>
             </div>
             <ul class="space-y-1.5 text-slate-700 font-medium">
               <li class="flex items-start gap-1.5">
-                <span class="text-emerald-600 font-bold">•</span>
-                <span><strong>একক পাতার ক্লোজ-আপ:</strong> শুধুমাত্র একটি রোগাক্রান্ত পাতার স্পষ্ট ও কাছে থেকে ছবি তুলুন।</span>
+                <span class="text-emerald-700 font-bold">•</span>
+                <span><strong>একক পাতার ছবি:</strong> শুধুমাত্র একটি রোগাক্রান্ত পাতার স্পষ্ট ও নিকটবর্তী ক্লোজ-আপ ছবি দিন।</span>
               </li>
               <li class="flex items-start gap-1.5">
-                <span class="text-emerald-600 font-bold">•</span>
-                <span><strong>দিনের স্বাভাবিক আলো:</strong> পর্যাপ্ত প্রাকৃতিক দিনের আলোতে ছবি তুলুন যাতে পাতার রঙ অবিকল বোঝা যায়।</span>
+                <span class="text-emerald-700 font-bold">•</span>
+                <span><strong>দিনের স্বাভাবিক আলো:</strong> দিনের পর্যাপ্ত সূর্যালোকে ছবি তুলুন যাতে পাতার আসল রঙ প্রকাশ পায়।</span>
               </li>
               <li class="flex items-start gap-1.5">
-                <span class="text-emerald-600 font-bold">•</span>
-                <span><strong>দাগ স্পষ্ট ফোকাসে:</strong> পাতার রোগাক্রান্ত দাগ ফ্রেমের ঠিক মাঝে এবং স্পষ্ট ফোকাসে রাখুন।</span>
+                <span class="text-emerald-700 font-bold">•</span>
+                <span><strong>দাগ স্পষ্ট ফোকাসে:</strong> রোগাক্রান্ত ক্ষত বা দাগ ফ্রেমের কেন্দ্রে স্পষ্ট ফোকাসে রাখুন।</span>
               </li>
             </ul>
           </div>
 
           <!-- Don'ts -->
-          <div class="p-3.5 rounded-xl bg-rose-50/80 border border-rose-300 space-y-2">
+          <div class="p-3.5 rounded-lg bg-rose-50/60 border border-rose-200 space-y-2">
             <div class="flex items-center gap-1.5 text-rose-900 font-black">
-              <span>❌</span>
-              <span>কী করবেন না (Don'ts)</span>
+              <span>✕ বর্জনীয় (Don'ts):</span>
             </div>
             <ul class="space-y-1.5 text-slate-700 font-medium">
               <li class="flex items-start gap-1.5">
-                <span class="text-rose-600 font-bold">•</span>
-                <span><strong>টেবিল বা আসবাবপত্র নয়:</strong> টেবিল, মেঝের টাইলস, দেওয়াল বা কাপড়ের ছবি তোলা যাবে না (মডেলটি শুধু পাতার রোগ নির্ণয়ে তৈরি)।</span>
+                <span class="text-rose-700 font-bold">•</span>
+                <span><strong>টেবিল বা ঘরের আসবাবপত্র নয়:</strong> মেঝে, দেওয়াল বা কাপড়ের ছবি দেওয়া যাবে না।</span>
               </li>
               <li class="flex items-start gap-1.5">
-                <span class="text-rose-600 font-bold">•</span>
-                <span><strong>দূর থেকে তোলা বা পুরো গাছ:</strong> দূর থেকে তোলা জমি বা ঝোপঝাড়ের ছবি দেওয়া যাবে না।</span>
+                <span class="text-rose-700 font-bold">•</span>
+                <span><strong>দূর থেকে তোলা বা পুরো গাছ নয়:</strong> দূর থেকে তোলা জমি বা ঝোপঝাড়ের ছবি দেওয়া যাবে না।</span>
               </li>
               <li class="flex items-start gap-1.5">
-                <span class="text-rose-600 font-bold">•</span>
-                <span><strong>আলুর কন্দ, ফল বা মাটি:</strong> কন্দ বা মাটি নয়—কেবল পাতার ছবি বিশ্লেষণে সক্ষম।</span>
+                <span class="text-rose-700 font-bold">•</span>
+                <span><strong>কন্দ বা মাটি নয়:</strong> আলুর কন্দ বা মাটির ছবি নয়—কেবল আক্রান্ত পাতার ছবি বিশ্লেষণে মডেল প্রস্তুত।</span>
               </li>
             </ul>
           </div>
         </div>
       </div>
 
-      <!-- 2. Crop Selector (Precision Diagnosis) - Options SECOND -->
-      <div class="p-4 md:p-5 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-300 flex flex-col gap-3.5 shadow-sm">
+      <!-- 2. Crop Selector (Target Plant Verification) - Options SECOND -->
+      <div class="p-4 md:p-5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col gap-3">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div class="flex items-center gap-2.5">
-            <span class="text-2xl shrink-0">🌱</span>
-            <div>
-              <label for="crop-type-select" class="text-xs md:text-sm font-black text-slate-800 cursor-pointer">আক্রান্ত ফসল নির্বাচন করুন (নির্ভুল ফলাফলের জন্য আবশ্যক):</label>
-              <p class="text-[11px] text-slate-600 font-medium">আপনার ফসল বেছে নিলে এআই ব্যাকগ্রাউন্ড বা হাতের বিভ্রান্তি এড়িয়ে ১০০% নির্ভুল রোগ ও প্রেসক্রিপশন প্রদান করে</p>
-            </div>
+          <div>
+            <label for="crop-type-select" class="text-xs md:text-sm font-black text-slate-900 cursor-pointer">আক্রান্ত ফসল নির্বাচন করুন:</label>
+            <p class="text-[11px] text-slate-500 font-medium">নির্দিষ্ট ফসল বেছে নিলে এআই ব্যাকগ্রাউন্ড বিভ্রান্তি এড়িয়ে ১০০% নির্ভুল প্রেসক্রিপশন প্রদান করে</p>
           </div>
-          <select id="crop-type-select" name="crop_type" onchange="SmartAgroScanner.onCropSelectChange(this.value)" class="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs md:text-sm font-bold bg-white border border-emerald-300 text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer shadow-2xs">
-            <option value="tomato" selected>🍅 টমেটো (Tomato)</option>
-            <option value="potato">🥔 আলু (Potato)</option>
-            <option value="cucumber">🥒 শসা, ক্ষীরা ও লাউ (Cucumber / Gourd)</option>
-            <option value="pepper">🌶️ মরিচ ও ক্যাপসিকাম (Chilli / Pepper)</option>
-            <option value="bean">🌿 শিম ও বরবটি (Bean / Legumes)</option>
-            <option value="cabbage">🥬 বাঁধাকপি ও ফুলকপি (Cabbage / Cauliflower)</option>
-            <option value="corn">🌽 ভুট্টা (Corn / Maize)</option>
-            <option value="citrus">🍋 লেবু ও সাইট্রাস (Citrus / Lemon)</option>
-            <option value="papaya">🍈 পেঁপে (Papaya)</option>
-            <option value="apple">🍎 আপেল (Apple)</option>
-            <option value="grape">🍇 আঙুর (Grape)</option>
-            <option value="strawberry">🍓 স্ট্রবেরি (Strawberry)</option>
-            <option value="squash">🎃 মিষ্টি কুমড়া ও স্কোয়াশ (Squash / Pumpkin)</option>
-            <option value="peach">🍑 পীচ ও সয়াবিন (Peach / Soybean)</option>
-            <option value="auto">✨ স্বয়ংক্রিয় সনাক্তকরণ (সব ফসল)</option>
+          <select id="crop-type-select" name="crop_type" onchange="SmartAgroScanner.onCropSelectChange(this.value)" class="w-full sm:w-auto px-3.5 py-2 rounded-lg text-xs md:text-sm font-bold bg-white border border-slate-300 text-slate-800 focus:ring-1 focus:ring-emerald-600 focus:outline-none cursor-pointer shadow-2xs">
+            <option value="tomato" selected>টমেটো (Tomato)</option>
+            <option value="potato">আলু (Potato)</option>
+            <option value="cucumber">শসা, ক্ষীরা ও লাউ (Cucumber / Gourd)</option>
+            <option value="pepper">মরিচ ও ক্যাপসিকাম (Chilli / Pepper)</option>
+            <option value="bean">শিম ও বরবটি (Bean / Legumes)</option>
+            <option value="cabbage">বাঁধাকপি ও ফুলকপি (Cabbage / Cauliflower)</option>
+            <option value="corn">ভুট্টা (Corn / Maize)</option>
+            <option value="citrus">লেবু ও সাইট্রাস (Citrus / Lemon)</option>
+            <option value="papaya">পেঁপে (Papaya)</option>
+            <option value="apple">আপেল (Apple)</option>
+            <option value="grape">আঙুর (Grape)</option>
+            <option value="strawberry">স্ট্রবেরি (Strawberry)</option>
+            <option value="squash">মিষ্টি কুমড়া ও স্কোয়াশ (Squash / Pumpkin)</option>
+            <option value="peach">পীচ ও সয়াবিন (Peach / Soybean)</option>
+            <option value="auto">স্বয়ংক্রিয় সনাক্তকরণ (সব ফসল)</option>
           </select>
         </div>
 
-        <!-- 1-Click Fast Crop Pills -->
-        <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-emerald-200">
-          <span class="text-[11px] font-bold text-slate-600 mr-1">দ্রুত পছন্দ:</span>
-          <button type="button" onclick="SmartAgroScanner.setCropFilter('tomato')" data-crop-pill="tomato" class="crop-pill-btn px-3.5 py-1.5 rounded-xl text-xs font-black transition-all bg-emerald-600 text-white shadow-xs border border-emerald-600">🍅 টমেটো</button>
-          <button type="button" onclick="SmartAgroScanner.setCropFilter('potato')" data-crop-pill="potato" class="crop-pill-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200">🥔 আলু</button>
-          <button type="button" onclick="SmartAgroScanner.setCropFilter('cucumber')" data-crop-pill="cucumber" class="crop-pill-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200">🥒 শসা/ক্ষীরা</button>
-          <button type="button" onclick="SmartAgroScanner.setCropFilter('pepper')" data-crop-pill="pepper" class="crop-pill-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200">🌶️ মরিচ</button>
-          <button type="button" onclick="SmartAgroScanner.setCropFilter('bean')" data-crop-pill="bean" class="crop-pill-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200">🌿 শিম</button>
-          <button type="button" onclick="SmartAgroScanner.setCropFilter('cabbage')" data-crop-pill="cabbage" class="crop-pill-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200">🥬 বাঁধাকপি</button>
-          <button type="button" onclick="SmartAgroScanner.setCropFilter('corn')" data-crop-pill="corn" class="crop-pill-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200">🌽 ভুট্টা</button>
-          <button type="button" onclick="SmartAgroScanner.setCropFilter('citrus')" data-crop-pill="citrus" class="crop-pill-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200">🍋 লেবু</button>
-          <button type="button" onclick="SmartAgroScanner.setCropFilter('auto')" data-crop-pill="auto" class="crop-pill-btn px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200">✨ সব ফসল</button>
+        <!-- Fast Crop Pills -->
+        <div class="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-200">
+          <span class="text-[11px] font-bold text-slate-500 mr-1">দ্রুত নির্বাচন:</span>
+          <button type="button" onclick="SmartAgroScanner.setCropFilter('tomato')" data-crop-pill="tomato" class="crop-pill-btn px-3 py-1 rounded-md text-xs font-bold transition-colors bg-forest-900 text-white shadow-2xs">টমেটো</button>
+          <button type="button" onclick="SmartAgroScanner.setCropFilter('potato')" data-crop-pill="potato" class="crop-pill-btn px-3 py-1 rounded-md text-xs font-bold transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">আলু</button>
+          <button type="button" onclick="SmartAgroScanner.setCropFilter('cucumber')" data-crop-pill="cucumber" class="crop-pill-btn px-3 py-1 rounded-md text-xs font-bold transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">শসা/ক্ষীরা</button>
+          <button type="button" onclick="SmartAgroScanner.setCropFilter('pepper')" data-crop-pill="pepper" class="crop-pill-btn px-3 py-1 rounded-md text-xs font-bold transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">মরিচ</button>
+          <button type="button" onclick="SmartAgroScanner.setCropFilter('bean')" data-crop-pill="bean" class="crop-pill-btn px-3 py-1 rounded-md text-xs font-bold transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">শিম</button>
+          <button type="button" onclick="SmartAgroScanner.setCropFilter('cabbage')" data-crop-pill="cabbage" class="crop-pill-btn px-3 py-1 rounded-md text-xs font-bold transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">বাঁধাকপি</button>
+          <button type="button" onclick="SmartAgroScanner.setCropFilter('corn')" data-crop-pill="corn" class="crop-pill-btn px-3 py-1 rounded-md text-xs font-bold transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">ভুট্টা</button>
+          <button type="button" onclick="SmartAgroScanner.setCropFilter('citrus')" data-crop-pill="citrus" class="crop-pill-btn px-3 py-1 rounded-md text-xs font-bold transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">লেবু</button>
+          <button type="button" onclick="SmartAgroScanner.setCropFilter('auto')" data-crop-pill="auto" class="crop-pill-btn px-3 py-1 rounded-md text-xs font-bold transition-colors bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">সব ফসল</button>
         </div>
       </div>
 
       <!-- Drag & Drop Zone -->
-      <div id="scanner-dropzone" class="relative group border-2 border-dashed border-emerald-300 hover:border-emerald-500 rounded-3xl p-6 md:p-8 transition-all bg-emerald-50/20 hover:bg-emerald-50/50">
+      <div id="scanner-dropzone" class="relative border-2 border-dashed border-slate-300 hover:border-emerald-600 rounded-xl p-6 md:p-8 transition-colors bg-slate-50/60 hover:bg-emerald-50/20 text-center">
         
-        <!-- Direct file inputs (hidden via inline style, directly clickable) -->
+        <!-- Direct file inputs (hidden, programmatic click) -->
         <input type="file" id="crop-image-input" accept="image/*" style="display: none;" onchange="SmartAgroScanner.handleFileInputChange(this)">
         <input type="file" id="crop-camera-input" accept="image/*" capture="environment" style="display: none;" onchange="SmartAgroScanner.handleFileInputChange(this)">
 
         <!-- Empty State -->
-        <div id="scanner-empty-state" style="display: flex;" class="flex flex-col items-center justify-center py-4 space-y-5 text-center">
+        <div id="scanner-empty-state" style="display: flex;" class="flex flex-col items-center justify-center py-4 space-y-4">
           
-          <!-- Distinct Camera & Gallery Icon Hub -->
-          <div class="flex items-center justify-center gap-5">
-            <!-- Camera Quick Icon -->
-            <button type="button" id="empty-state-camera-btn" onclick="SmartAgroScanner.openLiveCamera()" title="সরাসরি লাইভ ক্যামেরা চালু করুন" class="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white flex flex-col items-center justify-center shadow-lg shadow-emerald-600/20 hover:scale-105 active:scale-95 transition-all cursor-pointer group">
-              <span class="text-3xl group-hover:scale-110 transition-transform">📷</span>
-              <span class="text-[10px] font-black mt-1">ক্যামেরা</span>
+          <!-- Distinct Camera & Gallery Trigger Hub -->
+          <div class="flex items-center justify-center gap-4">
+            <button type="button" id="empty-state-camera-btn" onclick="SmartAgroScanner.openLiveCamera()" title="সরাসরি লাইভ ক্যামেরা চালু করুন" class="w-16 h-16 rounded-xl bg-forest-900 hover:bg-forest-800 text-white flex flex-col items-center justify-center shadow-xs transition-colors cursor-pointer group active:scale-95">
+              <svg class="w-6 h-6 text-emerald-400 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+              <span class="text-[10px] font-bold mt-1">ক্যামেরা</span>
             </button>
             
-            <!-- Gallery Quick Icon -->
-            <button type="button" id="empty-state-gallery-btn" onclick="document.getElementById('crop-image-input').click()" title="কম্পিউটার বা ফোনের ফাইল/গ্যালারি থেকে ছবি নিন" class="w-20 h-20 rounded-2xl bg-white hover:bg-slate-50 border-2 border-slate-300 hover:border-emerald-400 text-slate-800 flex flex-col items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer group">
-              <span class="text-3xl group-hover:scale-110 transition-transform">🖼️</span>
+            <button type="button" id="empty-state-gallery-btn" onclick="document.getElementById('crop-image-input').click()" title="গ্যালারি বা কম্পিউটার থেকে ছবি নিন" class="w-16 h-16 rounded-xl bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 flex flex-col items-center justify-center shadow-2xs transition-colors cursor-pointer group active:scale-95">
+              <svg class="w-6 h-6 text-slate-600 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
               <span class="text-[10px] font-bold mt-1 text-slate-600">গ্যালারি</span>
             </button>
           </div>
 
           <div class="space-y-1">
-            <p class="text-base font-bold text-slate-900">আক্রান্ত পাতার ছবি তুলুন অথবা গ্যালারি থেকে নির্বাচন করুন</p>
-            <p class="text-xs text-slate-500">সমর্থিত ফরম্যাট: JPG, PNG, WebP (কম্পিউটার বা ফোনের যেকোনো ছবি ড্র্যাগ করে ছাড়ুন)</p>
+            <p class="text-sm md:text-base font-bold text-slate-900">আক্রান্ত পাতার ছবি তুলুন অথবা গ্যালারি থেকে আপলোড করুন</p>
+            <p class="text-xs text-slate-500">সমর্থিত ফরম্যাট: JPG, PNG, WebP (সর্বোচ্চ ৫ মেগাবাইট)</p>
           </div>
 
-          <!-- Primary Action Buttons -->
-          <div class="flex flex-wrap items-center justify-center gap-3 pt-1">
-            <button type="button" id="btn-open-camera" onclick="SmartAgroScanner.openLiveCamera()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs md:text-sm flex items-center space-x-2 shadow-sm transition-all active:scale-95 cursor-pointer">
-              <span>📷</span>
-              <span>ক্যামেরা দিয়ে ছবি তুলুন</span>
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap items-center justify-center gap-2.5 pt-1">
+            <button type="button" id="btn-open-camera" onclick="SmartAgroScanner.openLiveCamera()" class="px-4 py-2 rounded-lg bg-forest-900 hover:bg-forest-800 text-white font-bold text-xs md:text-sm flex items-center space-x-2 shadow-xs transition-colors active:scale-95 cursor-pointer">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+              <span>ক্যামেরা দিয়ে তুলুন</span>
             </button>
-            <button type="button" id="btn-open-gallery" onclick="document.getElementById('crop-image-input').click()" class="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-bold text-xs md:text-sm flex items-center space-x-2 shadow-2xs transition-all active:scale-95 cursor-pointer">
-              <span>🖼️</span>
+            <button type="button" id="btn-open-gallery" onclick="document.getElementById('crop-image-input').click()" class="px-4 py-2 rounded-lg bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 font-bold text-xs md:text-sm flex items-center space-x-2 shadow-2xs transition-colors active:scale-95 cursor-pointer">
+              <svg class="w-4 h-4 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
               <span>গ্যালারি থেকে নির্বাচন</span>
             </button>
           </div>
@@ -402,44 +434,44 @@
         <!-- Preview State -->
         <div id="scanner-preview-state" style="display: none;" class="flex flex-col items-center space-y-4">
           <!-- Viewport Box -->
-          <div id="scanner-viewport" class="relative w-full max-w-sm rounded-2xl overflow-hidden border-2 border-emerald-400 bg-slate-950 shadow-lg">
-            <img id="scanner-preview-img" src="" alt="ফসলের ছবি" class="w-full max-h-[340px] object-contain mx-auto block bg-slate-900">
+          <div id="scanner-viewport" class="scanner-viewport relative w-full max-w-sm rounded-lg overflow-hidden border border-slate-700 bg-slate-950">
+            <img id="scanner-preview-img" src="" alt="ফসলের ছবি" class="w-full max-h-[320px] object-contain mx-auto block bg-slate-900">
             
+            <!-- Inspection Scanning Bar -->
+            <div class="laser-beam"></div>
+
             <!-- Scanning Overlay -->
-            <div id="preview-scanning-overlay" class="hidden absolute inset-0 bg-slate-900/70 backdrop-blur-xs flex flex-col items-center justify-center text-white space-y-3 p-4">
-              <svg class="animate-spin h-10 w-10 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <div id="preview-scanning-overlay" class="hidden absolute inset-0 bg-slate-900/80 backdrop-blur-xs flex flex-col items-center justify-center text-white space-y-3 p-4">
+              <svg class="animate-spin h-8 w-8 text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
               </svg>
               <div class="text-center">
-                <span class="text-sm font-bold text-white block">এআই মডেল দ্বারা রোগ শনাক্তকরণ চলছে...</span>
-                <span class="text-[11px] text-emerald-200/80">দয়া করে এক মুহূর্ত অপেক্ষা করুন</span>
+                <span class="text-sm font-bold text-white block">নিউরাল নেটওয়ার্ক রোগ বিশ্লেষণ করছে...</span>
+                <span class="text-[11px] text-emerald-300/80">দয়া করে এক মুহূর্ত অপেক্ষা করুন</span>
               </div>
             </div>
           </div>
 
           <!-- File Info Pill -->
-          <div class="flex items-center justify-center gap-2 text-xs font-bold text-slate-700 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-2xs">
-            <span class="text-emerald-600">🌿 নির্বাচিত ছবি:</span>
+          <div class="flex items-center justify-center gap-2 text-xs font-bold text-slate-700 bg-white px-3.5 py-1.5 rounded-md border border-slate-200 shadow-2xs">
+            <span class="text-emerald-700">নির্বাচিত ছবি:</span>
             <span id="preview-file-name" class="text-slate-900 font-black">পাতা.jpg</span>
-            <span id="preview-file-size" class="text-slate-400 font-medium text-[11px]"></span>
+            <span id="preview-file-size" class="text-slate-500 font-medium text-[11px]"></span>
           </div>
 
-          <!-- Image Action Options (Camera / Reselect / Cancel) -->
+          <!-- Action Options -->
           <div class="w-full max-w-sm pt-1">
-            <div class="flex items-center justify-center gap-3 text-xs font-bold text-slate-500 bg-white/80 py-2.5 px-4 rounded-xl border border-slate-200 shadow-2xs">
-              <button id="scanner-new-camera-btn" type="button" onclick="SmartAgroScanner.openLiveCamera()" class="hover:text-emerald-700 flex items-center gap-1 cursor-pointer">
-                <span>📷</span>
+            <div class="flex items-center justify-center gap-3 text-xs font-bold text-slate-500 bg-white py-2 px-3 rounded-md border border-slate-200 shadow-2xs">
+              <button id="scanner-new-camera-btn" type="button" onclick="SmartAgroScanner.openLiveCamera()" class="hover:text-forest-900 flex items-center gap-1 cursor-pointer">
                 <span>ক্যামেরা</span>
               </button>
               <span>•</span>
-              <button type="button" onclick="document.getElementById('crop-image-input').click()" class="text-emerald-700 hover:text-emerald-800 flex items-center gap-1 cursor-pointer font-bold">
-                <span>🖼️</span>
+              <button type="button" onclick="document.getElementById('crop-image-input').click()" class="text-forest-800 hover:text-forest-900 flex items-center gap-1 cursor-pointer font-bold">
                 <span>অন্য ছবি নিন</span>
               </button>
               <span>•</span>
               <button id="scanner-reset-btn" type="button" onclick="SmartAgroScanner.resetScanner()" class="text-rose-600 hover:text-rose-700 flex items-center gap-1 cursor-pointer">
-                <span>❌</span>
                 <span>বাতিল</span>
               </button>
             </div>
@@ -450,194 +482,143 @@
 
       <!-- Start Scan Action Button -->
       <div>
-        <button id="start-scan-btn" type="button" onclick="SmartAgroScanner.executeCropScan()" disabled class="w-full py-3.5 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base shadow-sm transition-all opacity-50 cursor-not-allowed active:scale-95 flex items-center justify-center space-x-2">
-          <span>🔍</span>
-          <span>রোগ নির্ণয় ও সমাধান জানুন</span>
+        <button id="start-scan-btn" type="button" onclick="SmartAgroScanner.executeCropScan()" disabled class="w-full py-3 px-6 rounded-lg bg-forest-900 hover:bg-forest-800 text-white font-bold text-sm md:text-base shadow-xs transition-all opacity-50 cursor-not-allowed active:scale-95 flex items-center justify-center space-x-2">
+          <svg class="w-5 h-5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <span>রোগ নির্ণয় ও প্রেসক্রিপশন পান</span>
         </button>
       </div>
 
-      <!-- Supported Crops Showcase Card (14 Supported Crop Families) -->
-      <div class="p-4 md:p-5 rounded-2xl bg-slate-50 border border-slate-200 shadow-2xs space-y-3">
+      <!-- Supported Crops Directory Card -->
+      <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2.5">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <span class="text-lg">🌿</span>
-            <h3 class="text-xs md:text-sm font-black text-slate-800">মডেল-সমর্থিত ১৪টি ফসল পরিবার (Supported Crops Showcase)</h3>
-          </div>
-          <span class="text-[11px] font-bold text-slate-500 bg-white px-2.5 py-0.5 rounded-full border border-slate-200 self-start sm:self-auto">৬৭টি রোগ ও সুস্থ শ্রেণি</span>
+          <h3 class="text-xs font-black text-slate-800 uppercase tracking-wide">মডেল-সমর্থিত ১৪টি প্রধান ফসল শ্রেণি</h3>
+          <span class="text-[11px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200">৬৭টি রোগ ও সুস্থ পাতা অন্তর্ভুক্ত</span>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
-          <div class="p-2 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-center transition-colors shadow-2xs">
-            <span class="text-xl block">🍅</span>
-            <span class="text-[11px] font-bold text-slate-700 block mt-0.5">টমেটো</span>
-          </div>
-          <div class="p-2 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-center transition-colors shadow-2xs">
-            <span class="text-xl block">🥔</span>
-            <span class="text-[11px] font-bold text-slate-700 block mt-0.5">আলু</span>
-          </div>
-          <div class="p-2 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-center transition-colors shadow-2xs">
-            <span class="text-xl block">🥒</span>
-            <span class="text-[11px] font-bold text-slate-700 block mt-0.5">শসা ও লাউ</span>
-          </div>
-          <div class="p-2 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-center transition-colors shadow-2xs">
-            <span class="text-xl block">🌶️</span>
-            <span class="text-[11px] font-bold text-slate-700 block mt-0.5">মরিচ</span>
-          </div>
-          <div class="p-2 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-center transition-colors shadow-2xs">
-            <span class="text-xl block">🌿</span>
-            <span class="text-[11px] font-bold text-slate-700 block mt-0.5">শিম ও বরবটি</span>
-          </div>
-          <div class="p-2 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-center transition-colors shadow-2xs">
-            <span class="text-xl block">🥬</span>
-            <span class="text-[11px] font-bold text-slate-700 block mt-0.5">বাঁধাকপি</span>
-          </div>
-          <div class="p-2 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-center transition-colors shadow-2xs">
-            <span class="text-xl block">🌽</span>
-            <span class="text-[11px] font-bold text-slate-700 block mt-0.5">ভুট্টা</span>
-          </div>
-          <div class="p-2 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-center transition-colors shadow-2xs">
-            <span class="text-xl block">🍋</span>
-            <span class="text-[11px] font-bold text-slate-700 block mt-0.5">লেবু ও কমলা</span>
-          </div>
-          <div class="p-2 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-center transition-colors shadow-2xs">
-            <span class="text-xl block">🍈</span>
-            <span class="text-[11px] font-bold text-slate-700 block mt-0.5">পেঁপে</span>
-          </div>
-          <div class="p-2 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-center transition-colors shadow-2xs">
-            <span class="text-xl block">🍎</span>
-            <span class="text-[11px] font-bold text-slate-700 block mt-0.5">আপেল</span>
-          </div>
-          <div class="p-2 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-center transition-colors shadow-2xs">
-            <span class="text-xl block">🍇</span>
-            <span class="text-[11px] font-bold text-slate-700 block mt-0.5">আঙুর</span>
-          </div>
-          <div class="p-2 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-center transition-colors shadow-2xs">
-            <span class="text-xl block">🍓</span>
-            <span class="text-[11px] font-bold text-slate-700 block mt-0.5">স্ট্রবেরি</span>
-          </div>
-          <div class="p-2 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-center transition-colors shadow-2xs">
-            <span class="text-xl block">🎃</span>
-            <span class="text-[11px] font-bold text-slate-700 block mt-0.5">মিষ্টি কুমড়া</span>
-          </div>
-          <div class="p-2 rounded-xl bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 text-center transition-colors shadow-2xs">
-            <span class="text-xl block">🍑</span>
-            <span class="text-[11px] font-bold text-slate-700 block mt-0.5">পীচ ও সয়াবিন</span>
-          </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-1.5 text-center text-xs">
+          <div class="p-1.5 rounded-md bg-white border border-slate-200 font-bold text-slate-800">টমেটো</div>
+          <div class="p-1.5 rounded-md bg-white border border-slate-200 font-bold text-slate-800">আলু</div>
+          <div class="p-1.5 rounded-md bg-white border border-slate-200 font-bold text-slate-800">শসা/লাউ</div>
+          <div class="p-1.5 rounded-md bg-white border border-slate-200 font-bold text-slate-800">মরিচ</div>
+          <div class="p-1.5 rounded-md bg-white border border-slate-200 font-bold text-slate-800">শিম/বরবটি</div>
+          <div class="p-1.5 rounded-md bg-white border border-slate-200 font-bold text-slate-800">বাঁধাকপি</div>
+          <div class="p-1.5 rounded-md bg-white border border-slate-200 font-bold text-slate-800">ভুট্টা</div>
+          <div class="p-1.5 rounded-md bg-white border border-slate-200 font-bold text-slate-800">লেবু/সাইট্রাস</div>
+          <div class="p-1.5 rounded-md bg-white border border-slate-200 font-bold text-slate-800">পেঁপে</div>
+          <div class="p-1.5 rounded-md bg-white border border-slate-200 font-bold text-slate-800">আপেল</div>
+          <div class="p-1.5 rounded-md bg-white border border-slate-200 font-bold text-slate-800">আঙুর</div>
+          <div class="p-1.5 rounded-md bg-white border border-slate-200 font-bold text-slate-800">স্ট্রবেরি</div>
+          <div class="p-1.5 rounded-md bg-white border border-slate-200 font-bold text-slate-800">মিষ্টি কুমড়া</div>
+          <div class="p-1.5 rounded-md bg-white border border-slate-200 font-bold text-slate-800">পীচ/সয়াবিন</div>
         </div>
       </div>
 
     </div>
 
     <!-- ====================================================================
-         3. Clean & Modern Prescription Results Section
+         3. Official Agronomic Diagnostic Prescription Card (Rx Format)
          ==================================================================== -->
     
-    <!-- State A: Valid Diagnosis Result Card -->
-    <div id="scan-results-container" style="display: none;" class="hidden bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm space-y-6">
+    <!-- State A: Valid Diagnosis Result Slip -->
+    <div id="scan-results-container" style="display: none;" class="hidden agro-card p-6 md:p-8 space-y-6 border-t-4 border-t-forest-800">
       
       <!-- Top Diagnostic Summary Header -->
-      <div class="border-b border-slate-200 pb-5 flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <div class="border-b border-slate-200 pb-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="flex items-start gap-4">
-          <img id="result-leaf-preview-img" src="" alt="আক্রান্ত পাতা" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-emerald-400 bg-slate-900 shadow-sm shrink-0">
+          <img id="result-leaf-preview-img" src="" alt="আক্রান্ত পাতা" class="w-20 h-20 sm:w-22 sm:h-22 rounded-lg object-cover border border-slate-300 bg-slate-900 shrink-0">
           <div>
-            <div class="flex flex-wrap items-center gap-2 mb-2">
-              <span id="result-crop-badge" class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-700 border border-slate-200">
+            <div class="flex flex-wrap items-center gap-1.5 mb-2">
+              <span id="result-crop-badge" class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-100 text-slate-800 border border-slate-200">
                 ফসল: টমেটো
               </span>
-              <span id="result-severity-badge" class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
-                ক্ষতির মাত্রা: উচ্চ
+              <span id="result-severity-badge" class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200">
+                ক্ষতির মাত্রা: মাঝারি
               </span>
-              <span id="result-confidence-badge" class="px-2.5 py-0.5 rounded-md text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+              <span id="result-confidence-badge" class="px-2.5 py-0.5 rounded-md text-xs font-black bg-emerald-50 text-emerald-900 border border-emerald-200">
                 ৯৭.৫% নিশ্চিত
               </span>
             </div>
-            <h2 id="result-disease-title" class="text-2xl md:text-3xl font-black text-slate-900">
+            <h2 id="result-disease-title" class="text-xl md:text-2xl font-black text-slate-900">
               টমেটোর টার্গেট স্পট রোগ
             </h2>
-            <p id="result-disease-en" class="text-xs md:text-sm text-slate-500 italic font-semibold mt-0.5">
+            <p id="result-disease-en" class="text-xs md:text-sm text-slate-500 italic font-medium mt-0.5">
               Tomato Target Spot (Corynespora cassiicola)
             </p>
           </div>
         </div>
 
-        <!-- Quick Action Buttons -->
+        <!-- Action Controls -->
         <div class="flex flex-wrap items-center gap-2">
-          <button id="listen-prescription-btn" class="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center space-x-1.5 transition-all">
-            <span>📢</span>
+          <button id="listen-prescription-btn" class="px-3 py-1.5 rounded-md bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-900 text-xs font-bold flex items-center space-x-1.5 transition-colors">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            </svg>
             <span>পরামর্শ শুনুন</span>
           </button>
-          <button onclick="window.print()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-bold flex items-center space-x-1.5 transition-all">
-            <span>🖨️</span>
-            <span>প্রিন্ট / সংরক্ষণ</span>
+          <button onclick="window.print()" class="px-3 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 text-xs font-bold flex items-center space-x-1.5 transition-colors">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"/>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+              <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            <span>প্রিন্ট / সেভ</span>
           </button>
-          <button onclick="SmartAgroScanner.resetScanner()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold flex items-center space-x-1.5 transition-all">
-            <span>🔄</span>
+          <button onclick="SmartAgroScanner.resetScanner()" class="px-3 py-1.5 rounded-md bg-forest-900 hover:bg-forest-800 text-white text-xs font-bold flex items-center space-x-1.5 transition-colors">
             <span>নতুন স্ক্যান</span>
           </button>
         </div>
       </div>
 
-      <!-- Quick Crop Re-Diagnosis Switcher Bar -->
-      <div id="result-crop-switcher-box" class="mt-4 p-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div class="flex items-center gap-2">
-          <span class="text-base">🔄</span>
-          <span class="font-bold text-slate-700">ফসল সংশোধন করতে চান? নির্দিষ্ট ফসলে ক্লিক করে সাথে সাথে প্রেসক্রিপশন পরিবর্তন করুন:</span>
-        </div>
-        <div class="flex flex-wrap items-center gap-1.5">
-          <button type="button" onclick="SmartAgroScanner.rescanWithCrop('tomato')" class="px-3 py-1.5 rounded-xl text-xs font-black bg-white text-emerald-800 border border-emerald-300 hover:bg-emerald-600 hover:text-white transition-all shadow-2xs cursor-pointer">🍅 টমেটো</button>
-          <button type="button" onclick="SmartAgroScanner.rescanWithCrop('potato')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-emerald-800 border border-emerald-300 hover:bg-emerald-600 hover:text-white transition-all shadow-2xs cursor-pointer">🥔 আলু</button>
-          <button type="button" onclick="SmartAgroScanner.rescanWithCrop('cucumber')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-emerald-800 border border-emerald-300 hover:bg-emerald-600 hover:text-white transition-all shadow-2xs cursor-pointer">🥒 শসা/ক্ষীরা</button>
-          <button type="button" onclick="SmartAgroScanner.rescanWithCrop('pepper')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-emerald-800 border border-emerald-300 hover:bg-emerald-600 hover:text-white transition-all shadow-2xs cursor-pointer">🌶️ মরিচ</button>
-          <button type="button" onclick="SmartAgroScanner.rescanWithCrop('bean')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-emerald-800 border border-emerald-300 hover:bg-emerald-600 hover:text-white transition-all shadow-2xs cursor-pointer">🌿 শিম</button>
-          <button type="button" onclick="SmartAgroScanner.rescanWithCrop('eggplant')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-emerald-800 border border-emerald-300 hover:bg-emerald-600 hover:text-white transition-all shadow-2xs cursor-pointer">🍆 বেগুন</button>
-          <button type="button" onclick="SmartAgroScanner.rescanWithCrop('rice')" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-emerald-800 border border-emerald-300 hover:bg-emerald-600 hover:text-white transition-all shadow-2xs cursor-pointer">🌾 ধান</button>
+      <!-- Quick Crop Re-Diagnosis Switcher -->
+      <div id="result-crop-switcher-box" class="p-3 rounded-lg bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+        <span class="font-bold text-slate-700">অন্য ফসলে তাৎক্ষণিক প্রেসক্রিপশন পরিবর্তন করুন:</span>
+        <div class="flex flex-wrap items-center gap-1">
+          <button type="button" onclick="SmartAgroScanner.rescanWithCrop('tomato')" class="px-2.5 py-1 rounded bg-white text-slate-800 border border-slate-300 hover:bg-slate-100 font-bold">টমেটো</button>
+          <button type="button" onclick="SmartAgroScanner.rescanWithCrop('potato')" class="px-2.5 py-1 rounded bg-white text-slate-800 border border-slate-300 hover:bg-slate-100 font-bold">আলু</button>
+          <button type="button" onclick="SmartAgroScanner.rescanWithCrop('cucumber')" class="px-2.5 py-1 rounded bg-white text-slate-800 border border-slate-300 hover:bg-slate-100 font-bold">শসা</button>
+          <button type="button" onclick="SmartAgroScanner.rescanWithCrop('pepper')" class="px-2.5 py-1 rounded bg-white text-slate-800 border border-slate-300 hover:bg-slate-100 font-bold">মরিচ</button>
+          <button type="button" onclick="SmartAgroScanner.rescanWithCrop('bean')" class="px-2.5 py-1 rounded bg-white text-slate-800 border border-slate-300 hover:bg-slate-100 font-bold">শিম</button>
+          <button type="button" onclick="SmartAgroScanner.rescanWithCrop('eggplant')" class="px-2.5 py-1 rounded bg-white text-slate-800 border border-slate-300 hover:bg-slate-100 font-bold">বেগুন</button>
+          <button type="button" onclick="SmartAgroScanner.rescanWithCrop('rice')" class="px-2.5 py-1 rounded bg-white text-slate-800 border border-slate-300 hover:bg-slate-100 font-bold">ধান</button>
         </div>
       </div>
 
-      <!-- 2-Column Clean Prescription Details -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- 2-Column Clinical Details -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
         
         <!-- Left: Symptoms & Spread -->
-        <div class="bg-amber-50/50 rounded-2xl p-5 border border-amber-200/80 space-y-3">
-          <div class="flex items-center space-x-2 text-amber-900 font-bold text-sm">
-            <span>🔍</span>
-            <h3 class="font-black text-base">রোগের লক্ষণ ও শনাক্তকরণ</h3>
-          </div>
+        <div class="bg-amber-50/40 rounded-xl p-4 md:p-5 border border-amber-200/80 space-y-2.5">
+          <h3 class="font-black text-sm text-amber-950 uppercase tracking-wide">রোগের ক্লিনিক্যাল লক্ষণ ও বিস্তার</h3>
           <div id="result-symptoms" class="text-xs md:text-sm text-slate-700 space-y-2 leading-relaxed font-medium">
             <!-- Dynamic symptoms injected here -->
           </div>
         </div>
 
-        <!-- Right: Prescription & Solutions (Organic & Chemical) -->
-        <div class="space-y-4">
+        <!-- Right: Treatment Recommendations -->
+        <div class="space-y-3.5">
           
           <!-- Organic Cure -->
-          <div class="bg-emerald-50/50 rounded-2xl p-5 border border-emerald-200/80 space-y-2.5">
-            <div class="flex items-center space-x-2 text-emerald-900 font-bold text-sm">
-              <span>🌱</span>
-              <h3 class="font-black text-base">জৈব ও প্রাকৃতিক দমন পদ্ধতি</h3>
-            </div>
+          <div class="bg-emerald-50/40 rounded-xl p-4 md:p-5 border border-emerald-200/80 space-y-2">
+            <h3 class="font-black text-sm text-emerald-950 uppercase tracking-wide">জৈব ও পরিবেশবান্ধব সমাধান</h3>
             <div id="result-organic" class="text-xs md:text-sm text-slate-700 space-y-1.5 leading-relaxed font-medium">
               <!-- Dynamic organic solution injected here -->
             </div>
           </div>
 
           <!-- Chemical Recommendation -->
-          <div class="bg-rose-50/50 rounded-2xl p-5 border border-rose-200/80 space-y-2.5">
-            <div class="flex items-center space-x-2 text-rose-900 font-bold text-sm">
-              <span>💊</span>
-              <h3 class="font-black text-base">অনুমোদিত সহজলভ্য বালাইনাশক ও স্প্রে ডোজ</h3>
-            </div>
+          <div class="bg-rose-50/40 rounded-xl p-4 md:p-5 border border-rose-200/80 space-y-2">
+            <h3 class="font-black text-sm text-rose-950 uppercase tracking-wide">অনুমোদিত রাসায়নিক বালাইনাশক ও ডোজ</h3>
             <div id="result-chemical" class="text-xs md:text-sm text-slate-700 space-y-1.5 leading-relaxed font-medium">
               <!-- Dynamic chemical solution injected here -->
             </div>
           </div>
 
-          <!-- Fertilizer & Recovery Nutrition -->
-          <div class="bg-blue-50/60 rounded-2xl p-5 border border-blue-200/80 space-y-2.5">
-            <div class="flex items-center space-x-2 text-blue-900 font-bold text-sm">
-              <span>🧪</span>
-              <h3 class="font-black text-base">সার ও পুষ্টি উপাদান ব্যবস্থাপনা (পুনরুদ্ধার নির্দেশিকা)</h3>
-            </div>
+          <!-- Fertilizer Nutrition -->
+          <div class="bg-blue-50/40 rounded-xl p-4 md:p-5 border border-blue-200/80 space-y-2">
+            <h3 class="font-black text-sm text-blue-950 uppercase tracking-wide">সার ও পুনরুদ্ধার পুষ্টি ব্যবস্থাপনা</h3>
             <div id="result-fertilizer" class="text-xs md:text-sm text-slate-700 space-y-1.5 leading-relaxed font-medium">
               <!-- Dynamic fertilizer solution injected here -->
             </div>
@@ -647,163 +628,148 @@
 
       </div>
 
-      <!-- Safety Precaution & Road map bar -->
-      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-        <div class="flex items-start gap-2 text-slate-700">
-          <span class="text-base shrink-0">⚠️</span>
-          <div>
-            <span class="font-bold text-slate-900">সতর্কতা ও প্রত্যাহারকাল (PHI):</span>
-            <span id="result-safety-warning" class="font-medium text-slate-600 block mt-0.5">কীটনাশক স্প্রে করার অন্তত ৭-১০ দিন পর্যন্ত ফসল তোলা বা খাওয়া যাবে না।</span>
-          </div>
+      <!-- Safety Precaution & PHI notice -->
+      <div class="p-3.5 rounded-lg bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <div class="text-slate-700">
+          <span class="font-bold text-slate-900">নিরাপত্তা ও ফসল তোলার পূর্ববর্তী সময়সীমা (PHI):</span>
+          <span id="result-safety-warning" class="font-medium text-slate-600 block mt-0.5">কীটনাশক স্প্রে করার অন্তত ৭-১০ দিন পর্যন্ত ফসল তোলা বা খাওয়া যাবে না।</span>
         </div>
-        <a id="result-roadmap-link" href="/roadmap" class="shrink-0 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-colors flex items-center gap-1">
-          <span>🌾</span>
-          <span>সম্পূর্ণ চাষাবাদ গাইড</span>
+        <a id="result-roadmap-link" href="/roadmap" class="shrink-0 px-3 py-1.5 rounded-md bg-forest-900 hover:bg-forest-800 text-white font-bold text-xs transition-colors">
+          সম্পূর্ণ চাষাবাদ গাইড ➔
         </a>
       </div>
 
     </div>
 
-    <!-- State B: Unidentified / Invalid Image Card -->
-    <div id="scan-unidentified-container" class="hidden bg-white rounded-3xl p-6 md:p-8 border border-amber-300 shadow-sm space-y-5">
-      <div class="flex items-start space-x-4">
-        <img id="unidentified-leaf-preview-img" src="" alt="আপলোড করা ছবি" class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-amber-300 bg-slate-900 shadow-sm shrink-0">
-        <div class="space-y-1.5 flex-1">
+    <!-- State B: Unidentified / Non-Leaf Image Notice -->
+    <div id="scan-unidentified-container" class="hidden agro-card p-6 md:p-8 border-amber-300 space-y-4">
+      <div class="flex items-start space-x-3.5">
+        <img id="unidentified-leaf-preview-img" src="" alt="আপলোড করা ছবি" class="w-16 h-16 rounded-lg object-cover border border-amber-300 bg-slate-900 shrink-0">
+        <div class="space-y-1 flex-1">
           <div class="flex flex-wrap items-center gap-2">
-            <span id="unidentified-error-icon" class="text-xl">⚠️</span>
-            <h2 class="text-xl md:text-2xl font-black text-slate-900">
+            <span id="unidentified-error-icon" class="text-amber-600 font-bold">⚠</span>
+            <h2 class="text-lg md:text-xl font-black text-slate-900">
               ছবিটি শনাক্ত করা সম্ভব হয়নি
             </h2>
-            <span id="unidentified-error-badge" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-100 text-amber-800 border border-amber-200">অজানা ত্রুটি</span>
+            <span id="unidentified-error-badge" class="px-2 py-0.5 rounded-md text-xs font-bold bg-amber-100 text-amber-900 border border-amber-200">অজানা ত্রুটি</span>
           </div>
-          <p id="unidentified-reason-message" class="text-xs md:text-sm text-slate-700 font-medium leading-relaxed">
-            আপলোড করা ছবিটি কোনো পরিচিত ফসলের পাতা হিসেবে মিলছে না অথবা ছবিটি পর্যাপ্ত স্পষ্ট নয়। ভুল ফলাফল এড়াতে সিস্টেমটি কোনো অনুমানভিত্তিক রোগ প্রদান করেনি।
+          <p id="unidentified-reason-message" class="text-xs md:text-sm text-slate-600 font-medium leading-relaxed">
+            আপলোড করা ছবিটি কোনো পরিচিত ফসলের পাতা হিসেবে মিলছে না অথবা ছবিটি পর্যাপ্ত স্পষ্ট নয়। ভুল ফলাফল এড়াতে সিস্টেমটি কোনো কাল্পনিক রোগ প্রদান করেনি।
           </p>
         </div>
       </div>
 
-      <!-- Helpful Guidelines for Taking a Good Leaf Photo -->
-      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs md:text-sm space-y-2 text-slate-700">
-        <span class="font-bold text-slate-900 block">সঠিক এআই ফলাফলের জন্য করণীয় নির্দেশিকা:</span>
-        <ul class="list-disc list-inside space-y-1.5 text-slate-600 font-medium">
-          <li><strong>একক পাতা:</strong> শুধুমাত্র একটি আক্রান্ত পাতার পরিষ্কার ক্লোজ-আপ ছবি দিন।</li>
-          <li><strong>দিনের আলো ও ফোকাস:</strong> দিনের স্বাভাবিক সূর্যালোকে ছবি তুলুন এবং রোগাক্রান্ত দাগ ফোকাসে রাখুন।</li>
-          <li><strong>ফলমূল বা কন্দ এড়িয়ে চলুন:</strong> আলুর কন্দ, ফলমূল বা সম্পূর্ণ গাছের ছবি দেবেন না (মডেলটি শুধু পাতার রোগ নির্ণয়ে প্রশিক্ষিত)।</li>
-          <li><strong>যন্ত্রপাতি বা অন্যান্য বস্তু নয়:</strong> ট্রাক্টর, যন্ত্রপাতি, মানুষের হাত, পায়ের জুতো বা মাটির ছবি আপলোড করবেন না।</li>
-          <li><strong>সমর্থিত ফসল:</strong> নিশ্চিত করুন যে আপনার পাতাটি মডেলের ১৪টি সমর্থিত ফসলের একটি (টমেটো, আলু, শসা, মরিচ, শিম, বাঁধাকপি, ভুট্টা, লেবু, পেঁপে, আপেল, আঙুর, স্ট্রবেরি, মিষ্টি কুমড়া, পীচ/সয়াবিন)।</li>
+      <!-- Checklist -->
+      <div class="p-4 rounded-lg bg-slate-50 border border-slate-200 text-xs space-y-1.5 text-slate-700">
+        <span class="font-bold text-slate-900 block">সঠিক ফলাফলের জন্য চেক করুন:</span>
+        <ul class="list-disc list-inside space-y-1 text-slate-600">
+          <li>শুধুমাত্র আক্রান্ত একটি পাতার ক্লোজ-আপ ছবি দিন।</li>
+          <li>দিনের স্বাভাবিক আলোতে পাতার রোগাক্রান্ত দাগ ফোকাসে রাখুন।</li>
+          <li>টেবিল, আসবাবপত্র, জুতো বা মাটির ছবি পরিহার করুন।</li>
         </ul>
       </div>
 
-      <div class="flex justify-center pt-2">
-        <button onclick="SmartAgroScanner.resetScanner()" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs md:text-sm shadow-sm transition-all active:scale-95 flex items-center gap-2">
-          <span>🔄</span>
-          <span>নতুন ছবি নির্বাচন করুন</span>
+      <div class="flex justify-start pt-1">
+        <button onclick="SmartAgroScanner.resetScanner()" class="px-4 py-2 rounded-lg bg-forest-900 hover:bg-forest-800 text-white font-bold text-xs shadow-xs transition-colors">
+          পুনরায় চেষ্টা করুন
         </button>
       </div>
     </div>
 
-  <!-- ====================================================================
-       Camera Viewfinder Modal (Live WebRTC Video Stream with Shutter)
-       ==================================================================== -->
-  <div id="camera-modal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col items-center justify-between p-4 sm:p-6 transition-all duration-300" style="display: none;">
+  <!-- Camera Viewfinder Modal -->
+  <div id="camera-modal" class="fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-between p-4 sm:p-6 transition-all duration-300" style="display: none;">
     <!-- Top Header -->
     <div class="w-full max-w-lg flex items-center justify-between text-white py-2">
       <div class="flex items-center gap-2">
-        <span class="inline-block w-3 h-3 rounded-full bg-rose-500 animate-pulse"></span>
-        <span class="text-sm font-bold">লাইভ ক্যামেরা ভিউফাইন্ডার</span>
+        <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+        <span class="text-xs sm:text-sm font-bold">লাইভ ক্যামেরা ভিউফাইন্ডার</span>
       </div>
-      <button type="button" id="camera-close-btn" class="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-lg font-black transition-colors cursor-pointer">
+      <button type="button" id="camera-close-btn" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-sm font-bold transition-colors cursor-pointer">
         ✕
       </button>
     </div>
 
-    <!-- Live Video Viewport with Targeting Overlay -->
-    <div class="relative w-full max-w-lg flex-1 max-h-[68vh] rounded-3xl overflow-hidden border-2 border-emerald-400 bg-slate-950 flex items-center justify-center shadow-2xl">
+    <!-- Live Video Viewport -->
+    <div class="relative w-full max-w-lg flex-1 max-h-[65vh] rounded-xl overflow-hidden border border-slate-700 bg-slate-950 flex items-center justify-center">
       <video id="camera-video" playsinline autoplay muted class="w-full h-full object-cover"></video>
       <canvas id="camera-canvas" class="hidden"></canvas>
       
       <!-- Leaf Target Guide Box -->
-      <div class="absolute inset-6 border-2 border-dashed border-emerald-400/80 rounded-2xl pointer-events-none flex flex-col items-center justify-between p-4">
-        <span class="text-[11px] font-bold text-emerald-200 bg-black/60 px-3 py-1 rounded-full shadow-xs">
-          🌿 আক্রান্ত পাতাটি ফ্রেমের মাঝে রাখুন
+      <div class="absolute inset-6 border border-dashed border-emerald-400/70 rounded-lg pointer-events-none flex flex-col items-center justify-between p-3">
+        <span class="text-[11px] font-bold text-emerald-200 bg-black/70 px-2.5 py-0.5 rounded-md">
+          আক্রান্ত পাতাটি ফ্রেমের মাঝে রাখুন
         </span>
-        <div class="w-16 h-16 border-2 border-emerald-300/60 rounded-full pointer-events-none flex items-center justify-center text-emerald-400/50 text-xl">
-          🎯
-        </div>
-        <span class="text-[10px] font-medium text-emerald-300/80 bg-black/60 px-2 py-0.5 rounded-md">
+        <span class="text-[10px] font-medium text-slate-300 bg-black/70 px-2 py-0.5 rounded-md">
           পর্যাপ্ত আলো ও ফোকাস রাখুন
         </span>
       </div>
     </div>
 
-    <!-- Bottom Camera Controls -->
+    <!-- Camera Controls -->
     <div class="w-full max-w-lg flex items-center justify-around py-4">
-      <!-- Switch Camera Button -->
-      <button type="button" id="camera-switch-btn" title="ক্যামেরা ফ্লিপ করুন" class="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-xl transition-all active:scale-95 cursor-pointer">
+      <button type="button" id="camera-switch-btn" title="ক্যামেরা ফ্লিপ করুন" class="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-sm transition-colors cursor-pointer">
         🔄
       </button>
 
-      <!-- Big Circular Shutter Button (Capture) -->
-      <button type="button" id="camera-shutter-btn" title="ছবি তুলুন" class="w-20 h-20 rounded-full bg-white border-4 border-emerald-500 hover:border-emerald-400 shadow-xl flex items-center justify-center active:scale-90 transition-all cursor-pointer group">
-        <div class="w-16 h-16 rounded-full bg-emerald-600 group-hover:bg-emerald-500 transition-colors flex items-center justify-center text-2xl text-white">
-          📷
-        </div>
+      <button type="button" id="camera-shutter-btn" title="ছবি তুলুন" class="w-16 h-16 rounded-full bg-white border-4 border-forest-900 hover:border-forest-800 shadow-lg flex items-center justify-center active:scale-95 transition-transform cursor-pointer">
+        <div class="w-12 h-12 rounded-full bg-forest-900 transition-colors"></div>
       </button>
 
-      <!-- Gallery Fallback Button -->
-      <button type="button" id="camera-gallery-fallback-btn" title="গ্যালারি থেকে ছবি নিন" class="w-12 h-12 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-xl transition-all active:scale-95 cursor-pointer">
-        🖼️
+      <button type="button" id="camera-gallery-fallback-btn" title="গ্যালারি থেকে ছবি নিন" class="w-10 h-10 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center text-sm transition-colors cursor-pointer">
+        🖼
       </button>
     </div>
   </div>
 
   </main>
 
-            <!-- START: Unified Mobile Navigation & Drawer -->
   <!-- ====================================================================
-       Floating Glass Bottom Mobile Navigation Bar (Clean 3-Item Layout: Home, Scan, Menu)
-       Active on all mobile, tablet & narrow desktop windows (< 1280px)
+       4. Floating Bottom Mobile Navigation Bar & Drawer
        ==================================================================== -->
   <nav class="xl:hidden fixed bottom-2.5 left-4 right-4 z-40 glass-header bg-white/95 backdrop-blur-md border border-emerald-200/90 rounded-2xl px-3 py-1 shadow-xl max-w-xs mx-auto">
     <div class="flex items-center justify-between text-center relative">
       
       <!-- 1. Home -->
-      <a href="/" data-nav-page="home" class="flex-1 flex flex-col items-center justify-center rounded-xl transition-all text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold py-1">
-        <span class="text-base sm:text-lg">🏠</span>
-        <span class="text-[10px] font-bold tracking-tight">হোম</span>
+      <a href="/" data-nav-page="home" class="flex-1 flex flex-col items-center justify-center rounded-xl transition-all text-slate-600 hover:text-forest-900 font-bold py-1">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span class="text-[10px] mt-0.5 tracking-tight">হোম</span>
       </a>
 
-      <!-- 2. Center Elevated AI Scanner Hero Button -->
+      <!-- 2. Center AI Scanner Button -->
       <div class="flex-1 flex flex-col items-center justify-center -mt-3.5">
-        <a href="/scan" data-nav-page="scanner" class="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center text-lg shadow-lg border-2 border-white transition-all active:scale-95 scale-105 ring-2 ring-emerald-400 shadow-emerald-600/40" title="এআই রোগ নির্ণয় স্ক্যানার">
-          📷
+        <a href="/scan" data-nav-page="scanner" class="w-10 h-10 rounded-full bg-forest-900 text-white flex items-center justify-center shadow-lg border-2 border-white transition-all active:scale-95" title="এআই রোগ নির্ণয় স্ক্যানার">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
         </a>
-        <span class="text-[10px] mt-0.5 tracking-tight text-emerald-700 font-black">স্ক্যানার</span>
+        <span class="text-[10px] mt-0.5 tracking-tight text-forest-900 font-black">স্ক্যানার</span>
       </div>
 
-      <!-- 3. Menu Trigger (Opens all other options) -->
-      <button id="mobile-menu-trigger-btn" type="button" onclick="toggleSmartAgroMobileMenu()" class="flex-1 flex flex-col items-center justify-center rounded-xl transition-all text-slate-600 hover:text-emerald-800 hover:bg-emerald-50 font-bold py-1" title="মেনু ও অন্যান্য সকল সেবা">
-        <span class="text-base sm:text-lg">☰</span>
-        <span class="text-[10px] font-bold tracking-tight">মেনু</span>
+      <!-- 3. Menu Trigger -->
+      <button id="mobile-menu-trigger-btn" type="button" onclick="toggleSmartAgroMobileMenu()" class="flex-1 flex flex-col items-center justify-center rounded-xl transition-all text-slate-600 hover:text-forest-900 font-bold py-1" title="মেনু ও অন্যান্য সকল সেবা">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+        <span class="text-[10px] mt-0.5 tracking-tight">মেনু</span>
       </button>
 
     </div>
   </nav>
 
-  <!-- ====================================================================
-       Smart Agro Mobile Drawer / Slide-Up Sheet (All Other Services & Navigation)
-       ==================================================================== -->
+  <!-- Mobile Drawer / Slide-Up Sheet -->
   <div id="smart-agro-mobile-drawer" class="fixed inset-0 z-50 hidden transition-opacity duration-300">
-    <!-- Dark Backdrop -->
     <div id="smart-agro-drawer-backdrop" onclick="toggleSmartAgroMobileMenu(false)" class="absolute inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"></div>
     
-    <!-- Sheet Panel -->
-    <div class="absolute bottom-0 left-0 right-0 max-h-[85vh] bg-white rounded-t-3xl shadow-2xl border-t border-emerald-200 p-4 pb-20 overflow-y-auto animate-slide-up font-bengali">
-      
-      <!-- Top Drag Bar & Header -->
+    <div class="absolute bottom-0 left-0 right-0 max-h-[85vh] bg-white rounded-t-2xl shadow-2xl border-t border-slate-200 p-4 pb-20 overflow-y-auto animate-slide-up font-bengali">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100">
         <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-base font-bold">🌾</div>
+          <div class="w-8 h-8 rounded-lg bg-forest-900 text-white flex items-center justify-center text-sm font-bold">🌾</div>
           <div>
             <h4 class="text-sm font-black text-slate-800">স্মার্ট এগ্রো মেনু</h4>
             <p class="text-[10px] text-slate-500 font-medium">সকল সেবা ও গুরুত্বপূর্ণ লিঙ্কসমূহ</p>
@@ -814,83 +780,40 @@
         </button>
       </div>
 
-      <!-- Navigation & Services Grid -->
       <div class="grid grid-cols-2 gap-2.5 mt-3.5">
-        
-        <!-- Crop Guides / Roadmap -->
-        <a href="/roadmap" class="p-3 rounded-2xl border transition-all flex flex-col justify-between bg-slate-50 hover:bg-emerald-50/60 border-slate-200/80">
-          <div class="flex items-center justify-between">
-            <span class="text-2xl">🌾</span>
-            
-          </div>
-          <div class="mt-2">
-            <div class="text-xs font-black text-slate-800">ফসলের গাইড</div>
-            <div class="text-[10px] text-slate-500 line-clamp-1">৪০+ ফসলের পূর্ণাঙ্গ চাষাবাদ</div>
-          </div>
+        <a href="/roadmap" class="p-3 rounded-xl border transition-all flex flex-col justify-between bg-slate-50 hover:bg-slate-100 border-slate-200">
+          <div class="text-xs font-black text-slate-800">ফসলের গাইড</div>
+          <div class="text-[10px] text-slate-500 line-clamp-1">৪০+ ফসলের পূর্ণাঙ্গ চাষাবাদ</div>
         </a>
-
-        <!-- Fertilizer Calculator -->
-        <a href="/calculator" class="p-3 rounded-2xl border transition-all flex flex-col justify-between bg-slate-50 hover:bg-emerald-50/60 border-slate-200/80">
-          <div class="flex items-center justify-between">
-            <span class="text-2xl">⚖️</span>
-            
-          </div>
-          <div class="mt-2">
-            <div class="text-xs font-black text-slate-800">সার ক্যালকুলেটর</div>
-            <div class="text-[10px] text-slate-500 line-clamp-1">সুষম সারের সঠিক হিসাব</div>
-          </div>
+        <a href="/calculator" class="p-3 rounded-xl border transition-all flex flex-col justify-between bg-slate-50 hover:bg-slate-100 border-slate-200">
+          <div class="text-xs font-black text-slate-800">সার ক্যালকুলেটর</div>
+          <div class="text-[10px] text-slate-500 line-clamp-1">সুষম সারের সঠিক হিসাব</div>
         </a>
-
-        <!-- Grafting / Nursery -->
-        <a href="/grafting" class="p-3 rounded-2xl border transition-all flex flex-col justify-between bg-slate-50 hover:bg-emerald-50/60 border-slate-200/80">
-          <div class="flex items-center justify-between">
-            <span class="text-2xl">🌱</span>
-            
-          </div>
-          <div class="mt-2">
-            <div class="text-xs font-black text-slate-800">কলম পদ্ধতি</div>
-            <div class="text-[10px] text-slate-500 line-clamp-1">গ্রাফটিং ও গুটি কলম গাইড</div>
-          </div>
+        <a href="/grafting" class="p-3 rounded-xl border transition-all flex flex-col justify-between bg-slate-50 hover:bg-slate-100 border-slate-200">
+          <div class="text-xs font-black text-slate-800">কলম পদ্ধতি</div>
+          <div class="text-[10px] text-slate-500 line-clamp-1">গ্রাফটিং ও নার্সারি নির্দেশিকা</div>
         </a>
-
-        <!-- History -->
-        <a href="/history" class="p-3 rounded-2xl border transition-all flex flex-col justify-between bg-slate-50 hover:bg-emerald-50/60 border-slate-200/80">
-          <div class="flex items-center justify-between">
-            <span class="text-2xl">📜</span>
-            
-          </div>
-          <div class="mt-2">
-            <div class="text-xs font-black text-slate-800">স্ক্যান ইতিহাস</div>
-            <div class="text-[10px] text-slate-500 line-clamp-1">পূর্বের সকল পরীক্ষার রেকর্ড</div>
-          </div>
+        <a href="/history" class="p-3 rounded-xl border transition-all flex flex-col justify-between bg-slate-50 hover:bg-slate-100 border-slate-200">
+          <div class="text-xs font-black text-slate-800">স্ক্যান ইতিহাস</div>
+          <div class="text-[10px] text-slate-500 line-clamp-1">পূর্বের সকল পরীক্ষার রেকর্ড</div>
         </a>
-
       </div>
 
-      <!-- Account Settings & Linking Card -->
-      <div onclick="SmartAgroAuth.openAccountSettingsModal(); toggleSmartAgroMobileMenu(false);" class="mt-3 p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100/70 border border-emerald-300/80 cursor-pointer transition-all flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-xs">👤</div>
-          <div>
-            <div class="text-xs font-black text-slate-800">অ্যাকাউন্ট সেটিংস ও যোগাযোগ</div>
-            <div class="text-[10px] text-slate-600">প্রোফাইল সেটিংস ও ইমেইল যুক্ত করুন</div>
-          </div>
+      <div onclick="SmartAgroAuth.openAccountSettingsModal(); toggleSmartAgroMobileMenu(false);" class="mt-3 p-3 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 cursor-pointer transition-colors flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="text-xs font-black text-slate-800">অ্যাকাউন্ট সেটিংস</div>
+          <div class="text-[10px] text-slate-500">ইমেইল ভেরিফিকেশন ও প্রোফাইল</div>
         </div>
-        <span class="text-xs text-emerald-700 font-black">খুলুন ➔</span>
+        <span class="text-xs text-forest-800 font-black">➔</span>
       </div>
 
-      <!-- Quick Emergency Helpline Card -->
-      <div class="mt-2.5 bg-gradient-to-r from-amber-500/10 to-emerald-500/10 border border-amber-300/50 rounded-2xl p-3 flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg shadow-xs">📞</div>
-          <div>
-            <div class="text-xs font-black text-slate-800">কৃষি কল সেন্টার (৩৩৩১)</div>
-            <div class="text-[10px] text-slate-600">সরকারি কৃষি বিশেষজ্ঞের সাথে ফ্রি পরামর্শ</div>
-          </div>
+      <div class="mt-2.5 bg-slate-50 border border-slate-200 rounded-xl p-3 flex items-center justify-between">
+        <div>
+          <div class="text-xs font-black text-slate-800">কৃষি কল সেন্টার (১৬১২৩)</div>
+          <div class="text-[10px] text-slate-500">সরকারি কৃষি বিশেষজ্ঞের সাথে সরাসরি পরামর্শ</div>
         </div>
-        <a href="tel:3331" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-xs active:scale-95">কল করুন</a>
+        <a href="tel:16123" class="px-3 py-1.5 rounded-lg bg-forest-900 text-white text-xs font-bold active:scale-95">কল করুন</a>
       </div>
-
     </div>
   </div>
 
@@ -909,9 +832,8 @@
       }
     }
   </script>
-  <!-- END: Unified Mobile Navigation & Drawer -->
 
-  <!-- Scripts with Cache-Busting Versioning -->
+  <!-- Client JavaScript -->
   <script src="/js/firebase-config.js?v=2.6.0"></script>
   <script src="/js/weather.js?v=2.6.0"></script>
   <script src="/js/voice-assistant.js?v=2.6.0"></script>
@@ -928,4 +850,3 @@
   </script>
 </body>
 </html>
-
