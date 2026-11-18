@@ -228,7 +228,10 @@ async function calculateFertilizer(shouldScroll = false) {
   if (calcBtn) {
     calcBtn.disabled = true;
     calcBtn.innerHTML = `
-      <div class="inline-block animate-spin mr-2">⚙️</div>
+      <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+      </svg>
       <span>সারের বৈজ্ঞানিক মাত্রা হিসাব করা হচ্ছে...</span>
     `;
   }
@@ -273,7 +276,11 @@ async function calculateFertilizer(shouldScroll = false) {
     if (calcBtn) {
       calcBtn.disabled = false;
       calcBtn.innerHTML = `
-        <span class="text-xl">⚖️</span>
+        <svg class="w-4 h-4 text-emerald-400 inline-block mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
         <span>সারের সঠিক পরিমাণ হিসাব করুন</span>
       `;
     }
@@ -287,9 +294,9 @@ function renderFertilizerResults(data, shouldScroll = false) {
   const summaryEl = document.getElementById('fert-summary-title');
   if (summaryEl) {
     if (data.calc_mode === 'seedling_count') {
-      summaryEl.innerHTML = `🌱 <b>${data.land_amount} ${data.land_unit}</b> ${data.crop_name}-এর মোট সার সুপারিশ <span class="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full ml-1">আনুমানিক ${data.decimals} শতাংশ জমি</span>`;
+      summaryEl.innerHTML = `<b>${data.land_amount} ${data.land_unit}</b> ${data.crop_name}-এর মোট সার সুপারিশ <span class="text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full ml-1">আনুমানিক ${data.decimals} শতাংশ জমি</span>`;
     } else {
-      summaryEl.innerHTML = `📐 <b>${data.land_amount} ${data.land_unit}</b> (${data.decimals} শতাংশ) জমিতে ${data.crop_name} চাষের সার সুপারিশ:`;
+      summaryEl.innerHTML = `<b>${data.land_amount} ${data.land_unit}</b> (${data.decimals} শতাংশ) জমিতে ${data.crop_name} চাষের সার সুপারিশ:`;
     }
   }
 
@@ -317,7 +324,7 @@ function renderFertilizerResults(data, shouldScroll = false) {
     const cleanCropName = data.crop_name.split(' ')[0].trim();
     const targetCropId = cropNameToId[cleanCropName] || cropNameToId[data.crop_name] || 'rice';
     roadmapBtn.href = `/crop-detail?crop=${targetCropId}`;
-    roadmapBtn.innerHTML = `<span>🌾</span> <span>${data.crop_name} চাষাবাদ রোডম্যাপ</span>`;
+    roadmapBtn.innerHTML = `<span>${data.crop_name} চাষাবাদ রোডম্যাপ ➔</span>`;
   }
 
   // Inject exact KG badges for nutrients
@@ -418,7 +425,12 @@ function renderSeedlingHighlightCard(data) {
   plantCard.innerHTML = `
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-emerald-200 pb-3">
       <div class="flex items-center gap-2">
-        <span class="text-2xl">🌱</span>
+        <div class="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center shrink-0 shadow-2xs">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+            <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+          </svg>
+        </div>
         <div>
           <h4 class="font-black text-slate-900 text-sm md:text-base">
             ${unitLabel} প্রয়োগের সুনির্দিষ্ট মাত্রা (Per Plant / Pit Dose)
@@ -469,7 +481,11 @@ function renderSeedlingHighlightCard(data) {
 
     ${info.planting_advice ? `
       <div class="p-3 rounded-xl bg-emerald-50/90 border border-emerald-300 text-xs text-slate-800 font-medium flex items-center gap-2">
-        <span class="text-base shrink-0">💡</span>
+        <svg class="w-4 h-4 text-emerald-800 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="16" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12.01" y2="8"/>
+        </svg>
         <span><b>সতর্কতা ও প্রয়োগ নিয়ম:</b> ${info.planting_advice} সারের প্রয়োগ সবসময় কাণ্ড থেকে ৫-১০ সেমি দূরে রিং আকারে করতে হবে।</span>
       </div>
     ` : ''}

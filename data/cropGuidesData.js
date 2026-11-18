@@ -3224,13 +3224,13 @@ const allCropGuides = [
       "channel": "বাংলাদেশ ধান গবেষণা ইনস্টিটিউট (BRRI)"
     },
     "fertilizer_plan": {
-      "urea": "১.২ কেজি / শতাংশ",
-      "tsp": "০.৮ কেজি / শতাংশ",
-      "mop": "০.৭ কেজি / শতাংশ",
-      "gypsum": "০.৫ কেজি / শতাংশ",
-      "zinc": "০.১ কেজি / শতাংশ",
-      "boron": "০.০৫ কেজি / শতাংশ",
-      "organic": "২০ কেজি / শতাংশ"
+      "urea": 1.2,
+      "tsp": 0.8,
+      "mop": 0.7,
+      "gypsum": 0.5,
+      "zinc": 0.1,
+      "boron": 0.05,
+      "organic": 20
     },
     "steps": [
       {
@@ -3337,13 +3337,13 @@ const allCropGuides = [
       "channel": "কৃষি তথ্য সার্ভিস (AIS)"
     },
     "fertilizer_plan": {
-      "urea": "১.০ কেজি / শতাংশ",
-      "tsp": "০.৭ কেজি / শতাংশ",
-      "mop": "০.৬ কেজি / শতাংশ",
-      "gypsum": "০.৪ কেজি / শতাংশ",
-      "zinc": "০.০৮ কেজি / শতাংশ",
-      "boron": "০.০৩ কেজি / শতাংশ",
-      "organic": "১৫ কেজি / শতাংশ"
+      "urea": 1,
+      "tsp": 0.7,
+      "mop": 0.6,
+      "gypsum": 0.4,
+      "zinc": 0.08,
+      "boron": 0.03,
+      "organic": 15
     },
     "steps": [
       {
@@ -3450,13 +3450,13 @@ const allCropGuides = [
       "channel": "কৃষি সম্প্রসারণ অধিদপ্তর"
     },
     "fertilizer_plan": {
-      "urea": "০.৯ কেজি / শতাংশ",
-      "tsp": "০.৬ কেজি / শতাংশ",
-      "mop": "০.৫ কেজি / শতাংশ",
-      "gypsum": "০.৩ কেজি / শতাংশ",
-      "zinc": "০.০৭ কেজি / শতাংশ",
-      "boron": "০.০২ কেজি / শতাংশ",
-      "organic": "১২ কেজি / শতাংশ"
+      "urea": 0.9,
+      "tsp": 0.6,
+      "mop": 0.5,
+      "gypsum": 0.3,
+      "zinc": 0.07,
+      "boron": 0.02,
+      "organic": 12
     },
     "steps": [
       {
@@ -3563,13 +3563,13 @@ const allCropGuides = [
       "channel": "মাটি ও মানুষ"
     },
     "fertilizer_plan": {
-      "urea": "০.৮ কেজি / শতাংশ",
-      "tsp": "০.৫ কেজি / শতাংশ",
-      "mop": "০.৬ কেজি / শতাংশ",
-      "gypsum": "০.৩ কেজি / শতাংশ",
-      "zinc": "০.০৫ কেজি / শতাংশ",
-      "boron": "০.০২ কেজি / শতাংশ",
-      "organic": "২৫ কেজি / শতাংশ"
+      "urea": 0.8,
+      "tsp": 0.5,
+      "mop": 0.6,
+      "gypsum": 0.3,
+      "zinc": 0.05,
+      "boron": 0.02,
+      "organic": 25
     },
     "steps": [
       {
@@ -3676,13 +3676,13 @@ const allCropGuides = [
       "channel": "দীপ্ত কৃষি"
     },
     "fertilizer_plan": {
-      "urea": "১.১ কেজি / শতাংশ",
-      "tsp": "০.৮ কেজি / শতাংশ",
-      "mop": "০.৯ কেজি / শতাংশ",
-      "gypsum": "০.৪ কেজি / শতাংশ",
-      "zinc": "০.১ কেজি / শতাংশ",
-      "boron": "০.০৫ কেজি / শতাংশ",
-      "organic": "৩০ কেজি / শতাংশ"
+      "urea": 1.1,
+      "tsp": 0.8,
+      "mop": 0.9,
+      "gypsum": 0.4,
+      "zinc": 0.1,
+      "boron": 0.05,
+      "organic": 30
     },
     "steps": [
       {
@@ -3789,13 +3789,13 @@ const allCropGuides = [
       "channel": "কৃষি তথ্য সার্ভিস"
     },
     "fertilizer_plan": {
-      "urea": "১.২ কেজি / শতাংশ",
-      "tsp": "০.৮ কেজি / শতাংশ",
-      "mop": "০.৮৫ কেজি / শতাংশ",
-      "gypsum": "০.৪৫ কেজি / শতাংশ",
-      "zinc": "০.১ কেজি / শতাংশ",
-      "boron": "০.০৫ কেজি / শতাংশ",
-      "organic": "৩০ কেজি / শতাংশ"
+      "urea": 1.2,
+      "tsp": 0.8,
+      "mop": 0.85,
+      "gypsum": 0.45,
+      "zinc": 0.1,
+      "boron": 0.05,
+      "organic": 30
     },
     "steps": [
       {
@@ -3902,13 +3902,13 @@ const allCropGuides = [
       "channel": "বাংলাদেশ কৃষি গবেষণা ইনস্টিটিউট (BARI)"
     },
     "fertilizer_plan": {
-      "urea": "১.২ কেজি / শতাংশ",
-      "tsp": "০.৮৫ কেজি / শতাংশ",
-      "mop": "০.৯ কেজি / শতাংশ",
-      "gypsum": "০.৫ কেজি / শতাংশ",
-      "zinc": "০.১২ কেজি / শতাংশ",
-      "boron": "০.০৬ কেজি / শতাংশ",
-      "organic": "৩৫ কেজি / শতাংশ"
+      "urea": 1.2,
+      "tsp": 0.85,
+      "mop": 0.9,
+      "gypsum": 0.5,
+      "zinc": 0.12,
+      "boron": 0.06,
+      "organic": 35
     },
     "steps": [
       {
@@ -4015,13 +4015,13 @@ const allCropGuides = [
       "channel": "কৃষি বায়োস্কোপ"
     },
     "fertilizer_plan": {
-      "urea": "১.০ কেজি / শতাংশ",
-      "tsp": "০.৭৫ কেজি / শতাংশ",
-      "mop": "০.৮ কেজি / শতাংশ",
-      "gypsum": "০.৪ কেজি / শতাংশ",
-      "zinc": "০.১ কেজি / শতাংশ",
-      "boron": "০.০৫ কেজি / শতাংশ",
-      "organic": "২৫ কেজি / শতাংশ"
+      "urea": 1,
+      "tsp": 0.75,
+      "mop": 0.8,
+      "gypsum": 0.4,
+      "zinc": 0.1,
+      "boron": 0.05,
+      "organic": 25
     },
     "steps": [
       {
@@ -4128,13 +4128,13 @@ const allCropGuides = [
       "channel": "কৃষি তথ্য সার্ভিস"
     },
     "fertilizer_plan": {
-      "urea": "১.০ কেজি / শতাংশ",
-      "tsp": "০.৮ কেজি / শতাংশ",
-      "mop": "০.৭৫ কেজি / শতাংশ",
-      "gypsum": "০.৪ কেজি / শতাংশ",
-      "zinc": "০.০৮ কেজি / শতাংশ",
-      "boron": "০.০৪ কেজি / শতাংশ",
-      "organic": "৩০ কেজি / শতাংশ"
+      "urea": 1,
+      "tsp": 0.8,
+      "mop": 0.75,
+      "gypsum": 0.4,
+      "zinc": 0.08,
+      "boron": 0.04,
+      "organic": 30
     },
     "steps": [
       {
@@ -4241,13 +4241,13 @@ const allCropGuides = [
       "channel": "মাটি ও মানুষ"
     },
     "fertilizer_plan": {
-      "urea": "০.৮ কেজি / শতাংশ",
-      "tsp": "০.৫ কেজি / শতাংশ",
-      "mop": "০.৫ কেজি / শতাংশ",
-      "gypsum": "০.৩ কেজি / শতাংশ",
-      "zinc": "০.০৫ কেজি / শতাংশ",
-      "boron": "০.০২ কেজি / শতাংশ",
-      "organic": "২৫ কেজি / শতাংশ"
+      "urea": 0.8,
+      "tsp": 0.5,
+      "mop": 0.5,
+      "gypsum": 0.3,
+      "zinc": 0.05,
+      "boron": 0.02,
+      "organic": 25
     },
     "steps": [
       {
@@ -4354,13 +4354,13 @@ const allCropGuides = [
       "channel": "মাটি ও মানুষ"
     },
     "fertilizer_plan": {
-      "urea": "০.৫ কেজি / গাছ / বছর",
-      "tsp": "০.৪ কেজি / গাছ",
-      "mop": "০.৪ কেজি / গাছ",
-      "gypsum": "০.২ কেজি / গাছ",
-      "zinc": "০.০৫ কেজি / গাছ",
-      "boron": "০.০৩ কেজি / গাছ",
-      "organic": "২০ কেজি / গাছ"
+      "urea": 0.5,
+      "tsp": 0.4,
+      "mop": 0.4,
+      "gypsum": 0.2,
+      "zinc": 0.05,
+      "boron": 0.03,
+      "organic": 20
     },
     "steps": [
       {
@@ -4467,13 +4467,13 @@ const allCropGuides = [
       "channel": "দীপ্ত কৃষি"
     },
     "fertilizer_plan": {
-      "urea": "০.৩ কেজি / গাছ",
-      "tsp": "০.২৫ কেজি / গাছ",
-      "mop": "০.৩ কেজি / গাছ",
-      "gypsum": "০.১৫ কেজি / গাছ",
-      "zinc": "০.০৩ কেজি / গাছ",
-      "boron": "০.০২ কেজি / গাছ",
-      "organic": "১৫ কেজি / গাছ"
+      "urea": 0.3,
+      "tsp": 0.25,
+      "mop": 0.3,
+      "gypsum": 0.15,
+      "zinc": 0.03,
+      "boron": 0.02,
+      "organic": 15
     },
     "steps": [
       {
@@ -4580,13 +4580,13 @@ const allCropGuides = [
       "channel": "চ্যানেল আই"
     },
     "fertilizer_plan": {
-      "urea": "০.৮ কেজি / গাছ",
-      "tsp": "০.৫ কেজি / গাছ",
-      "mop": "০.৭ কেজি / গাছ",
-      "gypsum": "০.৩ কেজি / গাছ",
-      "zinc": "০.০৫ কেজি / গাছ",
-      "boron": "০.০৩ কেজি / গাছ",
-      "organic": "৪০ কেজি / গাছ"
+      "urea": 0.8,
+      "tsp": 0.5,
+      "mop": 0.7,
+      "gypsum": 0.3,
+      "zinc": 0.05,
+      "boron": 0.03,
+      "organic": 40
     },
     "steps": [
       {
@@ -4693,13 +4693,13 @@ const allCropGuides = [
       "channel": "হৃদয়ে মাটি ও মানুষ"
     },
     "fertilizer_plan": {
-      "urea": "০.৪ কেজি / পিলার",
-      "tsp": "০.৩ কেজি / পিলার",
-      "mop": "০.৪ কেজি / পিলার",
-      "gypsum": "০.১৫ কেজি / পিলার",
-      "zinc": "০.০২ কেজি / পিলার",
-      "boron": "০.০২ কেজি / পিলার",
-      "organic": "২৫ কেজি / পিলার"
+      "urea": 0.4,
+      "tsp": 0.3,
+      "mop": 0.4,
+      "gypsum": 0.15,
+      "zinc": 0.02,
+      "boron": 0.02,
+      "organic": 25
     },
     "steps": [
       {
@@ -4806,13 +4806,13 @@ const allCropGuides = [
       "channel": "কৃষি তথ্য সার্ভিস"
     },
     "fertilizer_plan": {
-      "urea": "০.৪ কেজি / গাছ",
-      "tsp": "০.৩ কেজি / গাছ",
-      "mop": "০.৩৫ কেজি / গাছ",
-      "gypsum": "০.২ কেজি / গাছ",
-      "zinc": "০.০৪ কেজি / গাছ",
-      "boron": "০.০২ কেজি / গাছ",
-      "organic": "২০ কেজি / গাছ"
+      "urea": 0.4,
+      "tsp": 0.3,
+      "mop": 0.35,
+      "gypsum": 0.2,
+      "zinc": 0.04,
+      "boron": 0.02,
+      "organic": 20
     },
     "steps": [
       {
@@ -4900,17 +4900,19 @@ const allCropGuides = [
   }
 ];
 
-function getAllCrops() {
-  return allCropGuides;
+function getCropById(cropId) {
+  if (!cropId) return allCropGuides[0];
+  const clean = cropId.toLowerCase().trim();
+  return allCropGuides.find(c => c.crop_id.toLowerCase() === clean) || allCropGuides[0];
 }
 
-function getCropById(cropId) {
-  if (!cropId) return null;
-  return allCropGuides.find(c => c.crop_id.toLowerCase() === cropId.toLowerCase()) || null;
+function getCropsByCategory(catId) {
+  if (!catId || catId === "all") return allCropGuides;
+  return allCropGuides.filter(c => c.category_id === catId);
 }
 
 module.exports = {
   allCropGuides,
-  getAllCrops,
-  getCropById
+  getCropById,
+  getCropsByCategory
 };

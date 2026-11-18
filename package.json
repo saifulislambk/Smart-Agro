@@ -9,6 +9,7 @@
     "start:all": "bash start_services.sh",
     "dev": "node --watch server.js",
     "docs": "node scripts/generators/generate-docs.js",
+    "sync:nav": "node scripts/generators/sync-navbar.js",
     "test": "node scripts/tests/verify-smart-agro.js",
     "test:smoke": "node scripts/tests/verify-local-smoke.js",
     "test:browser": "node scripts/tests/browser-scanner-test.js"

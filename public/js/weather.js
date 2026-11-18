@@ -167,18 +167,18 @@ function findNearestDistrictClient(lat, lon) {
 // Initialize Weather Module
 async function initWeather() {
   const gpsBtn = document.getElementById('gps-refresh-btn');
-  const districtSelect = document.getElementById('district-select');
+  const districtSelects = document.querySelectorAll('#district-select');
 
   if (gpsBtn) {
     gpsBtn.addEventListener('click', openLocationModal);
   }
 
-  if (districtSelect) {
-    districtSelect.value = currentDistrict;
-    districtSelect.addEventListener('change', (e) => {
+  districtSelects.forEach(sel => {
+    sel.value = currentDistrict;
+    sel.addEventListener('change', (e) => {
       selectDistrict(e.target.value);
     });
-  }
+  });
 
   const locationLabel = document.getElementById('weather-location-label');
   if (locationLabel && (!locationLabel.innerText || locationLabel.innerText.trim() === 'ব্রাহ্মণবাড়িয়া')) {
@@ -189,14 +189,18 @@ async function initWeather() {
   fetchWeatherData();
   initialWeatherFetched = true;
 
-  // Asynchronously trigger auto-geolocation detection on page load
+  // Asynchronously trigger auto-geolocation detection on page load (if user hasn't chosen manually)
   autoDetectDistrictOnLoad();
 }
 
 // Asynchronous Automatic District Geolocation Detection on Page Load
 function autoDetectDistrictOnLoad() {
+  // If user has explicitly selected a district manually, do not override with GPS
+  if (localStorage.getItem('smart_agro_district_manual') === 'true') {
+    return;
+  }
+
   if (!navigator.geolocation) {
-    console.debug('HTML5 Geolocation not supported by browser. Falling back to Dhaka.');
     fallbackToDhakaIfUnset();
     return;
   }
@@ -205,40 +209,39 @@ function autoDetectDistrictOnLoad() {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         try {
+          // Double-check user hasn't selected manually while GPS was resolving
+          if (localStorage.getItem('smart_agro_district_manual') === 'true') {
+            return;
+          }
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;
           if (isInsideBangladesh(lat, lon)) {
             const matchedDistrict = findNearestDistrictClient(lat, lon);
-            console.debug('Auto-detected district from GPS:', matchedDistrict, lat, lon);
             currentLocationCoords = { lat, lon };
             currentDistrict = matchedDistrict;
             localStorage.setItem('smart_agro_district', currentDistrict);
 
-            const districtSelect = document.getElementById('district-select');
-            if (districtSelect) districtSelect.value = currentDistrict;
+            document.querySelectorAll('#district-select').forEach(sel => {
+              sel.value = currentDistrict;
+            });
 
             const locationLabel = document.getElementById('weather-location-label');
             if (locationLabel) locationLabel.innerText = currentDistrict;
 
             fetchWeatherData();
           } else {
-            console.debug('GPS coordinates outside Bangladesh bounds:', lat, lon);
             fallbackToDhakaIfUnset();
           }
         } catch (err) {
-          console.debug('Error resolving auto-detected coordinates:', err);
           fallbackToDhakaIfUnset();
         }
       },
       (error) => {
-        // PERMISSION_DENIED (1), POSITION_UNAVAILABLE (2), TIMEOUT (3)
-        console.debug('Auto-geolocation denied, timed out, or unavailable:', error ? (error.message || error.code) : 'unknown');
         fallbackToDhakaIfUnset();
       },
       { timeout: 6000, enableHighAccuracy: false, maximumAge: 300000 }
     );
   } catch (err) {
-    console.debug('Auto-geolocation invocation error:', err);
     fallbackToDhakaIfUnset();
   }
 }
@@ -249,8 +252,9 @@ function fallbackToDhakaIfUnset() {
   if (!stored || stored === 'ব্রাহ্মণবাড়িয়া') {
     currentDistrict = 'ঢাকা';
     localStorage.setItem('smart_agro_district', 'ঢাকা');
-    const districtSelect = document.getElementById('district-select');
-    if (districtSelect) districtSelect.value = 'ঢাকা';
+    document.querySelectorAll('#district-select').forEach(sel => {
+      sel.value = 'ঢাকা';
+    });
     const locationLabel = document.getElementById('weather-location-label');
     if (locationLabel) locationLabel.innerText = 'ঢাকা';
   }
@@ -260,16 +264,16 @@ function fallbackToDhakaIfUnset() {
   }
 }
 
-// Select District Programmatically
+// Select District Programmatically (Instant Reactive Weather Update)
 function selectDistrict(districtName) {
   currentDistrict = districtName || 'ঢাকা';
-  currentLocationCoords = null;
+  currentLocationCoords = null; // Clear GPS coords so the selected district's coords are used!
   localStorage.setItem('smart_agro_district', currentDistrict);
+  localStorage.setItem('smart_agro_district_manual', 'true'); // Flag manual selection to preserve on reload
 
-  const districtSelect = document.getElementById('district-select');
-  if (districtSelect) {
-    districtSelect.value = currentDistrict;
-  }
+  document.querySelectorAll('#district-select').forEach(sel => {
+    sel.value = currentDistrict;
+  });
 
   const locationLabel = document.getElementById('weather-location-label');
   if (locationLabel) {
@@ -349,10 +353,12 @@ function requestGPSLocation() {
             currentDistrict = 'ঢাকা';
           }
 
+          localStorage.removeItem('smart_agro_district_manual'); // Explicit GPS request overrides previous manual override
           localStorage.setItem('smart_agro_district', currentDistrict);
 
-          const districtSelect = document.getElementById('district-select');
-          if (districtSelect) districtSelect.value = currentDistrict;
+          document.querySelectorAll('#district-select').forEach(sel => {
+            sel.value = currentDistrict;
+          });
 
           const locationLabel = document.getElementById('weather-location-label');
           if (locationLabel) locationLabel.innerText = currentDistrict;
@@ -424,35 +430,188 @@ function handleGPSFailure(message) {
   }
 }
 
-// Fetch weather from backend API
+// Fetch weather from backend API or Direct Live Global Satellite API
 async function fetchWeatherData() {
+  const districtName = currentDistrict || 'ঢাকা';
+  
+  // 1. Give immediate visual feedback that weather is actively updating
+  const tempEl = document.getElementById('weather-temp');
+  const conditionEl = document.getElementById('weather-condition');
+  const humidityEl = document.getElementById('weather-humidity');
+  const rainProbEl = document.getElementById('weather-rain-prob');
+  const windEl = document.getElementById('weather-wind');
+  
+  if (tempEl) tempEl.style.opacity = '0.4';
+  if (conditionEl) conditionEl.style.opacity = '0.4';
+
+  let coords = currentLocationCoords;
+  if (!coords) {
+    const found = BD_DISTRICTS_COORDS.find(d => d.name === districtName) || BD_DISTRICTS_COORDS[0];
+    coords = { lat: found.lat, lon: found.lon };
+  }
+
+  // 2. Try Client-side Direct Live Open-Meteo API (100% Real-time WMO Satellite Data, Instant & CORS-enabled)
+  try {
+    const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum&timezone=Asia%2FDhaka`;
+    const omRes = await fetch(omUrl);
+    if (omRes.ok) {
+      const omData = await omRes.json();
+      if (omData && omData.current) {
+        const cur = omData.current;
+        const currentHour = new Date().getHours();
+        const isDay = currentHour >= 6 && currentHour <= 18;
+        const wCode = cur.weather_code || 0;
+
+        let conditionBn = 'পরিষ্কার ও রৌদ্রোজ্জ্বল';
+        let icon = isDay ? '01d' : '01n';
+        let rainProb = 10;
+        if (wCode === 0) { conditionBn = 'আকাশ সম্পূর্ণ পরিষ্কার'; icon = isDay ? '01d' : '01n'; rainProb = 5; }
+        else if (wCode <= 3) { conditionBn = 'আংশিক মেঘলা'; icon = isDay ? '02d' : '02n'; rainProb = 20; }
+        else if (wCode === 45 || wCode === 48) { conditionBn = 'কুয়াশাচ্ছন্ন পরিবেশ'; icon = '50d'; rainProb = 15; }
+        else if (wCode >= 51 && wCode <= 55) { conditionBn = 'হালকা গুঁড়ি গুঁড়ি বৃষ্টি'; icon = '10d'; rainProb = 65; }
+        else if (wCode >= 61 && wCode <= 65) { conditionBn = 'মাঝারি থেকে ভারী বৃষ্টিপাত'; icon = '10d'; rainProb = 85; }
+        else if (wCode >= 80 && wCode <= 82) { conditionBn = 'বর্ষণমুখর বৃষ্টি'; icon = '09d'; rainProb = 90; }
+        else if (wCode >= 95) { conditionBn = 'বজ্রঝড় ও শিলাবৃষ্টির ঝুঁকি'; icon = '11d'; rainProb = 95; }
+
+        if (cur.precipitation > 0) rainProb = Math.max(rainProb, 80);
+
+        const temp = Math.round(cur.temperature_2m);
+        const feelsLike = Math.round(cur.apparent_temperature);
+        const humidity = Math.round(cur.relative_humidity_2m);
+        const windSpeed = Math.round(cur.wind_speed_10m);
+
+        const isSafeToSpray = rainProb < 40 && windSpeed <= 15;
+        const spraying = {
+          is_safe: isSafeToSpray,
+          window_bn: isSafeToSpray ? 'কীটনাশক স্প্রে করার উপযুক্ত সময়' : 'বৃষ্টি বা বাতাসের ঝুঁকি: স্প্রে করা থেকে বিরত থাকুন'
+        };
+
+        let alertLevel = 'success';
+        let alertTitle = 'অনুকূল আবহাওয়া';
+        let alertMsg = 'ফসলের বৃদ্ধির জন্য স্বাভাবিক ও অনুকূল আবহাওয়া বিরাজ করছে।';
+        let alertAction = 'নিয়মিত সেচ ও জমিতে আগাছা পরিষ্কার অব্যাহত রাখুন।';
+
+        if (rainProb >= 70 || cur.precipitation > 2) {
+          alertLevel = 'danger';
+          alertTitle = 'ভারী বৃষ্টির সতর্কতা';
+          alertMsg = `${districtName} অঞ্চলে বৃষ্টির সম্ভাবনা বেশি। জমিতে অতিরিক্ত পানি নিষ্কাশনের ব্যবস্থা নিন।`;
+          alertAction = 'পানি নিষ্কাশন নালা পরিষ্কার রাখুন এবং সার দেওয়া সাময়িক স্থগিত রাখুন।';
+        } else if (temp >= 35) {
+          alertLevel = 'warning';
+          alertTitle = 'তীব্র তাপপ্রবাহ';
+          alertMsg = `${districtName} অঞ্চলে তাপমাত্রা বেশি। ফসলে আর্দ্রতার ঘাটতি হতে পারে।`;
+          alertAction = 'সকালে বা বিকেলে জমিতে হালকা সেচ দিন।';
+        } else if (temp <= 14) {
+          alertLevel = 'warning';
+          alertTitle = 'শৈত্যপ্রবাহ ও কুয়াশা';
+          alertMsg = `${districtName} অঞ্চলে ঠান্ডা আবহাওয়া। ব্লাইট ও ছত্রাকের ঝুঁকি রয়েছে।`;
+          alertAction = 'আলু ও টমেটোতে আগাম ছত্রাকনাশক স্প্রে করুন।';
+        }
+
+        const alert = {
+          level: alertLevel,
+          title: alertTitle,
+          message: alertMsg,
+          actionable_advice: alertAction
+        };
+
+        const weather = {
+          source: 'Open-Meteo Live Satellite',
+          location: districtName,
+          temp: temp,
+          feels_like: feelsLike,
+          humidity: humidity,
+          wind_speed: windSpeed,
+          rain_probability: rainProb,
+          condition_bn: conditionBn,
+          icon: icon,
+          is_day: isDay
+        };
+
+        renderWeatherUI(weather, alert, spraying);
+
+        // Parse and render 5-day daily precision agro-forecast from Open-Meteo satellite
+        if (omData.daily && omData.daily.time) {
+          const banglaDays = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+          const banglaMonths = ['জানু', 'ফেব্রু', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টে', 'অক্টো', 'নভে', 'ডিসে'];
+          const toBnNum = (n) => String(n).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+          const d = omData.daily;
+          const forecastList = [];
+          for (let i = 0; i < Math.min(5, d.time.length); i++) {
+            const dObj = new Date(d.time[i] + 'T00:00:00');
+            let dayName = banglaDays[dObj.getDay()];
+            if (i === 0) dayName = 'আজ';
+            else if (i === 1) dayName = 'আগামীকাল';
+
+            const maxTemp = Math.round(d.temperature_2m_max[i]);
+            const minTemp = Math.round(d.temperature_2m_min[i]);
+            const rainP = Math.round(d.precipitation_probability_max ? (d.precipitation_probability_max[i] || 0) : 0);
+            const wC = d.weather_code ? (d.weather_code[i] || 0) : 0;
+
+            let fIcon = '☀️';
+            let fCond = 'রৌদ্রোজ্জ্বল';
+            if (wC === 0) { fIcon = '☀️'; fCond = 'রৌদ্রোজ্জ্বল'; }
+            else if (wC <= 3) { fIcon = '⛅'; fCond = 'আংশিক মেঘলা'; }
+            else if (wC === 45 || wC === 48) { fIcon = '🌫️'; fCond = 'কুয়াশাচ্ছন্ন'; }
+            else if (wC >= 51 && wC <= 65) { fIcon = '🌧️'; fCond = 'বৃষ্টিপাত'; }
+            else if (wC >= 80 && wC <= 82) { fIcon = '🌧️'; fCond = 'বর্ষণমুখর বৃষ্টি'; }
+            else if (wC >= 95) { fIcon = '⛈️'; fCond = 'বজ্রঝড়'; }
+
+            forecastList.push({
+              day_bn: dayName,
+              date_bn: `${toBnNum(dObj.getDate())} ${banglaMonths[dObj.getMonth()]}`,
+              temp_max: maxTemp,
+              temp_min: minTemp,
+              rain_prob: rainP,
+              icon: fIcon,
+              condition: fCond
+            });
+          }
+          renderDailyForecastUI(forecastList, districtName);
+        }
+
+        if (tempEl) tempEl.style.opacity = '1';
+        if (conditionEl) conditionEl.style.opacity = '1';
+        return;
+      }
+    }
+  } catch (clientOmErr) {
+    console.debug('Direct Open-Meteo notice, falling back to backend API:', clientOmErr.message);
+  }
+
+  // 3. Backend API Fallback
   try {
     let url = '/api/weather';
     if (currentLocationCoords) {
       url += `?lat=${currentLocationCoords.lat}&lon=${currentLocationCoords.lon}`;
     } else {
-      url += `?district=${encodeURIComponent(currentDistrict || 'ঢাকা')}`;
+      url += `?district=${encodeURIComponent(districtName)}`;
     }
 
     const response = await fetch(url);
     const result = await response.json();
 
     if (result.success && result.weather) {
-      currentDistrict = result.weather.location || currentDistrict || 'ঢাকা';
+      currentDistrict = result.weather.location || districtName;
       localStorage.setItem('smart_agro_district', currentDistrict);
 
-      // Sync header dropdown if matches
-      const districtSelect = document.getElementById('district-select');
-      if (districtSelect) {
-        districtSelect.value = currentDistrict;
-      }
+      document.querySelectorAll('#district-select').forEach(sel => {
+        sel.value = currentDistrict;
+      });
 
       renderWeatherUI(result.weather, result.alert, result.spraying);
+
+      if (result.forecast && Array.isArray(result.forecast)) {
+        renderDailyForecastUI(result.forecast, currentDistrict);
+      }
     } else {
       console.debug('Weather data response was not successful:', result);
     }
   } catch (err) {
     console.debug('Failed to load weather:', err);
+  } finally {
+    if (tempEl) tempEl.style.opacity = '1';
+    if (conditionEl) conditionEl.style.opacity = '1';
   }
 }
 
@@ -519,6 +678,69 @@ function renderWeatherUI(weather, alert, spraying) {
       }
     }
   }
+}
+
+// Render 5-Day Precision Daily Agro-Weather Forecast
+function renderDailyForecastUI(forecastList, locationName) {
+  const container = document.getElementById('daily-forecast-cards');
+  const locNameEl = document.getElementById('forecast-location-name');
+  if (locNameEl && locationName) {
+    locNameEl.innerText = escapeHtml(locationName);
+  }
+
+  if (!container) return;
+
+  if (!Array.isArray(forecastList) || forecastList.length === 0) {
+    return;
+  }
+
+  const toBnNum = (n) => String(n).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+
+  container.innerHTML = forecastList.map((item, idx) => {
+    const isToday = idx === 0;
+    const isTomorrow = idx === 1;
+    const dayLabel = item.day_bn || (isToday ? 'আজ' : (isTomorrow ? 'আগামীকাল' : 'দিন ' + toBnNum(idx + 1)));
+    const dateLabel = item.date_bn || '';
+    const tempMaxBn = toBnNum(item.temp_max !== undefined ? item.temp_max : 28);
+    const tempMinBn = toBnNum(item.temp_min !== undefined ? item.temp_min : 18);
+    const rainProb = item.rain_prob !== undefined ? item.rain_prob : 0;
+    const rainProbBn = toBnNum(rainProb);
+    const icon = item.icon || '☀️';
+    const condition = item.condition || 'পরিষ্কার';
+
+    let rainBadgeColor = 'text-emerald-700 bg-emerald-50 border-emerald-200';
+    if (rainProb >= 60) {
+      rainBadgeColor = 'text-rose-700 bg-rose-50 border-rose-200';
+    } else if (rainProb >= 30) {
+      rainBadgeColor = 'text-amber-700 bg-amber-50 border-amber-200';
+    }
+
+    return `
+      <div class="p-3.5 rounded-xl border ${isToday ? 'bg-forest-50/50 border-emerald-300 ring-1 ring-emerald-300/40' : 'bg-white border-slate-200 hover:border-slate-300'} flex flex-col justify-between transition-all duration-200 shadow-2xs">
+        <div>
+          <div class="flex items-center justify-between gap-1 mb-1.5">
+            <span class="text-xs font-black ${isToday ? 'text-forest-900' : 'text-slate-800'}">${escapeHtml(dayLabel)}</span>
+            <span class="text-[10px] text-slate-400 font-medium">${escapeHtml(dateLabel)}</span>
+          </div>
+          <div class="flex items-center gap-2 my-2">
+            <span class="text-2xl">${icon}</span>
+            <span class="text-[11px] font-bold text-slate-600 line-clamp-1">${escapeHtml(condition)}</span>
+          </div>
+        </div>
+
+        <div class="space-y-1.5 pt-2 border-t border-slate-100">
+          <div class="flex items-baseline justify-between text-xs font-black">
+            <span class="text-slate-900 text-sm">${tempMaxBn}°</span>
+            <span class="text-slate-400 font-bold text-[11px]">${tempMinBn}° সে.</span>
+          </div>
+          <div class="flex items-center justify-between text-[10px] px-1.5 py-0.5 rounded-md border ${rainBadgeColor} font-bold">
+            <span>🌧️ বৃষ্টি:</span>
+            <span>${rainProbBn}%</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 // Inject Interactive GPS Location Modal
@@ -617,6 +839,7 @@ window.SmartAgroWeather = {
   autoDetectDistrictOnLoad,
   requestGPSLocation,
   fetchWeatherData,
+  renderDailyForecastUI,
   openLocationModal,
   closeLocationModal,
   selectDistrict,

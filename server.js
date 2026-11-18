@@ -4,6 +4,7 @@ const compression = require('compression');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const child_process = require('child_process');
 const axios = require('axios');
 const FormData = require('form-data');
 let nodemailer = null;
@@ -171,51 +172,163 @@ app.use('/uploads', express.static(uploadDir));
 
 const { allCropGuides, getCropById } = require('./data/cropGuidesData');
 
+// Bengali number parser and normalizer
+const bnDigits = { '০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4', '৫': '5', '৬': '6', '৭': '7', '৮': '8', '৯': '9' };
+function parseBnFloat(val, fallback = 0) {
+  if (typeof val === 'number') return isNaN(val) ? fallback : val;
+  if (!val) return fallback;
+  const str = String(val).replace(/[০-৯]/g, d => bnDigits[d] || d);
+  const match = str.match(/[\d\.]+/);
+  if (!match) return fallback;
+  const num = parseFloat(match[0]);
+  return isNaN(num) ? fallback : num;
+}
+
+function normalizeBnString(str) {
+  if (!str) return '';
+  return str.toLowerCase().replace(/\u09AF\u09BC/g, '\u09DF').replace(/\s+/g, ' ').trim();
+}
+
 // Helper to normalize Bengali crop names across all variations and input spellings
 function normalizeCropName(name) {
   if (!name) return 'ধান';
-  const clean = name.trim().toLowerCase();
+  const clean = normalizeBnString(name);
   
-  // Specific checks first
-  if (clean.includes('পেঁপে') || clean === 'papaya') return 'পেঁপে';
+  if (clean.includes('পেঁপে') || clean.includes('পেপে') || clean === 'papaya') return 'পেঁপে';
   if (clean.includes('পেয়ারা') || clean.includes('পেয়ারা') || clean === 'guava') return 'পেয়ারা';
-  if (clean.includes('পেঁয়াজ') || clean.includes('পেঁয়াজ') || clean.includes('পেয়াজ') || clean === 'onion') return 'পেঁয়াজ';
+  if (clean.includes('পেঁয়াজ') || clean.includes('পেঁয়াজ') || clean.includes('পেয়াজ') || clean.includes('পেয়াজ') || clean === 'onion') return 'পেঁয়াজ';
   if (clean.includes('লেবু') || clean === 'lemon' || clean === 'lime') return 'লেবু';
   if (clean.includes('আম') || clean === 'mango') return 'আম';
   if (clean.includes('ড্রাগন') || clean === 'dragon_fruit') return 'ড্রাগন ফল';
   if (clean.includes('মাল্টা') || clean === 'malta') return 'মাল্টা';
   if (clean.includes('পটল') || clean === 'pointed_gourd') return 'পটল';
   if (clean.includes('কচুর লতি') || clean.includes('কচু') || clean === 'taro_loti') return 'কচুর লতি';
+  if (clean.includes('বোরো') || clean.includes('boro')) return 'বোরো ধান';
+  if (clean.includes('আমন') || clean.includes('aman')) return 'রোপা আমন ধান';
+  if (clean.includes('আউশ') || clean.includes('aus')) return 'আউশ ধান';
+  if (clean.includes('সুগন্ধি') || clean.includes('aromatic')) return 'সুগন্ধি ধান';
   if (clean.includes('ধান') || clean === 'rice') return 'ধান';
   if (clean.includes('গম') || clean === 'wheat') return 'গম';
   if (clean.includes('ভুট্টা') || clean === 'maize' || clean === 'corn') return 'ভুট্টা';
   if (clean.includes('আলু') || clean === 'potato') return 'আলু';
   if (clean.includes('টমেটো') || clean === 'tomato') return 'টমেটো';
+  if (clean.includes('গোল বেগুন') || clean.includes('তাল বেগুন')) return 'গোল বেগুন';
+  if (clean.includes('লম্বা বেগুন')) return 'লম্বা বেগুন';
+  if (clean.includes('বিটি বেগুন')) return 'বারি বিটি বেগুন';
+  if (clean.includes('সবুজ বেগুন')) return 'সবুজ বেগুন';
   if (clean.includes('বেগুন') || clean === 'eggplant' || clean === 'brinjal') return 'বেগুন';
   if (clean.includes('ফুলকপি') || clean === 'cauliflower') return 'ফুলকপি';
-  if (clean.includes('বাঁধাকপি') || clean === 'cabbage') return 'বাঁধাকপি';
+  if (clean.includes('বাঁধাকপি') || clean.includes('বাধাকপি') || clean === 'cabbage') return 'বাঁধাকপি';
   if (clean.includes('লাউ') || clean.includes('কদু') || clean === 'bottle_gourd') return 'লাউ';
-  if (clean.includes('মিষ্টি') || clean === 'sweet_gourd' || clean === 'pumpkin') return 'মিষ্টি কুমড়া';
+  if (clean.includes('মিষ্টি কুমড়া') || clean.includes('মিষ্টি কুমড়া') || clean.includes('মিষ্টি') || clean === 'sweet_gourd' || clean === 'pumpkin') return 'মিষ্টি কুমড়া';
   if (clean.includes('শসা') || clean.includes('ক্ষীরা') || clean === 'cucumber') return 'শসা';
   if (clean.includes('করলা') || clean.includes('উচ্ছে') || clean === 'bitter_gourd') return 'করলা';
-  if (clean.includes('ঢেঁড়শ') || clean.includes('ঢেঁড়শ') || clean.includes('ভেন্ডি') || clean === 'okra') return 'ঢেঁড়শ';
+  if (clean.includes('ঢেঁড়শ') || clean.includes('ঢেঁড়শ') || clean.includes('ঢেড়শ') || clean.includes('ভেন্ডি') || clean === 'okra') return 'ঢেঁড়শ';
   if (clean.includes('শিম') || clean === 'hyacinth_bean') return 'শিম';
   if (clean.includes('চিচিঙ্গা') || clean === 'snake_gourd') return 'চিচিঙ্গা';
-  if (clean.includes('ঝিঙা') || clean === 'ridge_gourd') return 'ঝিঙা';
-  if (clean.includes('চাল কুমড়া') || clean === 'ash_gourd') return 'চাল কুমড়া';
+  if (clean.includes('ঝিঙা') || clean.includes('ঝিঙ্গা') || clean === 'ridge_gourd') return 'ঝিঙা';
+  if (clean.includes('চাল কুমড়া') || clean.includes('চাল কুমড়া') || clean === 'ash_gourd') return 'চাল কুমড়া';
   if (clean.includes('মরিচ') || clean === 'chilli' || clean === 'pepper') return 'মরিচ';
   if (clean.includes('রসুন') || clean === 'garlic') return 'রসুন';
   if (clean.includes('আদা') || clean === 'ginger') return 'আদা';
   if (clean.includes('হলুদ') || clean === 'turmeric') return 'হলুদ';
   if (clean.includes('সরিষা') || clean === 'mustard') return 'সরিষা';
   if (clean.includes('মসুর') || clean === 'lentil') return 'মসুর ডাল';
-  if (clean.includes('লালশাক') || clean === 'red_amaranth') return 'লালশাক';
+  if (clean.includes('লালশাক') || clean.includes('লাল শাক') || clean.includes('লাল') || clean === 'red_amaranth') return 'লালশাক';
   if (clean.includes('পালং') || clean === 'spinach') return 'পালং শাক';
-  if (clean.includes('ডাঁটা') || clean === 'stem_amaranth') return 'ডাঁটাশাক';
-  if (clean.includes('পুঁই') || clean === 'malabar_spinach') return 'পুঁইশাক';
+  if (clean.includes('ডাঁটা') || clean.includes('ডাটা') || clean === 'stem_amaranth') return 'ডাঁটাশাক';
+  if (clean.includes('পুঁই') || clean.includes('পুই') || clean === 'malabar_spinach') return 'পুঁইশাক';
   if (clean.includes('কলমি') || clean === 'water_spinach') return 'কলমি শাক';
 
   return clean;
+}
+
+// Robust resolver to ensure any crop returns 100% valid numeric fertilizer rates
+function resolveCropPlan(inputName) {
+  const fallback = { urea: 1.0, tsp: 0.5, mop: 0.6, gypsum: 0.35, zinc: 0.05, boron: 0.03, organic: 18.0 };
+  if (!inputName) return fallback;
+  const clean = normalizeBnString(inputName);
+
+  // 1. Direct match by crop_id
+  let found = allCropGuides.find(c => c.crop_id.toLowerCase() === clean);
+  if (!found) {
+    // 2. Direct match by crop_name_bn
+    found = allCropGuides.find(c => {
+      const bn = normalizeBnString(c.crop_name_bn);
+      return bn === clean || bn.includes(clean) || clean.includes(bn);
+    });
+  }
+
+  // 3. Keyword-based matching
+  if (!found) {
+    const keywordMap = [
+      { keys: ['বোরো'], id: 'rice_boro' },
+      { keys: ['আমন', 'রোপা আমন'], id: 'rice_aman' },
+      { keys: ['আউশ'], id: 'rice_aus' },
+      { keys: ['সুগন্ধি'], id: 'rice_aromatic' },
+      { keys: ['ধান', 'চাল', 'rice'], id: 'rice' },
+      { keys: ['গম', 'wheat'], id: 'wheat' },
+      { keys: ['ভুট্টা', 'maize', 'corn'], id: 'maize' },
+      { keys: ['টমেটো', 'tomato'], id: 'tomato' },
+      { keys: ['গোল বেগুন', 'তাল বেগুন'], id: 'eggplant_round' },
+      { keys: ['লম্বা বেগুন'], id: 'eggplant_long' },
+      { keys: ['বিটি বেগুন', 'বারি বিটি বেগুন'], id: 'eggplant_bt' },
+      { keys: ['সবুজ বেগুন'], id: 'eggplant_green' },
+      { keys: ['বেগুন', 'eggplant', 'brinjal'], id: 'eggplant' },
+      { keys: ['মরিচ', 'chilli', 'chili'], id: 'chilli' },
+      { keys: ['ফুলকপি', 'cauliflower'], id: 'cauliflower' },
+      { keys: ['বাঁধাকপি', 'বাধাকপি', 'cabbage'], id: 'cabbage' },
+      { keys: ['আলু', 'potato'], id: 'potato' },
+      { keys: ['কচুর লতি', 'কচু', 'লতি'], id: 'taro_loti' },
+      { keys: ['পেঁপে', 'পেপে', 'papaya'], id: 'papaya' },
+      { keys: ['পেয়ারা', 'পেয়ারা', 'guava'], id: 'guava' },
+      { keys: ['লেবু', 'lemon', 'lime'], id: 'lemon' },
+      { keys: ['আম', 'mango'], id: 'mango' },
+      { keys: ['ড্রাগন', 'dragon'], id: 'dragon_fruit' },
+      { keys: ['মাল্টা', 'কমলা', 'malta'], id: 'malta' },
+      { keys: ['লাউ', 'কদু', 'bottle_gourd'], id: 'bottle_gourd' },
+      { keys: ['মিষ্টি কুমড়া', 'মিষ্টি কুমড়া', 'pumpkin', 'sweet_gourd'], id: 'sweet_gourd' },
+      { keys: ['শসা', 'ক্ষীরা', 'cucumber'], id: 'cucumber' },
+      { keys: ['করলা', 'উচ্ছে', 'bitter_gourd'], id: 'bitter_gourd' },
+      { keys: ['পটল', 'pointed_gourd'], id: 'pointed_gourd' },
+      { keys: ['শিম', 'hyacinth_bean'], id: 'hyacinth_bean' },
+      { keys: ['চিচিঙ্গা', 'snake_gourd'], id: 'snake_gourd' },
+      { keys: ['ঝিঙা', 'ঝিঙ্গা', 'ridge_gourd'], id: 'ridge_gourd' },
+      { keys: ['চাল কুমড়া', 'চাল কুমড়া', 'ash_gourd'], id: 'ash_gourd' },
+      { keys: ['ঢেঁড়শ', 'ঢেঁড়শ', 'ঢেড়শ', 'ভেন্ডি', 'okra'], id: 'okra' },
+      { keys: ['পেঁয়াজ', 'পেঁয়াজ', 'পেয়াজ', 'পেয়াজ', 'onion'], id: 'onion' },
+      { keys: ['রসুন', 'garlic'], id: 'garlic' },
+      { keys: ['আদা', 'ginger'], id: 'ginger' },
+      { keys: ['হলুদ', 'turmeric'], id: 'turmeric' },
+      { keys: ['সরিষা', 'mustard'], id: 'mustard' },
+      { keys: ['মসুর', 'lentil'], id: 'lentil' },
+      { keys: ['লালশাক', 'লাল শাক', 'red_amaranth'], id: 'red_amaranth' },
+      { keys: ['পালং', 'পালংশাক', 'পালং শাক', 'spinach'], id: 'spinach' },
+      { keys: ['ডাঁটা', 'ডাটা', 'ডাঁটাশাক', 'ডাঁটা শাক', 'stem_amaranth'], id: 'stem_amaranth' },
+      { keys: ['পুঁই', 'পুই', 'পুঁইশাক', 'পুঁই শাক', 'malabar_spinach'], id: 'malabar_spinach' },
+      { keys: ['কলমি', 'কলমিশাক', 'কলমি শাক', 'water_spinach'], id: 'water_spinach' }
+    ];
+
+    for (const item of keywordMap) {
+      if (item.keys.some(k => clean.includes(normalizeBnString(k)))) {
+        found = allCropGuides.find(c => c.crop_id === item.id);
+        if (found) break;
+      }
+    }
+  }
+
+  const rawPlan = (found && found.fertilizer_plan) ? found.fertilizer_plan : fallback;
+  
+  // Return sanitized numeric plan (guaranteed numbers, never strings or NaN)
+  return {
+    urea: parseBnFloat(rawPlan.urea, 1.0),
+    tsp: parseBnFloat(rawPlan.tsp, 0.5),
+    mop: parseBnFloat(rawPlan.mop, 0.6),
+    gypsum: parseBnFloat(rawPlan.gypsum, 0.35),
+    zinc: parseBnFloat(rawPlan.zinc, 0.05),
+    boron: parseBnFloat(rawPlan.boron, 0.03),
+    organic: parseBnFloat(rawPlan.organic, 18.0)
+  };
 }
 
 // ====================================================================
@@ -707,6 +820,70 @@ app.get('/api/weather', async (req, res) => {
       }
     }
 
+    // 2. Open-Meteo Global High-Precision WMO Meteorological API (100% Free, No API Key Required)
+    if (!weatherData) {
+      let districtName = requestedDistrict;
+      let targetLat = lat;
+      let targetLon = lon;
+
+      if (hasLat || hasLon) {
+        if (lat === null || lon === null || isNaN(lat) || isNaN(lon)) {
+          districtName = 'ঢাকা';
+          targetLat = 23.8103;
+          targetLon = 90.4125;
+        } else {
+          districtName = findNearestDistrict(lat, lon);
+          targetLat = lat;
+          targetLon = lon;
+        }
+      } else {
+        const found = bdDistrictsCoords.find(d => d.name === requestedDistrict) || bdDistrictsCoords[0];
+        targetLat = found.lat;
+        targetLon = found.lon;
+        districtName = found.name;
+      }
+
+      try {
+        const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${targetLat}&longitude=${targetLon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum&timezone=Asia%2FDhaka`;
+        const omRes = await axios.get(omUrl, { timeout: 3500 });
+        if (omRes && omRes.data && omRes.data.current) {
+          const cur = omRes.data.current;
+          const currentHour = new Date().getHours();
+          const isDay = currentHour >= 6 && currentHour <= 18;
+          const wCode = cur.weather_code || 0;
+          
+          let conditionBn = 'পরিষ্কার ও রৌদ্রোজ্জ্বল';
+          let icon = isDay ? '01d' : '01n';
+          let rainProb = 10;
+          if (wCode === 0) { conditionBn = 'আকাশ সম্পূর্ণ পরিষ্কার'; icon = isDay ? '01d' : '01n'; rainProb = 5; }
+          else if (wCode <= 3) { conditionBn = 'আংশিক মেঘলা'; icon = isDay ? '02d' : '02n'; rainProb = 20; }
+          else if (wCode === 45 || wCode === 48) { conditionBn = 'কুয়াশাচ্ছন্ন পরিবেশ'; icon = '50d'; rainProb = 15; }
+          else if (wCode >= 51 && wCode <= 55) { conditionBn = 'হালকা গুঁড়ি গুঁড়ি বৃষ্টি'; icon = '10d'; rainProb = 65; }
+          else if (wCode >= 61 && wCode <= 65) { conditionBn = 'মাঝারি থেকে ভারী বৃষ্টিপাত'; icon = '10d'; rainProb = 85; }
+          else if (wCode >= 80 && wCode <= 82) { conditionBn = 'বর্ষণমুখর বৃষ্টি'; icon = '09d'; rainProb = 90; }
+          else if (wCode >= 95) { conditionBn = 'বজ্রঝড় ও শিলাবৃষ্টির সম্ভাবনা'; icon = '11d'; rainProb = 95; }
+
+          if (cur.precipitation > 0) rainProb = Math.max(rainProb, 80);
+
+          weatherData = {
+            source: 'Open-Meteo High-Precision Global API',
+            location: districtName,
+            temp: Math.round(cur.temperature_2m),
+            feels_like: Math.round(cur.apparent_temperature),
+            humidity: Math.round(cur.relative_humidity_2m),
+            wind_speed: Math.round(cur.wind_speed_10m),
+            rain_probability: rainProb,
+            condition_bn: conditionBn,
+            icon: icon,
+            is_day: isDay,
+            raw_daily: omRes.data.daily
+          };
+        }
+      } catch (omErr) {
+        // Fallback to local model if offline
+      }
+    }
+
     if (!weatherData) {
       const currentHour = new Date().getHours();
       const isDay = currentHour >= 6 && currentHour <= 18;
@@ -720,13 +897,20 @@ app.get('/api/weather', async (req, res) => {
         }
       }
 
-      const baseTemp = isDay ? (28 + Math.round(Math.sin(currentHour / 3) * 4)) : 22;
-      const roundedHumidity = Math.round(65 + (Math.cos(currentHour / 4) * 16));
-      const rainProbability = roundedHumidity > 76 ? 60 : 20;
+      // District-specific climatic offset for realistic geographic variation across Bangladesh
+      const coords = bdDistrictsCoords.find(d => d.name === districtName) || bdDistrictsCoords[0];
+      const latOffset = Math.round((24.0 - coords.lat) * 2.5); // Northern districts are cooler, Southern warmer
+      const lonOffset = Math.round((coords.lon - 90.0) * 2.0); // Eastern districts more humid/rainy, Western drier
+      
+      const baseTemp = (isDay ? (27 + Math.round(Math.sin(currentHour / 3) * 3)) : 20) + latOffset;
+      const roundedHumidity = Math.min(95, Math.max(40, Math.round(64 + (Math.cos(currentHour / 4) * 12) + lonOffset * 2)));
+      const rainProbability = Math.min(95, Math.max(5, roundedHumidity > 74 ? (45 + lonOffset * 4) : Math.max(10, 20 + lonOffset)));
 
       let condition = 'পরিষ্কার ও রৌদ্রোজ্জ্বল';
-      if (rainProbability > 50) condition = 'হালকা থেকে মাঝারি বৃষ্টি';
-      else if (roundedHumidity > 75) condition = 'আংশিক মেঘলা ও আর্দ্র';
+      if (rainProbability >= 60) condition = 'হালকা থেকে মাঝারি বৃষ্টিপাত';
+      else if (rainProbability >= 40) condition = 'মেঘলা আকাশ ও বৃষ্টির সম্ভাবনা';
+      else if (roundedHumidity > 75) condition = 'আংশিক মেঘলা ও আর্দ্র আবহাওয়া';
+      else if (latOffset < -3 && !isDay) condition = 'কুয়াশাচ্ছন্ন ও ঠান্ডা আবহাওয়া';
 
       weatherData = {
         source: 'Smart Agro Local Weather Model',
@@ -734,10 +918,10 @@ app.get('/api/weather', async (req, res) => {
         temp: baseTemp,
         feels_like: baseTemp + 2,
         humidity: roundedHumidity,
-        wind_speed: 12 + Math.round(Math.random() * 5),
+        wind_speed: Math.max(5, Math.min(35, 12 + Math.round(Math.abs(lonOffset)) + Math.round(Math.random() * 4))),
         rain_probability: rainProbability,
         condition_bn: condition,
-        icon: isDay ? '01d' : '01n',
+        icon: isDay ? (rainProbability > 50 ? '10d' : (roundedHumidity > 75 ? '02d' : '01d')) : (rainProbability > 50 ? '10n' : '01n'),
         is_day: isDay
       };
     }
@@ -788,19 +972,84 @@ app.get('/api/weather', async (req, res) => {
       };
     }
 
-    // 3-Day Forecast simulation
-    const forecast3Days = [
-      { day_bn: 'আজ', temp: weatherData.temp, rain_prob: weatherData.rain_probability, condition: weatherData.condition_bn },
-      { day_bn: 'আগামীকাল', temp: weatherData.temp + 1, rain_prob: Math.max(15, weatherData.rain_probability - 10), condition: 'রৌদ্রোজ্জ্বল ও উষ্ণ' },
-      { day_bn: 'পরশু', temp: weatherData.temp, rain_prob: 25, condition: 'আংশিক মেঘলা' }
-    ];
+    // 5-Day Precision Daily Agro-Weather Forecast
+    let forecast5Days = [];
+    if (weatherData.raw_daily && weatherData.raw_daily.time) {
+      const daily = weatherData.raw_daily;
+      const banglaDays = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+      const banglaMonths = ['জানু', 'ফেব্রু', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টে', 'অক্টো', 'নভে', 'ডিসে'];
+      const toBnNum = (n) => String(n).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+
+      const count = Math.min(daily.time.length, 5);
+      for (let i = 0; i < count; i++) {
+        const dObj = new Date(daily.time[i] + 'T00:00:00');
+        let dayName = banglaDays[dObj.getDay()];
+        if (i === 0) dayName = 'আজ';
+        else if (i === 1) dayName = 'আগামীকাল';
+
+        const maxTemp = Math.round(daily.temperature_2m_max[i]);
+        const minTemp = Math.round(daily.temperature_2m_min[i]);
+        const rainProb = Math.round(daily.precipitation_probability_max ? (daily.precipitation_probability_max[i] || 0) : 0);
+        const wCode = daily.weather_code[i] || 0;
+
+        let icon = '☀️';
+        let condition = 'পরিষ্কার';
+        if (wCode === 0) { icon = '☀️'; condition = 'রৌদ্রোজ্জ্বল'; }
+        else if (wCode <= 3) { icon = '⛅'; condition = 'আংশিক মেঘলা'; }
+        else if (wCode === 45 || wCode === 48) { icon = '🌫️'; condition = 'কুয়াশাচ্ছন্ন'; }
+        else if (wCode >= 51 && wCode <= 65) { icon = '🌧️'; condition = 'বৃষ্টিপাত'; }
+        else if (wCode >= 80 && wCode <= 82) { icon = '🌧️'; condition = 'বর্ষণমুখর বৃষ্টি'; }
+        else if (wCode >= 95) { icon = '⛈️'; condition = 'বজ্রঝড়'; }
+
+        forecast5Days.push({
+          day_bn: dayName,
+          date_bn: `${toBnNum(dObj.getDate())} ${banglaMonths[dObj.getMonth()]}`,
+          temp_max: maxTemp,
+          temp_min: minTemp,
+          rain_prob: rainProb,
+          icon,
+          condition
+        });
+      }
+    } else {
+      const banglaDays = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+      const banglaMonths = ['জানু', 'ফেব্রু', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টে', 'অক্টো', 'নভে', 'ডিসে'];
+      const toBnNum = (n) => String(n).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+      const today = new Date();
+
+      for (let i = 0; i < 5; i++) {
+        const dObj = new Date(today);
+        dObj.setDate(today.getDate() + i);
+        let dayName = banglaDays[dObj.getDay()];
+        if (i === 0) dayName = 'আজ';
+        else if (i === 1) dayName = 'আগামীকাল';
+
+        const maxTemp = Math.round(weatherData.temp + 4 + Math.sin(i * 1.5) * 2);
+        const minTemp = Math.round(weatherData.temp - 5 + Math.cos(i * 1.5) * 2);
+        const rainProb = Math.min(95, Math.max(5, Math.round(weatherData.rain_probability + ((i * 7) % 25) - 10)));
+        let icon = '☀️';
+        let condition = 'পরিষ্কার আকাশ';
+        if (rainProb >= 60) { icon = '🌧️'; condition = 'বৃষ্টির সম্ভাবনা'; }
+        else if (rainProb >= 35) { icon = '⛅'; condition = 'আংশিক মেঘলা'; }
+
+        forecast5Days.push({
+          day_bn: dayName,
+          date_bn: `${toBnNum(dObj.getDate())} ${banglaMonths[dObj.getMonth()]}`,
+          temp_max: maxTemp,
+          temp_min: minTemp,
+          rain_prob: rainProb,
+          icon,
+          condition
+        });
+      }
+    }
 
     res.json({
       success: true,
       weather: weatherData,
       alert: agroAlert,
       spraying: sprayingStatus,
-      forecast: forecast3Days
+      forecast: forecast5Days
     });
   } catch (error) {
     console.error('Weather endpoint error:', error);
@@ -907,7 +1156,7 @@ app.post(['/api/scan', '/api/detect'], (req, res, next) => {
     // 1. Forward image buffer to Python AI Microservice (Port 5000)
     // In production or Vercel, uses 3.5s timeout to prevent Serverless Function Invocation Timeout
     const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1';
-    const AI_MICROSERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:5000/predict';
+    const AI_MICROSERVICE_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:5000/predict';
     const AI_TIMEOUT_MS = parseInt(process.env.AI_TIMEOUT_MS, 10) || (isProduction ? 7500 : 15000);
     let aiResult = null;
     let pyErr = null;
@@ -1216,7 +1465,7 @@ app.post('/api/fertilizer-calc', async (req, res) => {
         splitInstructions = plantSpec.split_instructions;
       } else {
         // Fallback calculation for crops not in plantFertilizerSpecs
-        const rate = fertilizerRatesPerDecimal[crop] || fertilizerRatesPerDecimal['ধান'];
+        const rate = resolveCropPlan(rawCrop || crop);
         const estDensity = 100; // default 100 plants per decimal
         decimals = +(seedlingCount / estDensity).toFixed(2);
         ureaTotal = +(rate.urea * decimals).toFixed(2);
@@ -1254,7 +1503,7 @@ app.post('/api/fertilizer-calc', async (req, res) => {
       }
       unit = (req.body.landUnit || req.body.land_unit || 'শতাংশ').trim();
       decimals = convertToDecimals(amount, unit);
-      const rate = fertilizerRatesPerDecimal[crop] || fertilizerRatesPerDecimal['ধান'];
+      const rate = resolveCropPlan(rawCrop || crop);
 
       ureaTotal = +(rate.urea * decimals).toFixed(1);
       tspTotal = +(rate.tsp * decimals).toFixed(1);
@@ -1442,17 +1691,32 @@ if (require.main === module) {
     console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
     await db.initDb();
 
-    // Non-fatal healthcheck ping to Python AI Microservice (Port 5000)
-    const AI_HEALTH_URL = process.env.AI_HEALTH_URL || 'http://localhost:5000/health';
+    // Healthcheck ping or auto-spawn Python AI Microservice (Port 5000)
+    const AI_HEALTH_URL = process.env.AI_HEALTH_URL || 'http://127.0.0.1:5000/health';
     try {
-      const healthRes = await axios.get(AI_HEALTH_URL, { timeout: 3000, proxy: false });
+      const healthRes = await axios.get(AI_HEALTH_URL, { timeout: 2000, proxy: false });
       if (healthRes.status === 200) {
         console.log('🤖 Python AI Microservice (Port 5000) is online and healthy.');
       } else {
         console.warn(`⚠️ Python AI Microservice returned unexpected status: ${healthRes.status}`);
       }
     } catch (healthErr) {
-      console.warn(`⚠️ Warning: Python AI Microservice (Port 5000) is not reachable on startup: ${healthErr.message}`);
+      const venvPy = path.join(__dirname, 'ai_service', 'venv', 'bin', 'python');
+      const appPy = path.join(__dirname, 'ai_service', 'app.py');
+      if (fs.existsSync(venvPy) && fs.existsSync(appPy)) {
+        console.log('🚀 [Smart Agro] Auto-launching Python AI Microservice on Port 5000...');
+        const pyProc = child_process.spawn(venvPy, [appPy], {
+          cwd: path.join(__dirname, 'ai_service'),
+          env: { ...process.env, PORT: '5000' },
+          stdio: 'inherit'
+        });
+        pyProc.on('error', (e) => console.warn('⚠️ Python AI Microservice spawn error:', e.message));
+        process.on('exit', () => { try { pyProc.kill(); } catch(e){} });
+        process.on('SIGINT', () => { try { pyProc.kill(); } catch(e){} process.exit(); });
+        process.on('SIGTERM', () => { try { pyProc.kill(); } catch(e){} process.exit(); });
+      } else {
+        console.warn(`⚠️ Warning: Python AI Microservice (Port 5000) is not reachable on startup: ${healthErr.message}`);
+      }
     }
   });
 }

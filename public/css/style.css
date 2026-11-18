@@ -442,3 +442,49 @@ select option {
   color: #92400e;
   border: 1px solid #fde68a;
 }
+
+/* ====================================================================
+   Core Brand & Unified Navbar Utility Classes (Fail-Safe CSS)
+   Guarantees 100% Solid Colors across All Pages & Tailwind CDN States
+   ==================================================================== */
+.bg-forest-950 { background-color: #06261c !important; }
+.bg-forest-900 { background-color: #0b3b2c !important; }
+.bg-forest-800 { background-color: #14532d !important; }
+.bg-forest-700 { background-color: #15803d !important; }
+.text-forest-950 { color: #06261c !important; }
+.text-forest-900 { color: #0b3b2c !important; }
+.text-forest-800 { color: #14532d !important; }
+.text-forest-700 { color: #15803d !important; }
+.border-forest-900 { border-color: #0b3b2c !important; }
+.border-forest-800 { border-color: #14532d !important; }
+.border-t-forest-800 { border-top-color: #14532d !important; }
+.border-l-forest-800 { border-left-color: #14532d !important; }
+
+.hover\:bg-forest-800:hover { background-color: #14532d !important; }
+.hover\:bg-forest-900:hover { background-color: #0b3b2c !important; }
+.hover\:text-forest-900:hover { color: #0b3b2c !important; }
+.hover\:text-forest-800:hover { color: #14532d !important; }
+
+.bg-agro-900 { background-color: #0b3b2c !important; }
+.bg-agro-800 { background-color: #2a4c32 !important; }
+.text-agro-900 { color: #0b3b2c !important; }
+.text-agro-800 { color: #2a4c32 !important; }
+.border-agro-900 { border-color: #0b3b2c !important; }
+.border-agro-800 { border-color: #2a4c32 !important; }
+
+/* Desktop Navigation Link Active State Solid Enforcement */
+#desktop-primary-nav a.nav-active,
+#desktop-primary-nav a.bg-forest-900 {
+  background-color: #0b3b2c !important;
+  color: #ffffff !important;
+  font-weight: 900 !important;
+}
+
+#auth-login-btn {
+  background-color: #0b3b2c !important;
+  color: #ffffff !important;
+}
+
+#auth-login-btn:hover {
+  background-color: #14532d !important;
+}

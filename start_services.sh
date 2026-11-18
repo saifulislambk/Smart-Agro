@@ -7,7 +7,7 @@
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$PROJECT_DIR"
 
-PYTHON_BIN="/home/saiful_islam_bk/crop_disease_api/venv/bin/python"
+PYTHON_BIN="$PROJECT_DIR/ai_service/venv/bin/python"
 if [ ! -f "$PYTHON_BIN" ]; then
   PYTHON_BIN="python3"
 fi

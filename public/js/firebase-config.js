@@ -41,6 +41,12 @@ async function initFirebaseAuth() {
       authInstance = firebase.auth();
       authInstance.useDeviceLanguage();
       googleProvider = new firebase.auth.GoogleAuthProvider();
+      googleProvider.addScope('profile');
+      googleProvider.addScope('email');
+      // Force Google account chooser & consent prompt
+      googleProvider.setCustomParameters({
+        prompt: 'select_account'
+      });
       checkGoogleEmailSignInLink();
 
       // Check if real config is valid
@@ -499,8 +505,18 @@ async function handleSendEmailOtp() {
 
     const otpInput = document.getElementById('farmer-email-otp-input');
     if (otpInput) {
-      otpInput.value = data.otp || '';
+      otpInput.value = ''; // Always empty; farmer must enter OTP code manually
       otpInput.focus();
+    }
+
+    const simNotice = document.getElementById('otp-simulation-notice');
+    if (data.simulated) {
+      if (simNotice) {
+        simNotice.innerHTML = `ℹ️ <strong>পরীক্ষামূলক ওটিপি:</strong> সার্ভারে সরাসরি SMTP সেট না থাকায় জিমেইলে পাঠানো যায়নি। টেস্টের জন্য আপনার ওটিপি: <strong class="text-emerald-800 text-sm tracking-widest bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300 select-all">${data.otp}</strong>। কোডটি নিচের ঘরে লিখে লগইন করুন।`;
+        simNotice.classList.remove('hidden');
+      }
+    } else {
+      if (simNotice) simNotice.classList.add('hidden');
     }
 
     showToast(data.message || `ইমেইলে ওটিপি পাঠানো হয়েছে (${rawEmail})`);
@@ -670,6 +686,7 @@ function injectLoginModal() {
 
         <!-- Step 2: Input OTP Verification Code -->
         <div id="email-auth-step-2" class="hidden space-y-3 animate-fade-in">
+          <div id="otp-simulation-notice" class="hidden p-3 rounded-xl bg-amber-50 border border-amber-300 text-xs text-amber-900 leading-relaxed font-bengali"></div>
           <div class="flex items-center justify-between">
             <label class="block text-xs font-bold text-slate-700">
               🔑 ওটিপি কোড লিখুন:
