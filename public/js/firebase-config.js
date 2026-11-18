@@ -714,6 +714,37 @@ function injectLoginModal() {
 
       </div>
 
+      <!-- Direct Photo & Profile Settings Access (No Login Required) -->
+      <div class="mt-4 p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-300 text-center space-y-2.5">
+        <div class="flex items-center justify-center gap-2 text-xs font-black text-emerald-950">
+          <span class="text-base">📷</span>
+          <span>ছবি, জেলা বা নাম পরিবর্তন করতে চান?</span>
+        </div>
+        <p class="text-[11px] text-slate-600 font-medium">লগইন ছাড়াই নিজের পছন্দমতো প্রোফাইল ছবি, নিজ জেলা ও পদবী সেট করুন।</p>
+        <button onclick="SmartAgroAuth.closeLoginModal(); SmartAgroAuth.openAccountSettingsModal();" 
+                class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs md:text-sm shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
+          <span>📷</span>
+          <span>প্রোফাইল ছবি ও সেটিংস খুলুন</span>
+        </button>
+      </div>
+
+      <!-- 1-Click Demo Farmer Switcher -->
+      <div class="mt-4 pt-3 border-t border-slate-200 text-center">
+        <p class="text-[11px] font-bold text-slate-600 mb-2">অথবা ১-ক্লিকে যেকোনো নমুনা প্রোফাইল বাছুন:</p>
+        <div class="grid grid-cols-2 gap-2">
+          ${DEMO_PROFILES.map(p => `
+            <button onclick="SmartAgroAuth.selectDemoFarmer('${p.id}')" 
+                    class="p-2 rounded-xl border border-slate-200 hover:border-emerald-500 bg-white hover:bg-emerald-50 flex items-center gap-2 transition-all text-left group">
+              <img src="${p.photoURL}" class="w-8 h-8 rounded-full object-cover border-2 border-emerald-400 group-hover:scale-105 transition-transform shrink-0">
+              <div class="min-w-0 flex-1">
+                <div class="text-[11px] font-bold text-slate-800 truncate">${p.displayName}</div>
+                <div class="text-[9px] text-emerald-700 font-semibold truncate">${p.district} • ${p.role}</div>
+              </div>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+
     </div>
   `;
 
@@ -832,10 +863,20 @@ function selectProfilePresetAvatar(url, btnElement) {
 }
 
 function openAccountSettingsModal() {
-  const currentUser = getCurrentUser();
+  let currentUser = getCurrentUser();
   if (!currentUser) {
-    openLoginModal();
-    return;
+    currentUser = {
+      uid: 'farmer_guest_' + Date.now(),
+      displayName: 'কৃষক ভাই',
+      role: 'কৃষক',
+      district: localStorage.getItem('smart_agro_district') || 'ঢাকা',
+      email: '',
+      photoURL: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
+      badge: '✓ কৃষক সদস্য',
+      isGuest: true
+    };
+    localStorage.setItem('smart_agro_user', JSON.stringify(currentUser));
+    notifySubscribers(currentUser);
   }
 
   const existing = document.getElementById('smart-agro-account-modal');
