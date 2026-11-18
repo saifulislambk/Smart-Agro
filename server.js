@@ -549,10 +549,10 @@ app.get('/api/health', (req, res) => {
 app.get('/api/firebase-config', (req, res) => {
   const isConfigured = Boolean(process.env.FIREBASE_API_KEY && process.env.FIREBASE_PROJECT_ID);
   res.json({
-    apiKey: process.env.FIREBASE_API_KEY || "YOUR_FIREBASE_API_KEY",
-    authDomain: process.env.FIREBASE_AUTH_DOMAIN || "smart-agro-bd.firebaseapp.com",
-    projectId: process.env.FIREBASE_PROJECT_ID || "smart-agro-bd",
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "smart-agro-bd.appspot.com",
+    apiKey: process.env.FIREBASE_API_KEY || "AIzaSyBI5cZX6Y2WDt5AboZK6Ex-0pw4GXoEHio",
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN || "smartagro-bd.firebaseapp.com",
+    projectId: process.env.FIREBASE_PROJECT_ID || "smartagro-bd",
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "smartagro-bd.appspot.com",
     messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || "1234567890",
     appId: process.env.FIREBASE_APP_ID || "1:1234567890:web:abcdef123456",
     configured: isConfigured

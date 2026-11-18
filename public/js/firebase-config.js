@@ -3,12 +3,12 @@
 // Supports: Google Sign-In, Email OTP, and Demo Profiles
 // ====================================================================
 
-// Default fallback configuration (Automatically populated from /api/firebase-config if set)
+// Default production configuration
 let firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "smart-agro-bd.firebaseapp.com",
-  projectId: "smart-agro-bd",
-  storageBucket: "smart-agro-bd.appspot.com",
+  apiKey: "AIzaSyBI5cZX6Y2WDt5AboZK6Ex-0pw4GXoEHio",
+  authDomain: "smartagro-bd.firebaseapp.com",
+  projectId: "smartagro-bd",
+  storageBucket: "smartagro-bd.appspot.com",
   messagingSenderId: "1234567890",
   appId: "1:1234567890:web:abcdef123456"
 };
@@ -16,7 +16,7 @@ let firebaseConfig = {
 let authInstance = null;
 let googleProvider = null;
 let authSubscribers = [];
-let isFirebaseConfigured = false;
+let isFirebaseConfigured = true;
 
 // Initialize Firebase dynamically
 async function initFirebaseAuth() {
