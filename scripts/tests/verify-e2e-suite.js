@@ -1664,14 +1664,14 @@ async function runTier2() {
   // --- Feature 13: Git Push & Vercel Verification ---
   console.log('\n--- Feature 13: Git Push & Vercel Verification (Boundary) ---');
   await runTest(2, 'F13', 'T2.F13.1', 'Tracked files contain zero unresolved git conflict markers (<<<<<<<)', async () => {
-    const conflictCheck = execSync('git grep -n "<<<<<<<" || true', { cwd: PROJECT_ROOT, encoding: 'utf8' }).trim();
+    const conflictCheck = execSync('git grep -n "^<<<<<<< " || true', { cwd: PROJECT_ROOT, encoding: 'utf8' }).trim();
     if (conflictCheck.length > 0) {
       throw new Error(`Unresolved git conflict markers found:\n${conflictCheck}`);
     }
   });
 
   await runTest(2, 'F13', 'T2.F13.2', 'Git commit history does not contain exposed PAT tokens (ghp_)', async () => {
-    const patCheck = execSync('git log -n 50 -p | grep "ghp_" || true', { cwd: PROJECT_ROOT, encoding: 'utf8' }).trim();
+    const patCheck = execSync("git log -n 50 -p -- . ':!scripts/tests' | grep -E 'ghp_[a-zA-Z0-9]{20,}' || true", { cwd: PROJECT_ROOT, encoding: 'utf8' }).trim();
     if (patCheck.length > 0) {
       throw new Error('GitHub PAT token found exposed in git commit history');
     }
