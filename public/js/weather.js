@@ -450,7 +450,47 @@ async function fetchWeatherData() {
     coords = { lat: found.lat, lon: found.lon };
   }
 
-  // 2. Try Client-side Direct Live Open-Meteo API (100% Real-time ECMWF Satellite Data, Instant & CORS-enabled)
+  // 1. Try Backend High-Precision Weather API first (powered by WeatherAPI ground station key)
+  try {
+    let url = '/api/weather';
+    if (currentLocationCoords) {
+      url += `?lat=${currentLocationCoords.lat}&lon=${currentLocationCoords.lon}`;
+    } else {
+      url += `?district=${encodeURIComponent(districtName)}`;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+    const response = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    if (response.ok) {
+      const result = await response.json();
+      if (result.success && result.weather) {
+        currentDistrict = result.weather.location || districtName;
+        localStorage.setItem('smart_agro_district', currentDistrict);
+
+        document.querySelectorAll('#district-select').forEach(sel => {
+          sel.value = currentDistrict;
+        });
+
+        renderWeatherUI(result.weather, result.alert, result.spraying);
+
+        if (result.forecast && Array.isArray(result.forecast)) {
+          renderDailyForecastUI(result.forecast, currentDistrict);
+        }
+
+        if (tempEl) tempEl.style.opacity = '1';
+        if (conditionEl) conditionEl.style.opacity = '1';
+        return;
+      }
+    }
+  } catch (backendErr) {
+    console.debug('Backend weather API notice, falling back to client-side Open-Meteo:', backendErr.message);
+  }
+
+  // 2. Client-side Direct Live Open-Meteo Fallback (100% Real-time ECMWF Satellite Data, Instant & CORS-enabled)
   try {
     const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum&models=ecmwf_ifs025&timezone=Asia%2FDhaka`;
     const omRes = await fetch(omUrl);
@@ -576,39 +616,7 @@ async function fetchWeatherData() {
       }
     }
   } catch (clientOmErr) {
-    console.debug('Direct Open-Meteo notice, falling back to backend API:', clientOmErr.message);
-  }
-
-  // 3. Backend API Fallback
-  try {
-    let url = '/api/weather';
-    if (currentLocationCoords) {
-      url += `?lat=${currentLocationCoords.lat}&lon=${currentLocationCoords.lon}`;
-    } else {
-      url += `?district=${encodeURIComponent(districtName)}`;
-    }
-
-    const response = await fetch(url);
-    const result = await response.json();
-
-    if (result.success && result.weather) {
-      currentDistrict = result.weather.location || districtName;
-      localStorage.setItem('smart_agro_district', currentDistrict);
-
-      document.querySelectorAll('#district-select').forEach(sel => {
-        sel.value = currentDistrict;
-      });
-
-      renderWeatherUI(result.weather, result.alert, result.spraying);
-
-      if (result.forecast && Array.isArray(result.forecast)) {
-        renderDailyForecastUI(result.forecast, currentDistrict);
-      }
-    } else {
-      console.debug('Weather data response was not successful:', result);
-    }
-  } catch (err) {
-    console.debug('Failed to load weather:', err);
+    console.debug('Direct Open-Meteo notice:', clientOmErr.message);
   } finally {
     if (tempEl) tempEl.style.opacity = '1';
     if (conditionEl) conditionEl.style.opacity = '1';

@@ -793,15 +793,33 @@ app.get('/api/weather', async (req, res) => {
     // 0. WeatherAPI.com (Real-Time Ground Station Telemetry - Matches Google / Samsung Weather)
     if (weatherApiKey && weatherApiKey !== 'your_weatherapi_key_here' && weatherApiKey.length > 5) {
       try {
-        const queryParam = (lat !== null && lon !== null && !isNaN(lat) && !isNaN(lon))
-          ? `${lat},${lon}`
-          : (bdDistrictsCoords.find(d => d.name === requestedDistrict)?.name_en || requestedDistrict);
-        const wApiUrl = `https://api.weatherapi.com/v1/forecast.json?key=${weatherApiKey}&q=${encodeURIComponent(queryParam)}&days=5&aqi=no&alerts=no`;
+        let targetLat = lat;
+        let targetLon = lon;
+        if (targetLat === null || targetLon === null || isNaN(targetLat) || isNaN(targetLon)) {
+          const found = bdDistrictsCoords.find(d => d.name === requestedDistrict) || bdDistrictsCoords[0];
+          targetLat = found.lat;
+          targetLon = found.lon;
+        }
+        const wApiUrl = `https://api.weatherapi.com/v1/forecast.json?key=${weatherApiKey}&q=${targetLat},${targetLon}&days=5&aqi=no&alerts=no`;
         const res = await axios.get(wApiUrl, { timeout: 4000 });
         if (res.data && res.data.current) {
           const cur = res.data.current;
           const fcast = res.data.forecast?.forecastday || [];
-          const rainProb = fcast[0]?.day?.daily_chance_of_rain || (cur.condition?.text?.includes('Rain') ? 80 : 15);
+          const rainProb = fcast[0]?.day?.daily_chance_of_rain !== undefined
+            ? Math.round(fcast[0].day.daily_chance_of_rain)
+            : (cur.condition?.text?.includes('Rain') ? 80 : 15);
+
+          const condText = (cur.condition?.text || '').toLowerCase();
+          let conditionBn = 'পরিষ্কার ও রৌদ্রোজ্জ্বল';
+          if (condText.includes('thunder')) conditionBn = 'বজ্রঝড় ও বৃষ্টির সম্ভাবনা';
+          else if (condText.includes('heavy rain')) conditionBn = 'ভারী বৃষ্টিপাত';
+          else if (condText.includes('moderate rain')) conditionBn = 'মাঝারি বৃষ্টিপাত';
+          else if (condText.includes('patchy rain') || condText.includes('light rain') || condText.includes('drizzle')) conditionBn = 'হালকা গুঁড়ি গুঁড়ি বৃষ্টি';
+          else if (condText.includes('rain')) conditionBn = 'বৃষ্টির সম্ভাবনা';
+          else if (condText.includes('partly cloudy')) conditionBn = 'আংশিক মেঘলা';
+          else if (condText.includes('cloud') || condText.includes('overcast')) conditionBn = 'মেঘলা আকাশ';
+          else if (condText.includes('mist') || condText.includes('fog')) conditionBn = 'কুয়াশাচ্ছন্ন পরিবেশ';
+          else if (condText.includes('clear')) conditionBn = 'আকাশ সম্পূর্ণ পরিষ্কার';
 
           weatherData = {
             source: 'WeatherAPI Live Station Data',
@@ -811,9 +829,10 @@ app.get('/api/weather', async (req, res) => {
             humidity: cur.humidity,
             wind_speed: Math.round(cur.wind_kph),
             rain_probability: rainProb,
-            condition_bn: cur.condition?.text || 'পরিষ্কার',
+            condition_bn: conditionBn,
             icon: cur.is_day ? '01d' : '01n',
-            is_day: Boolean(cur.is_day)
+            is_day: Boolean(cur.is_day),
+            raw_weatherapi_daily: fcast
           };
         }
       } catch (wErr) {
@@ -1007,7 +1026,41 @@ app.get('/api/weather', async (req, res) => {
 
     // 5-Day Precision Daily Agro-Weather Forecast
     let forecast5Days = [];
-    if (weatherData.raw_daily && weatherData.raw_daily.time) {
+    if (weatherData.raw_weatherapi_daily && Array.isArray(weatherData.raw_weatherapi_daily)) {
+      const banglaDays = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+      const banglaMonths = ['জানু', 'ফেব্রু', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টে', 'অক্টো', 'নভে', 'ডিসে'];
+      const toBnNum = (n) => String(n).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+
+      forecast5Days = weatherData.raw_weatherapi_daily.slice(0, 5).map((fDay, i) => {
+        const dObj = new Date(fDay.date + 'T00:00:00');
+        let dayName = banglaDays[dObj.getDay()];
+        if (i === 0) dayName = 'আজ';
+        else if (i === 1) dayName = 'আগামীকাল';
+
+        const maxTemp = Math.round(fDay.day.maxtemp_c);
+        const minTemp = Math.round(fDay.day.mintemp_c);
+        const rainProb = Math.round(fDay.day.daily_chance_of_rain || 0);
+        const condText = (fDay.day.condition?.text || '').toLowerCase();
+
+        let icon = '☀️';
+        let condition = 'রৌদ্রোজ্জ্বল';
+        if (condText.includes('thunder')) { icon = '⛈️'; condition = 'বজ্রঝড়'; }
+        else if (condText.includes('heavy rain')) { icon = '🌧️'; condition = 'ভারী বৃষ্টিপাত'; }
+        else if (condText.includes('rain') || condText.includes('drizzle')) { icon = '🌧️'; condition = 'বৃষ্টিপাত'; }
+        else if (condText.includes('cloud') || condText.includes('overcast')) { icon = '⛅'; condition = 'আংশিক মেঘলা'; }
+        else if (condText.includes('mist') || condText.includes('fog')) { icon = '🌫️'; condition = 'কুয়াশাচ্ছন্ন'; }
+
+        return {
+          day_bn: dayName,
+          date_bn: `${toBnNum(dObj.getDate())} ${banglaMonths[dObj.getMonth()]}`,
+          temp_max: maxTemp,
+          temp_min: minTemp,
+          rain_prob: rainProb,
+          icon,
+          condition
+        };
+      });
+    } else if (weatherData.raw_daily && weatherData.raw_daily.time) {
       const daily = weatherData.raw_daily;
       const banglaDays = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
       const banglaMonths = ['জানু', 'ফেব্রু', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টে', 'অক্টো', 'নভে', 'ডিসে'];
