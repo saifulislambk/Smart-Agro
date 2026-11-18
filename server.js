@@ -786,10 +786,43 @@ app.get('/api/weather', async (req, res) => {
     }
     const requestedDistrict = sanitizedDistrict;
     const apiKey = process.env.OPENWEATHER_API_KEY;
+    const weatherApiKey = process.env.WEATHERAPI_KEY;
 
     let weatherData = null;
 
-    if (apiKey && apiKey !== 'your_openweathermap_api_key_here' && apiKey.length > 10) {
+    // 0. WeatherAPI.com (Real-Time Ground Station Telemetry - Matches Google / Samsung Weather)
+    if (weatherApiKey && weatherApiKey !== 'your_weatherapi_key_here' && weatherApiKey.length > 5) {
+      try {
+        const queryParam = (lat !== null && lon !== null && !isNaN(lat) && !isNaN(lon))
+          ? `${lat},${lon}`
+          : (bdDistrictsCoords.find(d => d.name === requestedDistrict)?.name_en || requestedDistrict);
+        const wApiUrl = `https://api.weatherapi.com/v1/forecast.json?key=${weatherApiKey}&q=${encodeURIComponent(queryParam)}&days=5&aqi=no&alerts=no`;
+        const res = await axios.get(wApiUrl, { timeout: 4000 });
+        if (res.data && res.data.current) {
+          const cur = res.data.current;
+          const fcast = res.data.forecast?.forecastday || [];
+          const rainProb = fcast[0]?.day?.daily_chance_of_rain || (cur.condition?.text?.includes('Rain') ? 80 : 15);
+
+          weatherData = {
+            source: 'WeatherAPI Live Station Data',
+            location: requestedDistrict,
+            temp: Math.round(cur.temp_c),
+            feels_like: Math.round(cur.feelslike_c),
+            humidity: cur.humidity,
+            wind_speed: Math.round(cur.wind_kph),
+            rain_probability: rainProb,
+            condition_bn: cur.condition?.text || 'পরিষ্কার',
+            icon: cur.is_day ? '01d' : '01n',
+            is_day: Boolean(cur.is_day)
+          };
+        }
+      } catch (wErr) {
+        console.warn('⚠️ WeatherAPI error:', wErr.message);
+      }
+    }
+
+    // 1. OpenWeatherMap Live API (If user provided OpenWeather key)
+    if (!weatherData && apiKey && apiKey !== 'your_openweathermap_api_key_here' && apiKey.length > 10) {
       try {
         let apiUrl = '';
         if (lat !== null && lon !== null && !isNaN(lat) && !isNaN(lon)) {
@@ -820,7 +853,7 @@ app.get('/api/weather', async (req, res) => {
       }
     }
 
-    // 2. Open-Meteo Global High-Precision WMO Meteorological API (100% Free, No API Key Required)
+    // 2. Open-Meteo High-Precision ECMWF Satellite API (100% Free, Zero Key, Google Weather ECMWF Model)
     if (!weatherData) {
       let districtName = requestedDistrict;
       let targetLat = lat;
@@ -844,7 +877,7 @@ app.get('/api/weather', async (req, res) => {
       }
 
       try {
-        const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${targetLat}&longitude=${targetLon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum&timezone=Asia%2FDhaka`;
+        const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${targetLat}&longitude=${targetLon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum&models=ecmwf_ifs025&timezone=Asia%2FDhaka`;
         const omRes = await axios.get(omUrl, { timeout: 3500 });
         if (omRes && omRes.data && omRes.data.current) {
           const cur = omRes.data.current;

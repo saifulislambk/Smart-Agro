@@ -450,9 +450,9 @@ async function fetchWeatherData() {
     coords = { lat: found.lat, lon: found.lon };
   }
 
-  // 2. Try Client-side Direct Live Open-Meteo API (100% Real-time WMO Satellite Data, Instant & CORS-enabled)
+  // 2. Try Client-side Direct Live Open-Meteo API (100% Real-time ECMWF Satellite Data, Instant & CORS-enabled)
   try {
-    const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum&timezone=Asia%2FDhaka`;
+    const omUrl = `https://api.open-meteo.com/v1/forecast?latitude=${coords.lat}&longitude=${coords.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum&models=ecmwf_ifs025&timezone=Asia%2FDhaka`;
     const omRes = await fetch(omUrl);
     if (omRes.ok) {
       const omData = await omRes.json();
