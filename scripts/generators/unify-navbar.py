@@ -200,12 +200,12 @@ def make_mobile_nav(active_key):
       </div>
 
       <!-- Account Settings & Linking Card -->
-      <div onclick="SmartAgroAuth.openAccountSettingsModal(); toggleSmartAgroMobileMenu(false);" class="mt-3 p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100/70 border border-emerald-300/80 cursor-pointer transition-all flex items-center justify-between">
+      <div onclick="SmartAgroAuth.openAccountSettingsModal(); toggleSmartAgroMobileMenu(false);" class="mt-3 p-3 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-300 cursor-pointer transition-all flex items-center justify-between">
         <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-xs">👤</div>
+          <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-xs">📷</div>
           <div>
-            <div class="text-xs font-black text-slate-800">অ্যাকাউন্ট সেটিংস ও যোগাযোগ</div>
-            <div class="text-[10px] text-slate-600">প্রোফাইল সেটিংস ও ইমেইল যুক্ত করুন</div>
+            <div class="text-xs font-black text-slate-800">প্রোফাইল ছবি ও সেটিংস পরিবর্তন</div>
+            <div class="text-[10px] text-emerald-800 font-semibold">নিজের ছবি, ৬৪ জেলা, পদবী ও নাম সেট করুন</div>
           </div>
         </div>
         <span class="text-xs text-emerald-700 font-black">খুলুন ➔</span>

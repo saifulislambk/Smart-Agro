@@ -714,37 +714,6 @@ function injectLoginModal() {
 
       </div>
 
-      <!-- Direct Photo & Profile Settings Access (No Login Required) -->
-      <div class="mt-4 p-4 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-300 text-center space-y-2.5">
-        <div class="flex items-center justify-center gap-2 text-xs font-black text-emerald-950">
-          <span class="text-base">📷</span>
-          <span>ছবি, জেলা বা নাম পরিবর্তন করতে চান?</span>
-        </div>
-        <p class="text-[11px] text-slate-600 font-medium">লগইন ছাড়াই নিজের পছন্দমতো প্রোফাইল ছবি, নিজ জেলা ও পদবী সেট করুন।</p>
-        <button onclick="SmartAgroAuth.closeLoginModal(); SmartAgroAuth.openAccountSettingsModal();" 
-                class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs md:text-sm shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
-          <span>📷</span>
-          <span>প্রোফাইল ছবি ও সেটিংস খুলুন</span>
-        </button>
-      </div>
-
-      <!-- 1-Click Demo Farmer Switcher -->
-      <div class="mt-4 pt-3 border-t border-slate-200 text-center">
-        <p class="text-[11px] font-bold text-slate-600 mb-2">অথবা ১-ক্লিকে যেকোনো নমুনা প্রোফাইল বাছুন:</p>
-        <div class="grid grid-cols-2 gap-2">
-          ${DEMO_PROFILES.map(p => `
-            <button onclick="SmartAgroAuth.selectDemoFarmer('${p.id}')" 
-                    class="p-2 rounded-xl border border-slate-200 hover:border-emerald-500 bg-white hover:bg-emerald-50 flex items-center gap-2 transition-all text-left group">
-              <img src="${p.photoURL}" class="w-8 h-8 rounded-full object-cover border-2 border-emerald-400 group-hover:scale-105 transition-transform shrink-0">
-              <div class="min-w-0 flex-1">
-                <div class="text-[11px] font-bold text-slate-800 truncate">${p.displayName}</div>
-                <div class="text-[9px] text-emerald-700 font-semibold truncate">${p.district} • ${p.role}</div>
-              </div>
-            </button>
-          `).join('')}
-        </div>
-      </div>
-
     </div>
   `;
 
@@ -783,13 +752,6 @@ const BANGLADESH_DIVISIONS_DISTRICTS = [
   { division: 'বরিশাল বিভাগ', districts: ['বরিশাল', 'পটুয়াখালী', 'ভোলা', 'পিরোজপুর', 'বরগুনা', 'ঝালকাঠি'] },
   { division: 'সিলেট বিভাগ', districts: ['সিলেট', 'মৌলভীবাজার', 'হবিগঞ্জ', 'সুনামগঞ্জ'] },
   { division: 'ময়মনসিংহ বিভাগ', districts: ['ময়মনসিংহ', 'জামালপুর', 'নেত্রকোণা', 'শেরপুর'] }
-];
-
-const PRESET_AVATARS = [
-  { label: '👨‍🌾 কৃষক ভাই', url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80' },
-  { label: '👩‍🌾 কিষাণী আপা', url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80' },
-  { label: '🧑‍💼 কৃষি কর্মকর্তা', url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80' },
-  { label: '🔬 গবেষক', url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' }
 ];
 
 const ROLE_OPTIONS = [
@@ -835,10 +797,7 @@ function handleProfilePhotoUpload(event) {
         const previewImg = document.getElementById('account-modal-avatar-preview');
         if (previewImg) previewImg.src = dataUrl;
 
-        document.querySelectorAll('.preset-avatar-btn').forEach(btn => {
-          btn.classList.remove('ring-4', 'ring-emerald-500', 'scale-110');
-        });
-        showToast('📷 ছবি সফলভাবে নির্বাচন করা হয়েছে! সংরক্ষণে ক্লিক করুন।');
+        showToast('📷 ছবি নির্বাচন সফল হয়েছে! সংরক্ষণে ক্লিক করুন।');
       } catch (err) {
         console.error('Image compression error:', err);
         showToast('ছবি প্রসেস করতে সমস্যা হয়েছে।');
@@ -849,34 +808,19 @@ function handleProfilePhotoUpload(event) {
   reader.readAsDataURL(file);
 }
 
-function selectProfilePresetAvatar(url, btnElement) {
+function selectProfilePresetAvatar(url) {
+  if (!url) return;
   currentSelectedPhotoURL = url;
   const previewImg = document.getElementById('account-modal-avatar-preview');
   if (previewImg) previewImg.src = url;
-
-  document.querySelectorAll('.preset-avatar-btn').forEach(btn => {
-    btn.classList.remove('ring-4', 'ring-emerald-500', 'scale-110');
-  });
-  if (btnElement) {
-    btnElement.classList.add('ring-4', 'ring-emerald-500', 'scale-110');
-  }
 }
 
 function openAccountSettingsModal() {
-  let currentUser = getCurrentUser();
-  if (!currentUser) {
-    currentUser = {
-      uid: 'farmer_guest_' + Date.now(),
-      displayName: 'কৃষক ভাই',
-      role: 'কৃষক',
-      district: localStorage.getItem('smart_agro_district') || 'ঢাকা',
-      email: '',
-      photoURL: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-      badge: '✓ কৃষক সদস্য',
-      isGuest: true
-    };
-    localStorage.setItem('smart_agro_user', JSON.stringify(currentUser));
-    notifySubscribers(currentUser);
+  const currentUser = getCurrentUser();
+  if (!currentUser || currentUser.isGuest) {
+    showToast('প্রোফাইল পরিবর্তনের জন্য অনুগ্রহ করে প্রথমে গুগল বা ইমেইল দিয়ে লগইন করুন।');
+    openLoginModal();
+    return;
   }
 
   const existing = document.getElementById('smart-agro-account-modal');
@@ -898,15 +842,6 @@ function openAccountSettingsModal() {
 
   const roleOptionsHtml = ROLE_OPTIONS.map(opt => `
     <option value="${opt.value}" ${opt.value === userRole ? 'selected' : ''}>${opt.label}</option>
-  `).join('');
-
-  const presetAvatarsHtml = PRESET_AVATARS.map((p, idx) => `
-    <button type="button" 
-            onclick="SmartAgroAuth.selectProfilePresetAvatar('${p.url}', this)"
-            title="${p.label}"
-            class="preset-avatar-btn group relative w-10 h-10 rounded-full overflow-hidden border-2 border-slate-200 hover:border-emerald-500 focus:outline-none transition-all ${userPhoto === p.url ? 'ring-4 ring-emerald-500 scale-110' : ''}">
-      <img src="${p.url}" alt="${p.label}" class="w-full h-full object-cover">
-    </button>
   `).join('');
 
   const modalDiv = document.createElement('div');
@@ -931,7 +866,7 @@ function openAccountSettingsModal() {
       <!-- Photo Edit Section -->
       <div class="flex flex-col items-center pb-5 mb-5 border-b border-slate-100">
         <div class="relative group">
-          <div class="w-20 h-20 rounded-full border-4 border-emerald-500 shadow-md overflow-hidden bg-slate-100 flex items-center justify-center">
+          <div class="w-24 h-24 rounded-full border-4 border-emerald-500 shadow-md overflow-hidden bg-slate-100 flex items-center justify-center">
             <img id="account-modal-avatar-preview" 
                  src="${userPhoto}" 
                  alt="${currentUser.displayName}" 
@@ -939,7 +874,7 @@ function openAccountSettingsModal() {
           </div>
           <button type="button" 
                   onclick="document.getElementById('link-photo-file').click()" 
-                  class="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center text-xs shadow-md border-2 border-white transition-all hover:scale-110"
+                  class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center text-sm shadow-md border-2 border-white transition-all hover:scale-110"
                   title="ছবি পরিবর্তন করুন">
             📷
           </button>
@@ -947,21 +882,13 @@ function openAccountSettingsModal() {
 
         <input type="file" id="link-photo-file" accept="image/*" class="hidden" onchange="SmartAgroAuth.handleProfilePhotoUpload(event)">
         
-        <div class="mt-3 flex items-center gap-2">
+        <div class="mt-3">
           <button type="button" 
                   onclick="document.getElementById('link-photo-file').click()" 
-                  class="px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-all">
+                  class="px-4 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold flex items-center gap-2 shadow-2xs transition-all">
             <span>📷</span>
-            <span>ছবি আপলোড / ক্যামেরা</span>
+            <span>গ্যালারি বা ক্যামেরা থেকে ছবি আপলোড</span>
           </button>
-        </div>
-
-        <!-- Preset Avatars -->
-        <div class="mt-3 text-center">
-          <div class="text-[11px] font-bold text-slate-500 mb-1.5">অথবা নমুনা ছবি নির্বাচন করুন:</div>
-          <div class="flex items-center justify-center gap-2.5">
-            ${presetAvatarsHtml}
-          </div>
         </div>
       </div>
 
