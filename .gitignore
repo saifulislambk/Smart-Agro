@@ -38,3 +38,7 @@ public/uploads/*.tmp
 # OS files
 .DS_Store
 Thumbs.db
+
+# Android APK builds
+*.apk
+

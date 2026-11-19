@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Smart Agro</string>
+    <string name="title_activity_main">Smart Agro</string>
+    <string name="package_name">bd.smartagro.app</string>
+    <string name="custom_url_scheme">bd.smartagro.app</string>
+</resources>
