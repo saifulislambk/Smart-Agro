@@ -14,7 +14,7 @@
     "test:smoke": "node scripts/tests/verify-local-smoke.js",
     "test:browser": "node scripts/tests/browser-scanner-test.js",
     "cap:sync": "cap sync android",
-    "android:build": "cap sync android && cd android && export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 && ./gradlew assembleDebug",
+    "android:build": "cap sync android && cd android && export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 && ./gradlew assembleRelease",
     "android:open": "cap open android"
   },
   "keywords": [

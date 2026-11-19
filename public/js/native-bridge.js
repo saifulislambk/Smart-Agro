@@ -19,7 +19,7 @@
   if (typeof window !== 'undefined' && window.fetch) {
     const originalFetch = window.fetch;
     window.fetch = function (resource, init) {
-      if (isCapacitorNative() && typeof resource === 'string' && resource.startsWith('/api/')) {
+      if (isCapacitorNative() && typeof resource === 'string' && (resource.startsWith('/api/') || resource.startsWith('/uploads/'))) {
         resource = LIVE_BACKEND_URL + resource;
       }
       return originalFetch.call(this, resource, init);
