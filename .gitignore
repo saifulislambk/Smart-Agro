@@ -40,5 +40,5 @@ public/uploads/*.tmp
 Thumbs.db
 
 # Android APK builds
-*.apk
+# *.apk
 
