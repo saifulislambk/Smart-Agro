@@ -17,10 +17,6 @@ function escapeHtml(str) {
 
 let currentLocationCoords = null;
 let currentDistrict = localStorage.getItem('smart_agro_district') || 'ঢাকা';
-if (currentDistrict === 'ব্রাহ্মণবাড়িয়া') {
-  currentDistrict = 'ঢাকা';
-  localStorage.setItem('smart_agro_district', 'ঢাকা');
-}
 let initialWeatherFetched = false;
 
 // ====================================================================
@@ -181,7 +177,7 @@ async function initWeather() {
   });
 
   const locationLabel = document.getElementById('weather-location-label');
-  if (locationLabel && (!locationLabel.innerText || locationLabel.innerText.trim() === 'ব্রাহ্মণবাড়িয়া')) {
+  if (locationLabel && !locationLabel.innerText) {
     locationLabel.innerText = currentDistrict;
   }
 
@@ -249,7 +245,7 @@ function autoDetectDistrictOnLoad() {
 // Ensure default fallback district is cleanly set to Dhaka without unhandled errors
 function fallbackToDhakaIfUnset() {
   const stored = localStorage.getItem('smart_agro_district');
-  if (!stored || stored === 'ব্রাহ্মণবাড়িয়া') {
+  if (!stored) {
     currentDistrict = 'ঢাকা';
     localStorage.setItem('smart_agro_district', 'ঢাকা');
     document.querySelectorAll('#district-select').forEach(sel => {
@@ -433,14 +429,14 @@ function handleGPSFailure(message) {
 // Fetch weather from backend API or Direct Live Global Satellite API
 async function fetchWeatherData() {
   const districtName = currentDistrict || 'ঢাকা';
-  
+
   // 1. Give immediate visual feedback that weather is actively updating
   const tempEl = document.getElementById('weather-temp');
   const conditionEl = document.getElementById('weather-condition');
   const humidityEl = document.getElementById('weather-humidity');
   const rainProbEl = document.getElementById('weather-rain-prob');
   const windEl = document.getElementById('weather-wind');
-  
+
   if (tempEl) tempEl.style.opacity = '0.4';
   if (conditionEl) conditionEl.style.opacity = '0.4';
 
@@ -665,7 +661,7 @@ function renderWeatherUI(weather, alert, spraying) {
 
     // Reset styles while preserving responsive grid layout classes
     alertContainer.className = 'glass-panel p-6 lg:col-span-2 border-l-4 flex flex-col justify-between transition-all duration-300 shadow-md';
-    
+
     if (alert.level === 'danger') {
       alertContainer.classList.add('border-rose-500', 'bg-rose-50/80');
       if (alertBadge) {

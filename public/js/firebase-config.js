@@ -175,7 +175,7 @@ async function signInWithGoogle() {
         phoneNumber: '',
         photoURL: result.user.photoURL || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
         badge: '✓ যাচাইকৃত কৃষক',
-        district: 'ব্রাহ্মণবাড়িয়া',
+        district: localStorage.getItem('smart_agro_district') || 'ঢাকা',
         auth_provider: 'google',
         isGuest: false
       };
